@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id       String    @id @default(uuid())
+  password String
+  email    String    @unique
+  name     String
+  photo    String?
+  shapes   Shape[]   
+  rooms    Room[]   
+  ownedRooms Room[] @relation("RoomAdmin")    
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  adminId     String
+  admin       User      @relation("RoomAdmin", fields: [adminId], references: [id])
+  users       User[]    
+  shapes      Shape[]   
+  // isPublic    Boolean   @default(true)
+  // canvasWidth  Int      @default(1920)
+  // canvasHeight Int      @default(1080)
+}
+
+model Shape {
+  id          String    @id @default(uuid())
+  type        ShapeType 
+  x           Float     
+  y           Float     
+  width       Float?    
+  height      Float?    
+  radius      Float?    
+  points      Json?     
+  color       String?    
+  strokeWidth Float?     @default(1)
+  fill        Boolean?   @default(true)
+  zIndex      Int?       @default(0)
+  userId      String    
+  roomId      String    
+  room        Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum ShapeType {
+  RECTANGLE 
+  CIRCLE
+  ELLIPSE
+  LINE
+  PATH
+  POLYGON
+  TEXT
+}
