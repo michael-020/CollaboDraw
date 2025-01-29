@@ -1,26 +1,20 @@
-import { CreateRoomSchema } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
 import { Request, Response } from "express";
 
 
 export const createRoomHandler = async (req: Request, res: Response) => {
     try {
-        const userId = req.userId;
+        const userId = req.user.id;
 
-        const parsedData = CreateRoomSchema.safeParse(req.body);
-
-        if (!parsedData.success) {
-            res.status(411).json({
-                msg: "invalid inputs"
-            });
-            return;
-        }
-
+        console.log(req.user)
+        const {slug, name} = req.body
         const room = await prismaClient.room.create({
             data: {
-                slug: parsedData.data.slug,
-                name: parsedData.data.name,
-                adminId: userId
+                slug: slug,
+                name: name,
+                admin: {
+                    connect: {id: userId}
+                }
             }
         });
 

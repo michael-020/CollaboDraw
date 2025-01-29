@@ -1,24 +1,55 @@
 import { NextFunction, Request, Response } from "express"
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config"
+import { prismaClient } from "@repo/db/client"
 
 
 interface customDecoded {
-   userId: string
+    userId?: string,
+    user?: IUser
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-   const token = req.headers["authorization"] ?? ""
+export interface IUser  {
+    id: string;           
+    email: string;
+    password?: string;
+    name: string;
+    photo?: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+   const token = req.cookies.jwt
 
    const decoded = jwt.verify(token, JWT_SECRET)
 
-   if(decoded){
-      req.userId = (decoded as customDecoded).userId
-      next()
-   }
-   else {
-      res.status(400).json({
-         msg: "Invalid token"
-      })
-   }
+    if(decoded){
+        const user = await prismaClient.user.findUnique({
+            where: {
+                id: (decoded as customDecoded).userId
+            },
+            select: {
+                password: false,
+                email: true,
+                name: true,
+                id: true
+            }
+        })
+
+        if(!user){
+            res.status(400).json({
+                msg: "user not found"
+            })
+            return
+        }
+
+        req.user = user as IUser
+        next()
+    }
+    else {
+        res.status(400).json({
+            msg: "You are not logged in"
+        })
+    }
 }
