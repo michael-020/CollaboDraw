@@ -3,6 +3,7 @@ import { prismaClient } from "@repo/db/client";
 import { Request, Response } from "express";
 import { JWT_SECRET } from "../config";
 import jwt from "jsonwebtoken"
+import { generateToken } from "../lib/utils";
 
 export const signupHandler = async (req: Request, res: Response) => {
     try {
@@ -25,14 +26,16 @@ export const signupHandler = async (req: Request, res: Response) => {
             }
         });
 
-        const token = jwt.sign({
-            userId: newUser.id
-        }, JWT_SECRET);
+        // const token = jwt.sign({
+        //     userId: newUser.id
+        // }, JWT_SECRET);
+
+        generateToken(newUser.id, res)
 
         res.json({
-            msg: "signup successful",
-            newUser,
-            token
+           id: newUser.id,
+           email: newUser.email,
+           username: newUser.name
         });
     } catch (error) {
         console.log("Error while signing up", error);

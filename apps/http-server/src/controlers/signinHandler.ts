@@ -3,6 +3,7 @@ import { JWT_SECRET } from "../config";
 import { SigninSchema } from "@repo/common/types";
 import jwt from "jsonwebtoken"
 import { prismaClient } from "@repo/db/client";
+import { generateToken } from "../lib/utils";
 
 export const signinHandler = async (req: Request, res: Response) => {
      try {
@@ -28,13 +29,14 @@ export const signinHandler = async (req: Request, res: Response) => {
                 return;
             }
     
-            const token = jwt.sign({
-                userId: checkUser.id
-            }, JWT_SECRET);
-    
+            // const token = jwt.sign({
+            //     userId: checkUser.id
+            // }, JWT_SECRET);
+            generateToken(checkUser.id, res)
             res.status(200).json({
-                token,
-                user: checkUser
+                id: checkUser.id,
+                email: checkUser.email,
+                name: checkUser.name
             });
         } catch (error) {
             console.log("Error while signing in", error);
