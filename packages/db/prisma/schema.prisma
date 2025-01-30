@@ -43,7 +43,8 @@ model Shape {
   y           Float     
   width       Float?    
   height      Float?    
-  radius      Float?    
+  radiusX     Float?    
+  radiusY     Float?
   points      Json?     
   color       String?    
   strokeWidth Float?     @default(1)

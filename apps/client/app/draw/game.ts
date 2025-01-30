@@ -1,5 +1,6 @@
 import { json } from "stream/consumers"
 import { getExistingShapes } from "./http"
+import { Tool } from "@/components/Canvas"
 
 export type Shapes = {
     type: "RECTANGLE",
@@ -7,6 +8,18 @@ export type Shapes = {
     y: number,
     width: number,
     height: number
+} | {
+    type: "CIRCLE",
+    x: number, 
+    y: number, 
+    radiusX: number,
+    radiusY: number
+} | {
+    type: "LINE"
+} | {
+    type: "ARROW"
+} | {
+    type: "PENCIL"
 }
 
 export class Game{
@@ -46,6 +59,9 @@ export class Game{
             if(shape.type === "RECTANGLE"){
                 this.ctx.strokeStyle = "rgb(255,255,255)"
                 this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height)
+            }
+            else if(shape.type === "CIRCLE"){
+
             }
         })
     }
@@ -110,6 +126,9 @@ export class Game{
                     height
                 }
             }))
+        } 
+        else if(this.selectedTool === "CIRCLE"){
+
         }
         
     }
@@ -118,5 +137,17 @@ export class Game{
         this.canvas.addEventListener("mousedown", this.mousedownHandler.bind(this))
         this.canvas.addEventListener("mousemove", this.mousemoveHandler.bind(this))
         this.canvas.addEventListener("mouseup", this.mouseupHandler.bind(this))
+    }
+
+    setTool(tool: Tool){
+        this.selectedTool = tool
+    }
+
+    destroy(){
+        this.canvas.removeEventListener("mousedown", this.mousedownHandler)
+
+        this.canvas.removeEventListener("mouseup",this.mouseupHandler)
+
+        this.canvas.removeEventListener("mousemove", this.mousemoveHandler)
     }
 }
