@@ -23,8 +23,10 @@ const RoomCanvas = ({roomId}: {roomId: string}) => {
   }, [])
 
   if(!socket)
-    return <div>
-        Connecting to the server...
+    return <div className='h-screen flex items-center justify-center'>
+        <div>
+            Connecting to the server...
+        </div>
     </div>
 
   return (

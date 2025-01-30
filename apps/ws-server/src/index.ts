@@ -51,7 +51,6 @@ wss.on("connection", function connection(ws, request) {
   }
 
   users.push({ userId, rooms: [], ws });
-  console.log("user connected")
 
   ws.on("message", async function message(data) {
     const messageData = typeof data === "string" ? data : data.toString();
@@ -61,7 +60,7 @@ wss.on("connection", function connection(ws, request) {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
       user.rooms.push(parsedData.roomId);
-      console.log("user joined room")
+
     }
 
     if (parsedData.type === "leave_room") {
@@ -82,14 +81,14 @@ wss.on("connection", function connection(ws, request) {
       //   height: number
       // }
 
-      if(message.type === "rect"){
+      if(message.type === "RECTANGLE"){
         await prismaClient.shape.create({
           data: {
             type: "RECTANGLE",
             width: Number(message.width),
             height: Number(message.height),
-            x: Number(message.startX),
-            y: Number(message.startY),
+            x: Number(message.x),
+            y: Number(message.y),
             user: {
               connect: { id: userId }
             },
@@ -102,6 +101,7 @@ wss.on("connection", function connection(ws, request) {
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId.toString())) {
+
           user.ws.send(
             JSON.stringify({
               type: "draw",

@@ -3,13 +3,14 @@ import { AxiosInstance } from "@/lib/axios"
 
 export const getExistingShapes = async (roomId: string) => {
     const res = await AxiosInstance.get(`/user/shapes/${roomId}`)
-    const messages = res.data
+    const messages = await res.data
+    // const shapes = messages.map((x: {message: string}) => {
 
-    const shapes = messages.map((x: {message: string}) => {
-        const parsedMessage = JSON.parse(x.message)
+    //     const messageData = x
+    //     console.log(messageData)
 
-        return parsedMessage
-    })  
+    // })
 
-    return shapes   
+
+    return messages;  
 }
