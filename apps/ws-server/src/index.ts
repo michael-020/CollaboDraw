@@ -51,6 +51,7 @@ wss.on("connection", function connection(ws, request) {
   }
 
   users.push({ userId, rooms: [], ws });
+  console.log("user connected")
 
   ws.on("message", async function message(data) {
     const messageData = typeof data === "string" ? data : data.toString();
@@ -60,6 +61,7 @@ wss.on("connection", function connection(ws, request) {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
       user.rooms.push(parsedData.roomId);
+      console.log("user joined room")
     }
 
     if (parsedData.type === "leave_room") {
