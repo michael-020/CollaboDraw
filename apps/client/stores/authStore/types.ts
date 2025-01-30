@@ -11,8 +11,15 @@ export interface IUser  {
 
 export type authState = {
     authUser: IUser | null
-    isSigninUp: boolean
+    isSigningUp: boolean
     isLoggingIn: boolean
     isLoggingOut: boolean
     isCheckingAuth: boolean
+}
+
+export type authActions = {
+    signup: (data: {name: string, email: string, password: string}) => void
+    login: (data: {email: string, password: string}) => void
+    checkAuth: () => void
+    logout: () => void
 }
