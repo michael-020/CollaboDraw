@@ -23,6 +23,7 @@
   "devDependencies": {
     "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/backend-common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",

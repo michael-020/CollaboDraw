@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { JWT_SECRET } from "../config";
 import { SigninSchema } from "@repo/common/types";
-import jwt from "jsonwebtoken"
 import { prismaClient } from "@repo/db/client";
 import { generateToken } from "../lib/utils";
 

@@ -1,6 +1,6 @@
 import { Response } from "express";
 import jwt from "jsonwebtoken"
-import { JWT_SECRET } from "../config";
+import { JWT_SECRET } from "@repo/backend-common/config";
 
 export const generateToken = (userId: string, res: Response) => {
     const token = jwt.sign({ userId }, JWT_SECRET, {

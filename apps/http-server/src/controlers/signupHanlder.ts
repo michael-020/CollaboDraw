@@ -1,8 +1,6 @@
 import { CreateUserSchema } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import { JWT_SECRET } from "../config";
-import jwt from "jsonwebtoken"
 import { generateToken } from "../lib/utils";
 
 export const signupHandler = async (req: Request, res: Response) => {
