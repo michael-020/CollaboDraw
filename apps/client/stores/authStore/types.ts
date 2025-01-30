@@ -15,6 +15,7 @@ export type authState = {
     isLoggingIn: boolean
     isLoggingOut: boolean
     isCheckingAuth: boolean
+    isCreatingRoom: boolean
     roomId: string
 }
 
