@@ -6,6 +6,7 @@ import { createRoomHandler } from "../controlers/createRoomHandler";
 import { getShapesHandler } from "../controlers/getShapesHandler";
 import { getRoomHandler } from "../controlers/getRoomHandler";
 import { checkAuth } from "../controlers/checkAuth";
+import { logoutHandler } from "../controlers/logoutHandler";
 
 const userRouter: Router = Router();
 
@@ -22,5 +23,7 @@ userRouter.get("/shapes/:roomId", getShapesHandler);
 userRouter.get("/room/:slug", getRoomHandler);
 
 userRouter.get("/check", checkAuth)
+
+userRouter.post("/logout", logoutHandler)
 
 export default userRouter;

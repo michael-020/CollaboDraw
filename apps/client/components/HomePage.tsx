@@ -5,12 +5,12 @@ import { useEffect } from "react"
 
 
 export default function HomePage() {
-  const { authUser, checkAuth } = useAuthStore()
+  const { authUser, checkAuth, logout } = useAuthStore()
   const router = useRouter()
 
   useEffect(() => {
     checkAuth()
-  }, [checkAuth])
+  }, [checkAuth, logout])
 
   
   useEffect(() => {
@@ -26,7 +26,8 @@ export default function HomePage() {
   }
   
   return (
-    <div>
+    <div className="flex flex-col">
+      {/* <button className="bg-blue-200 w-24" onClick={() => logout()}>Logout</button> */}
       this is home page
     </div>
   );

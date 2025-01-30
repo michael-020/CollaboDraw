@@ -3,7 +3,6 @@ import { useAuthStore } from "@/stores/authStore/authStore"
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 
-
 export default function(){
     const { signup, authUser } = useAuthStore()
     const [formData, setFormData] = useState({
