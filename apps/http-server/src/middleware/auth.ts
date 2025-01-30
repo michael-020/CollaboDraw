@@ -33,7 +33,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
                 password: false,
                 email: true,
                 name: true,
-                id: true
+                id: true,
+                photo: true,
+                createdAt: true,
+                updatedAt: true
             }
         })
 

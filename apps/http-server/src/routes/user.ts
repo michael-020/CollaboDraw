@@ -5,6 +5,7 @@ import { signinHandler } from "../controlers/signinHandler";
 import { createRoomHandler } from "../controlers/createRoomHandler";
 import { getShapesHandler } from "../controlers/getShapesHandler";
 import { getRoomHandler } from "../controlers/getRoomHandler";
+import { checkAuth } from "../controlers/checkAuth";
 
 const userRouter: Router = Router();
 
@@ -19,5 +20,7 @@ userRouter.post("/create-room", createRoomHandler);
 userRouter.get("/shapes/:roomId", getShapesHandler);
 
 userRouter.get("/room/:slug", getRoomHandler);
+
+userRouter.get("/check", checkAuth)
 
 export default userRouter;
