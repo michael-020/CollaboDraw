@@ -18,6 +18,8 @@ userRouter.use(authMiddleware)
 
 userRouter.post("/create-room", createRoomHandler);
 
+userRouter.post("/join-room/:roomId")
+
 userRouter.get("/shapes/:roomId", getShapesHandler);
 
 userRouter.get("/room/:slug", getRoomHandler);

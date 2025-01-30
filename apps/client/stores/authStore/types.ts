@@ -15,6 +15,7 @@ export type authState = {
     isLoggingIn: boolean
     isLoggingOut: boolean
     isCheckingAuth: boolean
+    roomId: string
 }
 
 export type authActions = {
@@ -22,4 +23,6 @@ export type authActions = {
     login: (data: {email: string, password: string}) => void
     checkAuth: () => void
     logout: () => void
+    createRoom: (data: {slug: string, name: string}) => void
+    joinRoom: (roomId: string) => void
 }
