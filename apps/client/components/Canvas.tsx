@@ -12,6 +12,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
 
     useEffect(() => {
       game?.setTool(selectedTool)
+      console.log("effect selected tool: ", selectedTool)
     }, [selectedTool, game])
 
     useEffect(() => {
@@ -24,7 +25,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
         return () => {
             g.destroy()
         }
-    }, [selectedTool])
+    }, [canvasRef])
 
     return (
         <div>

@@ -80,7 +80,7 @@ wss.on("connection", function connection(ws, request) {
       //   width: 123,
       //   height: number
       // }
-
+      console.log("m: ", message.type)
       if(message.type === "RECTANGLE"){
         await prismaClient.shape.create({
           data: {
@@ -97,6 +97,25 @@ wss.on("connection", function connection(ws, request) {
             }
           }
         })
+      } 
+      else if(message.type === "CIRCLE"){
+        console.log("hi 1")
+        await prismaClient.shape.create({
+          data: {
+            type: "CIRCLE",
+            x: Number(message.x),
+            y: Number(message.y),
+            radiusX: Number(message.radiusX),
+            radiusY: Number(message.radiusY),
+            user: {
+              connect: { id: userId }
+            },
+            room: {
+              connect: { id: roomId }
+            }
+          }
+        })
+        console.log("hi 2")
       }
 
       users.forEach((user) => {
