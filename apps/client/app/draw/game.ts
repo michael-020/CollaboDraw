@@ -45,6 +45,8 @@ export class Game{
     private x = 0
     private y = 0
     private selectedTool: Tool | "" = ""
+    private shouldDraw = false
+    private MAIN_MOUSE_BUTTON = 0;
 
     constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
         this.roomId = roomId,
@@ -307,6 +309,39 @@ export class Game{
     setTool(tool: Tool){
         this.selectedTool = tool
     }
+
+    setLineProperties(context: CanvasRenderingContext2D) {
+        context.lineWidth = 4;
+        context.lineJoin = "round";
+        context.lineCap = "round";
+        return context;
+      }
+
+    start(event: any) {
+        if (event.button === this.MAIN_MOUSE_BUTTON) {
+          this.shouldDraw = true;
+          this.setLineProperties(this.ctx);
+      
+          this.ctx.beginPath();
+          
+          let elementRect = event.target.getBoundingClientRect();
+          this.ctx.moveTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
+        }
+      }
+      
+      end(event: any) {
+        if (event.button === this.MAIN_MOUSE_BUTTON) {
+          this.shouldDraw = false;
+        }
+      }
+      
+      move(event: any) {
+        if (this.shouldDraw) {
+            let elementRect = event.target.getBoundingClientRect();
+          this.ctx.lineTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
+          this.ctx.stroke()
+        }
+      }
 
     destroy(){
         this.canvas.removeEventListener("mousedown", this.mousedownHandler)

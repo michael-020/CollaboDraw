@@ -7,6 +7,7 @@ import { getShapesHandler } from "../controlers/getShapesHandler";
 import { getRoomHandler } from "../controlers/getRoomHandler";
 import { checkAuth } from "../controlers/checkAuth";
 import { logoutHandler } from "../controlers/logoutHandler";
+import { joinRoomHandler } from "../controlers/joinRoomHandler";
 
 const userRouter: Router = Router();
 
@@ -18,7 +19,7 @@ userRouter.use(authMiddleware)
 
 userRouter.post("/create-room", createRoomHandler);
 
-userRouter.post("/join-room/:roomId")
+userRouter.post("/join-room/:roomId", joinRoomHandler)
 
 userRouter.get("/shapes/:roomId", getShapesHandler);
 
