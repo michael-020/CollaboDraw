@@ -21,19 +21,27 @@ const JoinRoom = () => {
         joinRoom(formData.roomId)
    }
     
-       
   return (
-    <div>
-       <div className="h-screen flex flex-col gap-3 items-center justify-center">
-            <form className="flex flex-col border px-6 py-8 gap-3 items-center rounded-xl">
-                <h1 className="text-lg relative bottom-4 text-white ">Join room</h1>
-                <input type="text" placeholder="RoomId..." className="bg-blue-200 border px-2 py-1 rounded-md placeholder:text-gray-500 " onChange={onChangeHandler} value={formData.roomId} name="roomId" />
-                <Link href={`/canvas/${formData.roomId}`} className='w-full'>
-                    <button className="bg-blue-500 w-full py-1 rounded-md" onClick={handleSubmit} >Submit</button>
-                </Link>
+    <div className="h-screen flex flex-col items-center justify-center text-white ">
+        <div className="bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)] p-10 rounded-2xl shadow-lg shadow-gray-800 max-w-lg w-full">
+            <h1 className="text-2xl font-bold text-center mb-6">Join a Room</h1>
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    placeholder="Enter Room ID..."
+                    className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    onChange={onChangeHandler}
+                    value={formData.roomId}
+                    name="roomId"
+                />
+                <button
+                    type="submit"
+                    className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                >
+                    Join Room
+                </button>
             </form>
-           
-        </div>  
+        </div>
     </div>
   )
 }

@@ -14,7 +14,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!authUser) {
-      router.replace("/signin"); 
+      router.replace("/"); 
     }
   }, [authUser, router]);
 
@@ -46,12 +46,12 @@ export default function HomePage() {
       {/* Buttons */}
       <div className="flex space-x-6">
         <Link href={"/create-room"}>
-          <button className="bg-blue-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition duration-300">
+          <button className="bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300">
             Create Room
           </button>
         </Link>
         <Link href={"/join-room"}>
-          <button className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition duration-300">
+          <button className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300">
             Join Room
           </button>
         </Link>

@@ -30,13 +30,13 @@ const LandingPage = () => {
         <div className="flex justify-center space-x-4 mb-12">
           <Link
             href="/signin"
-            className="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition duration-300"
+            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300"
           >
             Sign In
           </Link>
           <Link
             href="/signup"
-            className="bg-blue-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition duration-300"
+            className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300"
           >
             Sign Up
           </Link>
