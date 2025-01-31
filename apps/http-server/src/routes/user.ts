@@ -9,6 +9,8 @@ import { checkAuth } from "../controlers/checkAuth";
 import { logoutHandler } from "../controlers/logoutHandler";
 import { joinRoomHandler } from "../controlers/joinRoomHandler";
 import { getUsers } from "../controlers/getUsers";
+import { deleteRoomHandler } from "../controlers/deleteRoomHandler";
+import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 
 const userRouter: Router = Router();
 
@@ -21,6 +23,11 @@ userRouter.use(authMiddleware)
 userRouter.post("/create-room", createRoomHandler);
 
 userRouter.post("/join-room/:roomId", joinRoomHandler)
+
+// todo: leave room and delete room
+userRouter.put("/leave-room/:roomId", leaveRoomHandler);
+
+userRouter.delete("/delete-room/:roomId", deleteRoomHandler);
 
 userRouter.get("/getUsers/:roomId", getUsers)
         
