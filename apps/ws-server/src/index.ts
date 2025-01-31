@@ -118,10 +118,27 @@ wss.on("connection", function connection(ws, request) {
         })
       }
       else if(message.type === "LINE"){
-        console.log("points: ", message.points)
+        
         await prismaClient.shape.create({
           data: {
             type: "LINE",
+            x: Number(message.x),
+            y: Number(message.y),
+            points: message.points, // points -> {endX, endY}
+            user: {
+              connect: { id: userId }
+            },
+            room: {
+              connect: { id: roomId }
+            }
+          }
+        })
+      } 
+      else if(message.type === "ARROW"){
+        console.log("points: ", message.points)
+        await prismaClient.shape.create({
+          data: {
+            type: "ARROW",
             x: Number(message.x),
             y: Number(message.y),
             points: message.points, // points -> {endX, endY}

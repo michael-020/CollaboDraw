@@ -34,7 +34,6 @@ export type Shapes = {
     type: "PENCIL"
 }
 
-// line -> (startX, startY) to (endX, endY)
 
 export class Game{
     private roomId: string
@@ -96,10 +95,15 @@ export class Game{
                 // this.clearCanvas()
                 this.ctx.beginPath()
                 this.ctx.moveTo(shape.x, shape.y)
-                console.log("points: ", shape.points)
+
                 this.ctx.lineTo(shape.points.endX, shape.points.endY)
                 this.ctx.stroke()
                 // this.ctx.closePath();
+            }
+            else if(shape.type === "ARROW"){
+                this.ctx.beginPath()
+                canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY)
+                this.ctx.stroke()
             }
         })
     }
@@ -140,8 +144,17 @@ export class Game{
                     y: shape.y,
                     points: shape.points
                 }
-                console.log("line: ", line)
+                // console.log("line: ", line)
                 this.existingShapes.push(line)
+            }
+            else if(shape.type === "ARROW"){
+                const arrow: Shapes = {
+                    type: "ARROW",
+                    x: shape.x,
+                    y: shape.y,
+                    points: shape.points
+                }
+                this.existingShapes.push(arrow)
             }
             else {
                 console.warn("Received invalid shape:", shape)
@@ -242,12 +255,7 @@ export class Game{
         else if (this.selectedTool === "LINE"){
             const endX = e.clientX
             const endY = e.clientY
-            // this.clearCanvas()
-            // this.ctx.beginPath()
-            // this.ctx.moveTo(this.x, this.y)
-            // this.ctx.lineTo(endX, endY)
-            // this.ctx.stroke()
-            // this.ctx.closePath()
+        
             const message = {
                 type: "draw",
                 roomId: this.roomId,
@@ -283,6 +291,10 @@ export class Game{
                     }
                 }
             }
+            console.log("shapes arrow: ", message.message)
+            this.existingShapes.push(message.message as Shapes)
+            this.clearCanvas()
+            this.socket.send(JSON.stringify(message))
         }
     }
 
