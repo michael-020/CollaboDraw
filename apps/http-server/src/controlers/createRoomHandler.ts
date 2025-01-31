@@ -6,11 +6,9 @@ export const createRoomHandler = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id;
 
-        console.log(req.user)
-        const {slug, name} = req.body
+        const {name} = req.body
         const room = await prismaClient.room.create({
             data: {
-                slug: slug,
                 name: name,
                 admin: {
                     connect: {id: userId}

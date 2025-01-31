@@ -95,7 +95,7 @@ const CreateRoom = () => {
                         </button>
                     </div>
                     <Link href={`/canvas/${roomId}`}>
-                        <button className="mt-4 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" onClick={handleJoinRoom}>
+                        <button className="mt-4 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" onClick={handleJoinRoom} >
                             Join Room
                         </button>
                     </Link>

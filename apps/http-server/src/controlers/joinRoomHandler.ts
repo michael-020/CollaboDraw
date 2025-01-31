@@ -19,11 +19,11 @@ export const joinRoomHandler = async (req: Request, res: Response) => {
             return
         }
 
-        const isUserAlreadyInRoom = room.users.some(user => user.id === userId);
-        if (isUserAlreadyInRoom) {
-            res.status(400).json({ message: "User already in room" });
-            return
-        }
+        // const isUserAlreadyInRoom = room.users.some(user => user.id === userId);
+        // if (isUserAlreadyInRoom) {
+        //     res.status(400).json({ message: "User already in room" });
+        //     return
+        // }
 
         const updatedRoom = await prismaClient.room.update({
             where: {id: roomId},
