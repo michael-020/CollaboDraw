@@ -27,7 +27,7 @@ export type authActions = {
     login: (data: {email: string, password: string}) => void
     checkAuth: () => void
     logout: () => void
-    createRoom: (data: {slug: string, name: string}) => void
+    createRoom: (data: {name: string}) => void
     joinRoom: (roomId: string) => void
     getUsers: (roomId: string) => void
 }

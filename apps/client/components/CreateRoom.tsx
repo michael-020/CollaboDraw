@@ -9,7 +9,7 @@ const CreateRoom = () => {
     const { createRoom, roomId, isCreatingRoom, joinRoom } = useAuthStore()
     const [copied, setCopied] = useState(false)
     const [formData, setFormData] = useState({
-        slug: "",
+        // slug: "",
         name: ""
     })
 
@@ -43,14 +43,14 @@ const CreateRoom = () => {
             <div className={` ${!isCreatingRoom ? "bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)]" : "opacity-40" }  p-10 rounded-2xl shadow-lg shadow-gray-800 max-w-lg w-full z-10`}>
                 <h1 className="text-2xl font-bold text-center mb-6">Create a Room</h1>
                 <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                    <input
+                    {/* <input
                         type="text"
                         placeholder="Enter Room Slug..."
                         className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         onChange={onChangeHandler}
                         value={formData.slug}
                         name="slug"
-                    />
+                    /> */}
                     <input
                         type="text"
                         placeholder="Enter Room Name..."
