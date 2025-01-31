@@ -5,6 +5,8 @@ const UsersInRoom = ({roomId}: {roomId: string}) => {
     const {usersInRoom, getUsers} = useAuthStore()
 
     useEffect(() => {
+        if(usersInRoom.length < 2)
+            return
         getUsers(roomId)
     }, [getUsers])
 
