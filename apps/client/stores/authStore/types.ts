@@ -16,6 +16,8 @@ export type authState = {
     isLoggingOut: boolean
     isCheckingAuth: boolean
     isCreatingRoom: boolean
+    isJoiningRoom: boolean
+    usersInRoom: IUser[]
     roomId: string
 }
 

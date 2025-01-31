@@ -10,6 +10,8 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     isLoggingOut: false,
     isCheckingAuth: false,
     isCreatingRoom: false,
+    isJoiningRoom: false,
+    usersInRoom: [],
     roomId: "",
 
     signup: async (data) => {
@@ -79,10 +81,17 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     },
 
     joinRoom: async (roomId) => {
+        set({isJoiningRoom: true})
         try {
             const res = await AxiosInstance.post(`/user/join-room/${roomId}`)
+            
+            set((state) => ({
+                usersInRoom: state.authUser ? [...state.usersInRoom, state.authUser] : state.usersInRoom
+            }));
         } catch (error) {
             console.error(error)
+        } finally {
+            set({isJoiningRoom: false})
         }
     },
 }))
