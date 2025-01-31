@@ -80,7 +80,9 @@ wss.on("connection", function connection(ws, request) {
       //   width: 123,
       //   height: number
       // }
-      console.log("m: ", message.type)
+
+      console.log("Processing draw message:", message);
+
       if(message.type === "RECTANGLE"){
         await prismaClient.shape.create({
           data: {
@@ -99,7 +101,6 @@ wss.on("connection", function connection(ws, request) {
         })
       } 
       else if(message.type === "CIRCLE"){
-        console.log("hi 1")
         await prismaClient.shape.create({
           data: {
             type: "CIRCLE",
@@ -115,21 +116,38 @@ wss.on("connection", function connection(ws, request) {
             }
           }
         })
-        console.log("hi 2")
+      }
+      else if(message.type === "LINE"){
+        console.log("points: ", message.points)
+        await prismaClient.shape.create({
+          data: {
+            type: "LINE",
+            x: Number(message.x),
+            y: Number(message.y),
+            points: message.points, // points -> {endX, endY}
+            user: {
+              connect: { id: userId }
+            },
+            room: {
+              connect: { id: roomId }
+            }
+          }
+        })
       }
 
-      users.forEach((user) => {
-        if (user.rooms.includes(roomId.toString())) {
+      const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
 
-          user.ws.send(
-            JSON.stringify({
-              type: "draw",
-              message,
-              roomId,
-            })
-          );
-        }
-      });
+        usersInRoom.forEach(user => {
+          const broadcastMessage = {
+            type: "draw",
+            message: {
+              ...message,
+              type: message.type
+            },
+            roomId
+          };
+          user.ws.send(JSON.stringify(broadcastMessage));
+        });
     }
   });
 

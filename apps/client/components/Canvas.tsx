@@ -8,11 +8,10 @@ export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL"
 const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)  
     const [game, setGame] = useState<Game>()
-    const [selectedTool, setSelectedTool] = useState<Tool>("CIRCLE")
+    const [selectedTool, setSelectedTool] = useState<Tool | "">("")
 
     useEffect(() => {
-      game?.setTool(selectedTool)
-      console.log("effect selected tool: ", selectedTool)
+      game?.setTool(selectedTool as Tool)
     }, [selectedTool, game])
 
     useEffect(() => {
@@ -29,7 +28,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
 
     return (
         <div>
-            <ShapeOptions selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+            <ShapeOptions selectedTool={selectedTool as Tool} setSelectedTool={setSelectedTool} />
             <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight}  className='bg-neutral-800' ></canvas>
         </div>
     )

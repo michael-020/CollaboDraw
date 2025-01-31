@@ -61,9 +61,8 @@ model Shape {
 enum ShapeType {
   RECTANGLE 
   CIRCLE
-  ELLIPSE
   LINE
+  ARROW
   PATH
-  POLYGON
   TEXT
 }
