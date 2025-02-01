@@ -13,6 +13,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     isJoiningRoom: false,
     usersInRoom: [],
     isGettingUsers: false,
+    isLeavingRoom: false,
     roomId: "",
 
     signup: async (data) => {
@@ -105,6 +106,18 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             console.error(error)
         } finally {
             set({isGettingUsers: false})
+        }
+    },
+
+    leaveRoom: async(roomId) => {
+        set({isLeavingRoom: true})
+        try {   
+            const res = await AxiosInstance.put(`/user/leave-room/${roomId}`)
+            set({usersInRoom: res.data})
+        } catch (error) {
+            console.error(error)
+        } finally {
+            set({isLeavingRoom: false})
         }
     }
 }))
