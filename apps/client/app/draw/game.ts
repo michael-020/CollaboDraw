@@ -1,3 +1,4 @@
+import { ReactElement } from "react"
 import { getExistingShapes } from "./http"
 import { Tool } from "@/components/Canvas"
 
@@ -157,6 +158,9 @@ export class Game{
                 }
                 this.existingShapes.push(arrow)
             }
+            else if(shape.type === "PENCIL"){
+
+            }
             else {
                 console.warn("Received invalid shape:", shape)
             }
@@ -165,12 +169,25 @@ export class Game{
     }
 
     mousedownHandler(e: MouseEvent){
+        if (!(e.target instanceof HTMLCanvasElement)) 
+            return;
         this.clicked = true
         this.x = e.clientX
         this.y = e.clientY
+        if(this.selectedTool === "PENCIL"){
+            // console.log("mousedown: ",e.clientX)
+            // console.log("mousedown: ", e.clientY)
+            this.setLineProperties()
+            this.ctx.beginPath()
+
+            let elementRect = e.target.getBoundingClientRect()
+            this.ctx.moveTo(e.clientX-elementRect.left, e.clientY-elementRect.top)
+        }
     }
 
     mousemoveHandler(e: MouseEvent){
+        if (!(e.target instanceof HTMLCanvasElement)) 
+            return;
         if(!this.clicked)
             return
         this.ctx.strokeStyle = "rgb(255,255,255)"
@@ -203,6 +220,13 @@ export class Game{
             this.clearCanvas()
             this.ctx.beginPath()
             canvas_arrow(this.ctx, this.x, this.y, endX, endY)
+            this.ctx.stroke()
+        }
+        else if(this.selectedTool === "PENCIL"){
+            // console.log("mousemove: ",e.clientX)
+            // console.log("mousemove: ", e.clientY)
+            let elementRect = e.target.getBoundingClientRect()
+            this.ctx.lineTo(e.clientX-elementRect.left, e.clientY-elementRect.top)
             this.ctx.stroke()
         }
         
@@ -292,10 +316,13 @@ export class Game{
                     }
                 }
             }
-            console.log("shapes arrow: ", message.message)
+
             this.existingShapes.push(message.message as Shapes)
             this.clearCanvas()
             this.socket.send(JSON.stringify(message))
+        }
+        else if(this.selectedTool === "PENCIL"){
+            
         }
     }
 
@@ -309,38 +336,13 @@ export class Game{
         this.selectedTool = tool
     }
 
-    // setLineProperties(context: CanvasRenderingContext2D) {
-    //     context.lineWidth = 4;
-    //     context.lineJoin = "round";
-    //     context.lineCap = "round";
-    //     return context;
-    //   }
+    setLineProperties() {
+        this.ctx.lineWidth = 1;
+        this.ctx.lineJoin = "round";
+        this.ctx.lineCap = "round";
+        return this.ctx;
+    }
 
-    // start(event: any) {
-    //     if (event.button === this.MAIN_MOUSE_BUTTON) {
-    //       this.shouldDraw = true;
-    //       this.setLineProperties(this.ctx);
-      
-    //       this.ctx.beginPath();
-          
-    //       let elementRect = event.target.getBoundingClientRect();
-    //       this.ctx.moveTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
-    //     }
-    //   }
-      
-    //   end(event: any) {
-    //     if (event.button === this.MAIN_MOUSE_BUTTON) {
-    //       this.shouldDraw = false;
-    //     }
-    //   }
-      
-    //   move(event: any) {
-    //     if (this.shouldDraw) {
-    //         let elementRect = event.target.getBoundingClientRect();
-    //       this.ctx.lineTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
-    //       this.ctx.stroke()
-    //     }
-    //   }
 
     destroy(){
         this.canvas.removeEventListener("mousedown", this.mousedownHandler)
