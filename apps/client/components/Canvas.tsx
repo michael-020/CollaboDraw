@@ -6,7 +6,7 @@ import UsersInRoom from './UsersInRoom'
 import LeaveRoom from './LeaveRoom'
 import DeleteRoom from './DeleteRoom'
 
-export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL"
+export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT"
 
 const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)  

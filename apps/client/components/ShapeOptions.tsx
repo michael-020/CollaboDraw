@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, Circle, Minus, MoveLeft, Pencil, Square } from 'lucide-react'
+import { ArrowLeft, CaseSensitive, Circle, Minus, MoveLeft, Pencil, Square } from 'lucide-react'
 import { Tool } from './Canvas'
 import { IconButton } from './IconButton'
 
@@ -16,10 +16,13 @@ export const ShapeOptions = ({selectedTool, setSelectedTool}: {selectedTool: Too
             <IconButton icon={<Minus className='p-1 size-8 hover:scale-110' />}  isCircle={true} activated={selectedTool === "LINE" } onClick={() => {
                 setSelectedTool("LINE")
             }} />
-            <IconButton icon={<MoveLeft className='p-1 size-7 hover:scale-110' />}  isCircle={true} activated={selectedTool === "ARROW" } onClick={() => {
+            <IconButton icon={<MoveLeft className='p-1 size-7 hover:scale-110' />}  isCircle={false} activated={selectedTool === "ARROW" } onClick={() => {
                 setSelectedTool("ARROW")
             }} />
-            <IconButton icon={<Pencil className='p-1 hover:scale-110' />}  isCircle={true} activated={selectedTool === "PENCIL" } onClick={() => {
+            <IconButton icon={<Pencil className='p-1 hover:scale-110' />}  isCircle={false} activated={selectedTool === "PENCIL" } onClick={() => {
+                setSelectedTool("PENCIL")
+            }} />
+             <IconButton icon={<CaseSensitive className='p-1 size-9 hover:scale-105' />}  isCircle={false} activated={selectedTool === "TEXT" } onClick={() => {
                 setSelectedTool("PENCIL")
             }} />
         </div>

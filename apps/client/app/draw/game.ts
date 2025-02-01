@@ -31,7 +31,10 @@ export type Shapes = {
         endY: number
     }
 } | {
-    type: "PENCIL"
+    type: "PENCIL",
+
+} | {
+    type: "TEXT",
 }
 
 
