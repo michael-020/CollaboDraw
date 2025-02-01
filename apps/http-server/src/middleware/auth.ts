@@ -25,7 +25,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
    const decoded = jwt.verify(token, JWT_SECRET)
 
     if(decoded){
-        const user = await prismaClient.user.findUnique({
+        const user = await prismaClient.user.findFirst({
             where: {
                 id: (decoded as customDecoded).userId
             },
