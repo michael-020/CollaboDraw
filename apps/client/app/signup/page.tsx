@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
-export default function(){
+export default function Signup(){
     const { signup, authUser } = useAuthStore()
     const [formData, setFormData] = useState({
         name: "",
@@ -35,7 +35,7 @@ export default function(){
         if(authUser){
             router.replace("/home-page")
         }
-    }, [authUser])
+    }, [authUser, router])
     
 
     return (

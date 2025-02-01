@@ -6,7 +6,7 @@ const UsersInRoom = ({roomId}: {roomId: string}) => {
 
     useEffect(() => {
         getUsers(roomId)
-    }, [getUsers])
+    }, [getUsers, roomId])
 
   return (
     <div><div className='fixed right-4 flex gap-2 top-2'>{usersInRoom.map(user => (

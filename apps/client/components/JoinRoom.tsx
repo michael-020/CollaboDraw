@@ -1,7 +1,7 @@
 "use client"
 import { useAuthStore } from '@/stores/authStore/authStore'
 import { Loader } from 'lucide-react'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import {useRouter} from "next/navigation"
 
 const JoinRoom = () => {
@@ -24,6 +24,10 @@ const JoinRoom = () => {
         await joinRoom(formData.roomId)
         router.push(`/canvas/${formData.roomId}`)
     }
+
+    useEffect(() => {
+
+    }, [router])
 
     return (
         <div className="h-screen flex flex-col items-center justify-center text-white ">

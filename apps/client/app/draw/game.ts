@@ -1,4 +1,3 @@
-import { json } from "stream/consumers"
 import { getExistingShapes } from "./http"
 import { Tool } from "@/components/Canvas"
 
@@ -49,9 +48,9 @@ export class Game{
     private MAIN_MOUSE_BUTTON = 0;
 
     constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
-        this.roomId = roomId,
+        this.roomId = roomId
         this.socket = socket
-        this.canvas = canvas,
+        this.canvas = canvas
         this.ctx = canvas.getContext("2d")!
         this.existingShapes = []
         this.clicked = false
@@ -310,38 +309,38 @@ export class Game{
         this.selectedTool = tool
     }
 
-    setLineProperties(context: CanvasRenderingContext2D) {
-        context.lineWidth = 4;
-        context.lineJoin = "round";
-        context.lineCap = "round";
-        return context;
-      }
+    // setLineProperties(context: CanvasRenderingContext2D) {
+    //     context.lineWidth = 4;
+    //     context.lineJoin = "round";
+    //     context.lineCap = "round";
+    //     return context;
+    //   }
 
-    start(event: any) {
-        if (event.button === this.MAIN_MOUSE_BUTTON) {
-          this.shouldDraw = true;
-          this.setLineProperties(this.ctx);
+    // start(event: any) {
+    //     if (event.button === this.MAIN_MOUSE_BUTTON) {
+    //       this.shouldDraw = true;
+    //       this.setLineProperties(this.ctx);
       
-          this.ctx.beginPath();
+    //       this.ctx.beginPath();
           
-          let elementRect = event.target.getBoundingClientRect();
-          this.ctx.moveTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
-        }
-      }
+    //       let elementRect = event.target.getBoundingClientRect();
+    //       this.ctx.moveTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
+    //     }
+    //   }
       
-      end(event: any) {
-        if (event.button === this.MAIN_MOUSE_BUTTON) {
-          this.shouldDraw = false;
-        }
-      }
+    //   end(event: any) {
+    //     if (event.button === this.MAIN_MOUSE_BUTTON) {
+    //       this.shouldDraw = false;
+    //     }
+    //   }
       
-      move(event: any) {
-        if (this.shouldDraw) {
-            let elementRect = event.target.getBoundingClientRect();
-          this.ctx.lineTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
-          this.ctx.stroke()
-        }
-      }
+    //   move(event: any) {
+    //     if (this.shouldDraw) {
+    //         let elementRect = event.target.getBoundingClientRect();
+    //       this.ctx.lineTo(event.clientX - elementRect.left, event.clientY - elementRect.top);
+    //       this.ctx.stroke()
+    //     }
+    //   }
 
     destroy(){
         this.canvas.removeEventListener("mousedown", this.mousedownHandler)
@@ -353,10 +352,10 @@ export class Game{
 }
 
 function canvas_arrow(context: CanvasRenderingContext2D, fromx: number, fromy: number, tox: number, toy: number) {
-    var headlen = 10; // length of head in pixels
-    var dx = tox - fromx;
-    var dy = toy - fromy;
-    var angle = Math.atan2(dy, dx);
+    const headlen = 10; // length of head in pixels
+    const dx = tox - fromx;
+    const dy = toy - fromy;
+    const angle = Math.atan2(dy, dx);
     context.moveTo(fromx, fromy);
     context.lineTo(tox, toy);
     context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));

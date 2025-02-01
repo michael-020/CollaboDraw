@@ -1,0 +1,11 @@
+{
+    "version": 2,
+    "buildCommand": "pnpm turbo build",
+    "installCommand": "pnpm install",
+    "outputDirectory": "apps/client/.next",
+    "git": {
+      "deploymentEnabled": {
+        "main": true
+      }
+    }
+  }

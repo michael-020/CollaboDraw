@@ -1,7 +1,7 @@
 import CreateRoom from "@/components/CreateRoom";
 
 
-export default function (){
+export default function CreateRoomPage (){
 
     return <div>
         <CreateRoom />

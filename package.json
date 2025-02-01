@@ -1,23 +1,22 @@
 {
-  "name": "CollaboDraw",
+  "name": "collabodraw",
   "private": true,
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "prepare": "pnpm build"
   },
   "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "prettier": "^3.4.2",
-    "turbo": "^2.3.4",
-    "typescript": "5.7.3"
+    "turbo": "^2.3.4"
   },
-  "packageManager": "pnpm@9.0.0",
-  "engines": {
-    "node": ">=18"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.3.0",
-    "prisma": "^6.3.0"
-  }
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "pnpm@8.0.0"
 }

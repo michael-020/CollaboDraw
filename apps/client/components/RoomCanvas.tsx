@@ -20,7 +20,7 @@ const RoomCanvas = ({roomId}: {roomId: string}) => {
     return () => {
         ws.close()
     }
-  }, [])
+  }, [roomId])
 
   if(!socket)
     return <div className='h-screen flex items-center justify-center'>
