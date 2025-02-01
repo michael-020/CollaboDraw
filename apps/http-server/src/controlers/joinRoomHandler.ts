@@ -30,7 +30,14 @@ export const joinRoomHandler = async (req: Request, res: Response) => {
             data: {
                 users: { connect: { id: userId } }
             },
-            include: { users: true }
+            include: { users: {
+                select: {
+                    id: true,
+                    name: true,
+                    photo: true,
+                    
+                }
+            } }
         })
 
         res.status(200).json(updatedRoom)
