@@ -2,7 +2,10 @@
 
 Welcome to **CollaboDraw**! This repository is a **Monorepo** for the CollaboDraw project, a web application for collaborative drawing. It includes both the frontend and backend services, along with various shared packages used across the application.
 
-https://github.com/user-attachments/assets/4b87d09b-1295-416b-a368-a830340bfa0b
+Demo video:
+
+https://github.com/user-attachments/assets/ccf9e635-0379-41e0-a6d6-bc2dabc737d6
+
 
 
 
