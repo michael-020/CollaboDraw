@@ -32,7 +32,7 @@ export type Shapes = {
     }
 } | {
     type: "PENCIL",
-
+    points: Array<{x: number, y: number}> 
 } | {
     type: "TEXT",
 }
@@ -48,8 +48,7 @@ export class Game{
     private x = 0
     private y = 0
     private selectedTool: Tool | "" = ""
-    private shouldDraw = false
-    private MAIN_MOUSE_BUTTON = 0;
+    private currentPoints: Array<{x: number, y: number}> = []
 
     constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
         this.roomId = roomId
@@ -110,6 +109,16 @@ export class Game{
                 canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY)
                 this.ctx.stroke()
             }
+            else if(shape.type === "PENCIL"){
+                if(shape.points && shape.points.length > 0){
+                    this.ctx.beginPath()
+                    this.ctx.moveTo(shape.points[0].x, shape.points[0].y)
+                    for(let i=1; i<shape.points.length; i++){
+                        this.ctx.lineTo(shape.points[i].x, shape.points[i].y)
+                    }
+                    this.ctx.stroke()
+                }
+            }
         })
     }
 
@@ -162,7 +171,11 @@ export class Game{
                 this.existingShapes.push(arrow)
             }
             else if(shape.type === "PENCIL"){
-
+                const pencil: Shapes = {
+                    type: "PENCIL",
+                    points: shape.points
+                }
+                this.existingShapes.push(pencil)
             }
             else {
                 console.warn("Received invalid shape:", shape)
@@ -178,13 +191,16 @@ export class Game{
         this.x = e.clientX
         this.y = e.clientY
         if(this.selectedTool === "PENCIL"){
-            // console.log("mousedown: ",e.clientX)
-            // console.log("mousedown: ", e.clientY)
+            this.currentPoints = []
+            let elementRect = e.target.getBoundingClientRect()
+            const point = {
+                x: e.clientX - elementRect.left,
+                y: e.clientY - elementRect.top
+            }
+            this.currentPoints.push(point)
             this.setLineProperties()
             this.ctx.beginPath()
-
-            let elementRect = e.target.getBoundingClientRect()
-            this.ctx.moveTo(e.clientX-elementRect.left, e.clientY-elementRect.top)
+            this.ctx.moveTo(point.x, point.y)
         }
     }
 
@@ -226,10 +242,13 @@ export class Game{
             this.ctx.stroke()
         }
         else if(this.selectedTool === "PENCIL"){
-            // console.log("mousemove: ",e.clientX)
-            // console.log("mousemove: ", e.clientY)
             let elementRect = e.target.getBoundingClientRect()
-            this.ctx.lineTo(e.clientX-elementRect.left, e.clientY-elementRect.top)
+            const point = {
+                x: e.clientX - elementRect.left,
+                y: e.clientY - elementRect.top
+            }
+            this.currentPoints.push(point)
+            this.ctx.lineTo(point.x, point.y)
             this.ctx.stroke()
         }
         
@@ -325,7 +344,19 @@ export class Game{
             this.socket.send(JSON.stringify(message))
         }
         else if(this.selectedTool === "PENCIL"){
-            
+            const message= {
+                type: "draw",
+                roomId: this.roomId,
+                message: {
+                    type: "PENCIL",
+                    points: this.currentPoints
+                }
+            }
+
+            this.existingShapes.push(message.message as Shapes)
+            this.socket.send(JSON.stringify(message));
+            this.currentPoints = []
+            console.log(this.existingShapes)
         }
     }
 
