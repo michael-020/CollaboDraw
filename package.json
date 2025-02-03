@@ -2,11 +2,13 @@
   "name": "collabodraw",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "pnpm build"
+    "prepare": "turbo run build",
+    "postinstall": "prisma generate",
+    "deploy": "vercel --env DATABASE_URL=$DATABASE_URL --env JWT_SECRET=$JWT_SECRET"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

@@ -23,7 +23,7 @@ export const ShapeOptions = ({selectedTool, setSelectedTool}: {selectedTool: Too
                 setSelectedTool("PENCIL")
             }} />
              <IconButton icon={<CaseSensitive className='p-1 size-9 hover:scale-105' />}  isCircle={false} activated={selectedTool === "TEXT" } onClick={() => {
-                setSelectedTool("PENCIL")
+                setSelectedTool("TEXT")
             }} />
         </div>
     </div>

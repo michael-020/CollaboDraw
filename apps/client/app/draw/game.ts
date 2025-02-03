@@ -35,6 +35,9 @@ export type Shapes = {
     points: Array<{x: number, y: number}> 
 } | {
     type: "TEXT",
+    x: number,
+    y: number,
+    points: Array<{letter: string}>
 }
 
 
@@ -49,14 +52,23 @@ export class Game{
     private y = 0
     private selectedTool: Tool | "" = ""
     private currentPoints: Array<{x: number, y: number}> = []
+    private callbacks: {
+        onTextStart: (x: number, y: number) => void
+        onTextEnd: (x: number, y: number) => void
+    }
+    private texts: Array<{text: string, x: number, y: number}> = []
 
-    constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
+    constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement, callbacks: {
+        onTextStart: (x: number, y: number) => void;
+        onTextEnd: (x: number, y: number) => void;
+    }){
         this.roomId = roomId
         this.socket = socket
         this.canvas = canvas
         this.ctx = canvas.getContext("2d")!
         this.existingShapes = []
         this.clicked = false
+        this.callbacks = callbacks
         this.init()
         this.socketHandler()
         this.mouseEventHandler()
@@ -119,6 +131,12 @@ export class Game{
                     this.ctx.stroke()
                 }
             }
+            else if(shape.type === "TEXT"){
+                this.ctx.font = "16px Arial"
+                this.ctx.fillStyle = "rgb(255,255,255)"
+                const text = shape.points.map(point => point.letter).join('')
+                this.ctx.fillText(text, shape.x, shape.y)
+            }
         })
     }
 
@@ -177,6 +195,15 @@ export class Game{
                 }
                 this.existingShapes.push(pencil)
             }
+            else if(shape.type === "TEXT"){
+                const textShape: Shapes = {
+                    type: "TEXT",
+                    x: shape.x,
+                    y: shape.y,
+                    points: shape.points
+                }
+                this.existingShapes.push(textShape)
+            }
             else {
                 console.warn("Received invalid shape:", shape)
             }
@@ -201,6 +228,12 @@ export class Game{
             this.setLineProperties()
             this.ctx.beginPath()
             this.ctx.moveTo(point.x, point.y)
+        }
+        else if(this.selectedTool === "TEXT"){
+            // this.ctx.font = "28px Arial"
+            // this.ctx.fillStyle = "rgb(255,255,255)"
+            // this.ctx.fillText("hello", this.x, this.y)
+            this.callbacks.onTextStart(e.clientX, e.clientY)
         }
     }
 
@@ -358,7 +391,37 @@ export class Game{
             this.currentPoints = []
             console.log(this.existingShapes)
         }
+        else if(this.selectedTool === "TEXT"){
+            this.callbacks.onTextEnd(this.x, this.y)
+        }
     }
+
+    addText(text: string, x: number, y: number){
+        const letters = text.split('').map(letter => ({ letter }))
+        
+        const message = {
+            type: "draw",
+            roomId: this.roomId,
+            message: {
+                type: "TEXT",
+                x,
+                y,
+                points: letters
+            }
+        }
+
+        this.existingShapes.push(message.message as Shapes)
+        this.socket.send(JSON.stringify(message))
+        this.clearCanvas()
+    }
+
+    // drawAllTexts(){
+    //     this.ctx.font = "28px Arial"
+    //     this.ctx.fillStyle = "rgb(255,255,255)"
+    //     this.texts.forEach(({text, x, y}) => {
+    //         this.ctx.fillText(text, x, y)
+    //     })
+    // }
 
     mouseEventHandler(){
         this.canvas.addEventListener("mousedown", this.mousedownHandler.bind(this))

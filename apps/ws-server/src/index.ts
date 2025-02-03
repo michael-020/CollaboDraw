@@ -81,7 +81,7 @@ wss.on("connection", function connection(ws, request) {
       //   height: number
       // }
 
-      console.log("Processing draw message:", message);
+      // console.log("Processing draw message:", message);
 
       if(message.type === "RECTANGLE"){
         await prismaClient.shape.create({
@@ -152,7 +152,7 @@ wss.on("connection", function connection(ws, request) {
         })
       }
       else if(message.type === "PENCIL"){
-        console.log("message: ", message)
+
         await prismaClient.shape.create({
           data: {
             type: "PENCIL",
@@ -164,6 +164,22 @@ wss.on("connection", function connection(ws, request) {
             },
             room: {
               connect: { id: roomId}
+            }
+          }
+        })
+      }
+      else if(message.type === "TEXT"){
+        await prismaClient.shape.create({
+          data: {
+            type: "TEXT",
+            x: Number(message.x),
+            y: Number(message.y),
+            points: message.points,
+            user: {
+              connect: { id: userId }
+            },
+            room: {
+              connect: { id: roomId }
             }
           }
         })

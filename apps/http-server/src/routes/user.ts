@@ -10,7 +10,7 @@ import { logoutHandler } from "../controlers/logoutHandler";
 import { joinRoomHandler } from "../controlers/joinRoomHandler";
 import { getUsers } from "../controlers/getUsers";
 import { deleteRoomHandler } from "../controlers/deleteRoomHandler";
-import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
+// import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 
 const userRouter: Router = Router();
 
@@ -25,7 +25,7 @@ userRouter.post("/create-room", createRoomHandler);
 userRouter.post("/join-room/:roomId", joinRoomHandler)
 
 // todo: leave room and delete room
-userRouter.put("/leave-room/:roomId", leaveRoomHandler);
+// userRouter.put("/leave-room/:roomId", leaveRoomHandler);
 
 userRouter.delete("/delete-room/:roomId", deleteRoomHandler);
 
