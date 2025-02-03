@@ -3,8 +3,8 @@ import { Game } from '@/app/draw/Game'
 import React, { useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
-import LeaveRoom from './LeaveRoom'
-import DeleteRoom from './DeleteRoom'
+// import LeaveRoom from './LeaveRoom'
+// import DeleteRoom from './DeleteRoom'
 
 export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT"
 
@@ -50,7 +50,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
         return () => {
             g.destroy()
         }
-    }, [canvasRef, roomId, socket])
+    }, [canvasRef, roomId, socket, textContent])
 
     
 

@@ -1,4 +1,3 @@
-import { ReactElement } from "react"
 import { getExistingShapes } from "./http"
 import { Tool } from "@/components/Canvas"
 
@@ -219,7 +218,7 @@ export class Game{
         this.y = e.clientY
         if(this.selectedTool === "PENCIL"){
             this.currentPoints = []
-            let elementRect = e.target.getBoundingClientRect()
+            const elementRect = e.target.getBoundingClientRect()
             const point = {
                 x: e.clientX - elementRect.left,
                 y: e.clientY - elementRect.top
@@ -275,7 +274,7 @@ export class Game{
             this.ctx.stroke()
         }
         else if(this.selectedTool === "PENCIL"){
-            let elementRect = e.target.getBoundingClientRect()
+            const elementRect = e.target.getBoundingClientRect()
             const point = {
                 x: e.clientX - elementRect.left,
                 y: e.clientY - elementRect.top

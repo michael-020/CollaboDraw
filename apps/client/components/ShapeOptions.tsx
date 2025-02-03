@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, CaseSensitive, Circle, Minus, MoveLeft, Pencil, Square } from 'lucide-react'
+import { CaseSensitive, Circle, Minus, MoveLeft, Pencil, Square } from 'lucide-react'
 import { Tool } from './Canvas'
 import { IconButton } from './IconButton'
 
