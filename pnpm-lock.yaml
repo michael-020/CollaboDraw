@@ -81,9 +81,6 @@ importers:
       cookie:
         specifier: ^1.0.2
         version: 1.0.2
-      nodemon:
-        specifier: ^3.1.9
-        version: 3.1.9
       parser:
         specifier: ^0.1.4
         version: 0.1.4
@@ -115,9 +112,6 @@ importers:
       '@types/cors':
         specifier: ^2.8.17
         version: 2.8.17
-      '@types/dotenv':
-        specifier: ^8.2.3
-        version: 8.2.3
       '@types/express':
         specifier: ^5.0.0
         version: 5.0.0
@@ -139,6 +133,9 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
+      nodemon:
+        specifier: ^3.1.9
+        version: 3.1.9
 
   apps/ws-server:
     dependencies:
@@ -161,9 +158,6 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
-      '@types/cookie':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@types/jsonwebtoken':
         specifier: ^9.0.8
         version: 9.0.8
@@ -186,9 +180,6 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@types/dotenv':
-        specifier: ^8.2.3
-        version: 8.2.3
       dotenv:
         specifier: ^16.4.7
         version: 16.4.7
@@ -208,12 +199,6 @@ importers:
       '@prisma/client':
         specifier: 6.3.0
         version: 6.3.0(prisma@6.2.1)(typescript@5.7.3)
-      '@types/cookie':
-        specifier: ^1.0.0
-        version: 1.0.0
-      '@types/dotenv':
-        specifier: ^8.2.3
-        version: 8.2.3
       prisma:
         specifier: ^6.2.1
         version: 6.2.1
@@ -646,16 +631,8 @@ packages:
     peerDependencies:
       '@types/express': '*'
 
-  '@types/cookie@1.0.0':
-    resolution: {integrity: sha512-mGFXbkDQJ6kAXByHS7QAggRXgols0mAdP4MuXgloGY1tXokvzaFFM4SMqWvf7AH0oafI7zlFJwoGWzmhDqTZ9w==}
-    deprecated: This is a stub types definition. cookie provides its own type definitions, so you do not need this installed.
-
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
-
-  '@types/dotenv@8.2.3':
-    resolution: {integrity: sha512-g2FXjlDX/cYuc5CiQvyU/6kkbP1JtmGzh0obW50zD7OKeILVL0NSpPWLXVfqoAGQjom2/SLLx9zHq0KXvD6mbw==}
-    deprecated: This is a stub types definition. dotenv provides its own type definitions, so you do not need this installed.
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
@@ -3505,17 +3482,9 @@ snapshots:
     dependencies:
       '@types/express': 5.0.0
 
-  '@types/cookie@1.0.0':
-    dependencies:
-      cookie: 1.0.2
-
   '@types/cors@2.8.17':
     dependencies:
       '@types/node': 22.10.9
-
-  '@types/dotenv@8.2.3':
-    dependencies:
-      dotenv: 16.4.7
 
   '@types/estree@1.0.6': {}
 

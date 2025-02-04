@@ -17,7 +17,6 @@
     "@repo/db": "workspace:*",
     "@repo/backend-common": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@types/cookie": "^1.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/ws": "^8.5.14",
     "jsonwebtoken": "^9.0.2",
