@@ -8,10 +8,6 @@
         "dist/**",
         ".next/**",
         "!.next/cache/**"
-      ],
-      "env": [
-        "DATABASE_URL",
-        "JWT_SECRET"
       ]
     },
     "lint": {},
