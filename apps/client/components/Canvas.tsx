@@ -1,5 +1,5 @@
 "use client"
-import { Game } from '@/app/draw/Game'
+import { Game } from '@/app/draw/game'
 import React, { useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
