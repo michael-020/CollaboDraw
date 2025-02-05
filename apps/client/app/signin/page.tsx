@@ -5,7 +5,7 @@ import { ChangeEvent, FormEvent, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
 export default function Signin(){
-    const { login, authUser } = useAuthStore()
+    const { login } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
