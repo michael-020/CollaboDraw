@@ -23,7 +23,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     try {
         console.log("jwt in middl: ", JWT_SECRET)
         const token = req.cookies.jwt
-
+        console.log("0")
         const decoded = jwt.verify(token, JWT_SECRET)
         console.log("1")
         if(decoded){
