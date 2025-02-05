@@ -1,17 +1,17 @@
 "use client"
 import { useAuthStore } from "@/stores/authStore/authStore"
-import { useRouter } from "next/navigation"
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+// import { useRouter } from "next/navigation"
+import { ChangeEvent, FormEvent, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
 export default function Signin(){
-    const { login, authUser } = useAuthStore()
+    const { login } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     })
     const [showPassword, setShowPassword] = useState(false)
-    const router = useRouter()
+    // const router = useRouter()
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -31,11 +31,11 @@ export default function Signin(){
         setShowPassword(!showPassword)
     }
 
-    useEffect(() => {
-        if(authUser){
-            router.replace("/home-page")
-        }
-    }, [authUser, router])
+    // useEffect(() => {
+    //     if(authUser){
+    //         router.replace("/home-page")
+    //     }
+    // }, [authUser, router])
     
 
     return (
