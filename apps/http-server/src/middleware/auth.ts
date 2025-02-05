@@ -21,6 +21,7 @@ export interface IUser  {
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log("jwt in middl: ", JWT_SECRET)
         const token = req.cookies.jwt
 
         const decoded = jwt.verify(token, JWT_SECRET)
