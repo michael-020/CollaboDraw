@@ -14,6 +14,7 @@ export const generateToken = (userId: string, res: Response) => {
       sameSite: "lax", 
       secure: process.env.NODE_ENV !== "development",
     });
-  
+    
+    console.log("token in generation: ", token)
     return token;
 };
