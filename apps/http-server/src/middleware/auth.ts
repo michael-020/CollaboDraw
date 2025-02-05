@@ -24,7 +24,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         console.log("jwt in middl: ", JWT_SECRET)
         const token = req.cookies.jwt
         console.log("0")
-        const decoded = jwt.verify(token, JWT_SECRET)
+        const decoded = jwt.verify(token, JWT_SECRET as jwt.Secret)
         console.log("1")
         if(decoded){
             const user = await prismaClient.user.findFirst({
