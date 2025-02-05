@@ -1,23 +1,23 @@
 "use client"
-import { useRouter } from "next/navigation"
+// import { useRouter } from "next/navigation"
 import { useAuthStore } from "../stores/authStore/authStore"
 import { useEffect } from "react"
 import Link from "next/link"
 
 export default function HomePage() {
   const { authUser, checkAuth, logout } = useAuthStore()
-  const router = useRouter()
+  // const router = useRouter()
 
   useEffect(() => {
     checkAuth()
   }, [checkAuth, logout])
 
-  useEffect(() => {
-    if (!authUser) {
-      router.replace("/"); 
-    }
-    
-  }, [authUser, router]);
+  // useEffect(() => {
+  //   if (!authUser) {
+  //     router.replace("/"); 
+  //   }
+
+  // }, [authUser, router]);
 
   if (!authUser) {
     return <div className="flex items-center justify-center h-screen text-white text-lg">

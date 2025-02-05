@@ -1,11 +1,11 @@
 "use client"
 import { useAuthStore } from "@/stores/authStore/authStore"
 import { useRouter } from "next/navigation"
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
+import { ChangeEvent, FormEvent,  useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
 export default function Signup(){
-    const { signup, authUser } = useAuthStore()
+    const { signup } = useAuthStore()
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -22,20 +22,21 @@ export default function Signup(){
         }))
     }
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        signup(formData)
+        await signup(formData)
+        router.push("/home")
     }
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword)
     }
 
-    useEffect(() => {
-        if(authUser){
-            router.replace("/home-page")
-        }
-    }, [authUser, router])
+    // useEffect(() => {
+    //     if(authUser){
+    //         router.replace("/home-page")
+    //     }
+    // }, [authUser, router])
     
 
     return (
