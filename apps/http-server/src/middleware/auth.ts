@@ -25,7 +25,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         const token = req.cookies.jwt
 
         const decoded = jwt.verify(token, JWT_SECRET)
-
+        console.log("1")
         if(decoded){
             const user = await prismaClient.user.findFirst({
                 where: {
@@ -48,7 +48,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
                 })
                 return
             }
-
+            console.log("2")
             req.user = user as IUser
             next()
         }
