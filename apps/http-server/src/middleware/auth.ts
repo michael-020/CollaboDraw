@@ -20,39 +20,47 @@ export interface IUser  {
 }
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-   const token = req.cookies.jwt
+    try {
+        const token = req.cookies.jwt
 
-   const decoded = jwt.verify(token, JWT_SECRET)
+        const decoded = jwt.verify(token, JWT_SECRET)
 
-    if(decoded){
-        const user = await prismaClient.user.findFirst({
-            where: {
-                id: (decoded as customDecoded).userId
-            },
-            select: {
-                password: false,
-                email: true,
-                name: true,
-                id: true,
-                photo: true,
-                createdAt: true,
-                updatedAt: true
-            }
-        })
-
-        if(!user){
-            res.status(400).json({
-                msg: "user not found"
+        if(decoded){
+            const user = await prismaClient.user.findFirst({
+                where: {
+                    id: (decoded as customDecoded).userId
+                },
+                select: {
+                    password: false,
+                    email: true,
+                    name: true,
+                    id: true,
+                    photo: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
             })
-            return
-        }
 
-        req.user = user as IUser
-        next()
-    }
-    else {
-        res.status(400).json({
-            msg: "You are not logged in"
+            if(!user){
+                res.status(400).json({
+                    msg: "user not found"
+                })
+                return
+            }
+
+            req.user = user as IUser
+            next()
+        }
+        else {
+            res.status(400).json({
+                msg: "You are not logged in"
+            })
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            msg: "Internal server error"
         })
     }
+   
 }

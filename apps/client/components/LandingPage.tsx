@@ -1,24 +1,24 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from "next/link"
 import { Users, Share2, Edit3 } from "lucide-react"
 import { FeatureCard } from './FeatureCard'
-// import { useAuthStore } from '@/stores/authStore/authStore'
-// import { useRouter } from 'next/navigation'
+import { useAuthStore } from '@/stores/authStore/authStore'
+import { useRouter } from 'next/navigation'
 
 const LandingPage = () => {
-    // const { authUser } = useAuthStore()
-    // const router = useRouter()
-    // useEffect(() => {
-    //     if(authUser){
+    const { authUser } = useAuthStore()
+    const router = useRouter()
+    useEffect(() => {
+        if(authUser){
 
-    //         router.replace("/home-page")
-    //     } 
-    //     else {
+            router.replace("/home-page")
+        } 
+        else {
 
-    //         router.replace("/")
-    //     }
-    // }, [authUser, router])
+            router.replace("/")
+        }
+    }, [authUser, router])
 
   return (
     // <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-4">
