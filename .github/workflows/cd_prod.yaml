@@ -1,19 +1,19 @@
 name: Deploy to production
-on: 
-  push: 
+
+on:
+  push:
     branches: [ main ]
 
-
-jobs: 
+jobs:
   redeploy:
     runs-on: ubuntu-latest
     name: Deploying everything to production
     steps:
-      -run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+      - name: Deploy using SSH
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
           mkdir -p /home/runner/.ssh
-          ls /home/runner/.ssh
           touch /home/runner/.ssh/known_hosts
-          echo "${{ secrets.KNOWN_HOSTS }}" &> /home/runner/.ssh/known_hosts
-          chmod 700 /home/runner/ssh_key
-          ssh -i ~/ssh_key root@13.60.244.41 -t "cd Collabodraw/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart all"  
+          echo "${{ secrets.KNOWN_HOSTS }}" > /home/runner/.ssh/known_hosts
+          chmod 700 ~/ssh_key
+          ssh -i ~/ssh_key root@13.60.244.41 -t "cd Collabodraw/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart all"
