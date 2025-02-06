@@ -29,6 +29,7 @@ const checkUser = (token: string | undefined): string | null => {
 wss.on("connection", function connection(ws, request) {
   const cookies = request.headers.cookie;
   if (!cookies) {
+    console.log("No cookies found");
     ws.close();
     return;
   }
@@ -45,8 +46,8 @@ wss.on("connection", function connection(ws, request) {
   const userId = checkUser(token);
 
   if (!userId) {
-    ws.close();
     console.error("invalid token")
+    ws.close();
     return;
   }
 

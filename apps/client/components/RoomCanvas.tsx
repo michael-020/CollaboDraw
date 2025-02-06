@@ -7,6 +7,9 @@ const RoomCanvas = ({roomId}: {roomId: string}) => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
+    const token = document.cookie.split(';').find(c => c.trim().startsWith('jwt='));
+    const jwtToken = token ? token.split('=')[1] : '';
+    console.log("otkne:", jwtToken)
     const ws = new WebSocket(WS_URL)
 
     ws.onopen = () => {
