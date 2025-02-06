@@ -1,11 +1,12 @@
 "use client"
 import { useAuthStore } from "@/stores/authStore/authStore"
+import { Loader } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
 export default function Signin(){
-    const { login } = useAuthStore()
+    const { login, isLoggingIn } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -91,8 +92,10 @@ export default function Signin(){
                     <button
                         type="submit"
                         className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                        disabled={!isLoggingIn}
                     >
-                        Sign-in
+                        {isLoggingIn ? <Loader className="animate-spin mx-auto" /> : "Sign-in"}
+                        
                     </button>
                 </form>
             </div>

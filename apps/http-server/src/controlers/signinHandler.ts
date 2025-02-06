@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { SigninSchema } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
 import { generateToken } from "../lib/utils";
+import bcyrpt from "bcrypt"
 
 export const signinHandler = async (req: Request, res: Response) => {
      try {
@@ -13,7 +14,7 @@ export const signinHandler = async (req: Request, res: Response) => {
                 });
                 return;
             }
-    
+
             const checkUser = await prismaClient.user.findFirst({
                 where: {
                     email: parsedData.data.email
@@ -25,6 +26,16 @@ export const signinHandler = async (req: Request, res: Response) => {
                     msg: "Invalid credentials"
                 });
                 return;
+            }
+
+            const password = parsedData.data.password
+            const checkPassword = await bcyrpt.compare(password, checkUser.password)
+
+            if(!checkPassword){
+                res.status(400).json({
+                    msg: "Incorrect password"
+                })
+                return
             }
     
             // const token = jwt.sign({

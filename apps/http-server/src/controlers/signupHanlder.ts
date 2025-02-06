@@ -2,6 +2,7 @@ import { CreateUserSchema } from "@repo/common/types";
 import { prismaClient } from "@repo/db/client";
 import { Request, Response } from "express";
 import { generateToken } from "../lib/utils";
+import bcrypt from "bcrypt"
 
 export const signupHandler = async (req: Request, res: Response) => {
     try {
@@ -16,10 +17,12 @@ export const signupHandler = async (req: Request, res: Response) => {
 
         const { email, name, password } = data.data;
 
+        const hashedPassword = await bcrypt.hash(password, 6);
+
         const newUser = await prismaClient.user.create({
             data: {
                 email,
-                password,
+                password: hashedPassword,
                 name,
             }
         });

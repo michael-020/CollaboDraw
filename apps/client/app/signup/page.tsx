@@ -1,11 +1,12 @@
 "use client"
 import { useAuthStore } from "@/stores/authStore/authStore"
+import { Loader } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent,  useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"  // Importing the eye icons from react-icons
 
 export default function Signup(){
-    const { signup } = useAuthStore()
+    const { signup, isSigningUp } = useAuthStore()
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -98,9 +99,11 @@ export default function Signup(){
 
                     <button
                         type="submit"
-                        className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                        className={`bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg `}
+                        disabled={!isSigningUp}
                     >
-                        Sign-up
+                        {!isSigningUp ? <Loader className="mx-auto animate-spin" /> : "Sign-up"}
+                        
                     </button>
                 </form>
             </div>
