@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "@repo/backend-common/config";
 
 export const generateToken = (userId: string, res: Response) => {
-  console.log("jwt in signing token: ", JWT_SECRET)
     const token = jwt.sign({ userId }, JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -14,7 +13,6 @@ export const generateToken = (userId: string, res: Response) => {
       sameSite: "none", 
       secure: true,
     });
-    
-    console.log("token in generation: ", token)
+  
     return token;
 };

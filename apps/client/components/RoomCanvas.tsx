@@ -2,27 +2,34 @@
 import React, { useEffect, useState } from 'react'
 import Canvas from './Canvas'
 import { WS_URL } from '@/lib/config'
+import { AxiosInstance } from '@/lib/axios'
 
 const RoomCanvas = ({roomId}: {roomId: string}) => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
-    const token = document.cookie.split(';').find(c => c.trim().startsWith('jwt='));
-    const jwtToken = token ? token.split('=')[1] : '';
-    console.log("otkne:", jwtToken)
-    const ws = new WebSocket(WS_URL)
-
-    ws.onopen = () => {
-        setSocket(ws)
-        ws.send(JSON.stringify({
+    const connectWebSocket = async () => {
+      try {
+        const { data } = await AxiosInstance.get('/user/get-token');
+        const ws = new WebSocket(`${WS_URL}?token=${data.token}`);
+        
+        ws.onopen = () => {
+          setSocket(ws);
+          ws.send(JSON.stringify({
             type: "join_room",
             roomId
-        }))
-    }
-
+          }));
+        };
+      } catch (error) {
+        console.error('Failed to connect:', error);
+      }
+    };
+  
+    connectWebSocket();
+  
     return () => {
-        ws.close()
-    }
+      if (socket) socket.close();
+    };
   }, [roomId])
 
   if(!socket)

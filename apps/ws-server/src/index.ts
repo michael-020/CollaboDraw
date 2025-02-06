@@ -1,6 +1,5 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
-import { parse } from "cookie";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
 
@@ -27,15 +26,21 @@ const checkUser = (token: string | undefined): string | null => {
 };
 
 wss.on("connection", function connection(ws, request) {
-  const cookies = request.headers.cookie;
-  if (!cookies) {
-    console.log("No cookies found");
-    ws.close();
+  // const cookies = request.headers.cookie;
+  // if (!cookies) {
+  //   console.log("No cookies found");
+  //   ws.close();
+  //   return;
+  // }
+
+  // const parsedCookies = parse(cookies);
+  // const token = parsedCookies.jwt;
+  const url = request.url;
+  if (!url) {
     return;
   }
-
-  const parsedCookies = parse(cookies);
-  const token = parsedCookies.jwt;
+  const queryParams = new URLSearchParams(url.split('?')[1]);
+  const token = queryParams.get('token') || "";
 
   if (!token) {
     console.error("No token found in cookies");
@@ -52,7 +57,6 @@ wss.on("connection", function connection(ws, request) {
   }
 
   users.push({ userId, rooms: [], ws });
-
   ws.on("message", async function message(data) {
     const messageData = typeof data === "string" ? data : data.toString();
     const parsedData = JSON.parse(messageData);

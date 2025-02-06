@@ -10,6 +10,7 @@ import { logoutHandler } from "../controlers/logoutHandler";
 import { joinRoomHandler } from "../controlers/joinRoomHandler";
 import { getUsers } from "../controlers/getUsers";
 import { deleteRoomHandler } from "../controlers/deleteRoomHandler";
+import { tokenHandler } from "../controlers/tokenHandler";
 // import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 
 const userRouter: Router = Router();
@@ -38,5 +39,7 @@ userRouter.get("/room/:slug", getRoomHandler);
 userRouter.get("/check", checkAuth)
 
 userRouter.post("/logout", logoutHandler)
+
+userRouter.get("/get-token", tokenHandler)
 
 export default userRouter;
