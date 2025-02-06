@@ -15,4 +15,4 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 13.60.244.41 >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@13.60.244.41 -t "cd Collabodraw/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart all"
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@13.60.244.41 -t "cd Collabodraw/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart all"
