@@ -74,6 +74,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
                     }}
                 />
             )}
+            ello
             <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight}  className='bg-neutral-800' ></canvas>
         </div>
     )
