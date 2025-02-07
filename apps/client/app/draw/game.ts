@@ -51,23 +51,15 @@ export class Game{
     private y = 0
     private selectedTool: Tool | "" = ""
     private currentPoints: Array<{x: number, y: number}> = []
-    private callbacks: {
-        onTextStart: (x: number, y: number) => void
-        onTextEnd: (x: number, y: number) => void
-    }
-    private texts: Array<{text: string, x: number, y: number}> = []
+    // private texts: Array<{text: string, x: number, y: number}> = []
 
-    constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement, callbacks: {
-        onTextStart: (x: number, y: number) => void;
-        onTextEnd: (x: number, y: number) => void;
-    }){
+    constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
         this.roomId = roomId
         this.socket = socket
         this.canvas = canvas
         this.ctx = canvas.getContext("2d")!
         this.existingShapes = []
         this.clicked = false
-        this.callbacks = callbacks
         this.init()
         this.socketHandler()
         this.mouseEventHandler()
@@ -77,67 +69,59 @@ export class Game{
 
         this.existingShapes = await getExistingShapes(this.roomId)
 
-        this.clearCanvas()
+        this.redrawCanvas()
     }
 
-    clearCanvas(){
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    redrawCanvas() {
+        // Clear the canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Redraw all shapes from the existingShapes array immediately
+        for (const shape of this.existingShapes) {
+          this.drawShape(shape);
+        }
+    }
+      
+
+    drawShape(shape: Shapes) {
         this.ctx.strokeStyle = "rgb(255,255,255)"
-
-        this.existingShapes.forEach(shape => {
-            if(shape.type === "RECTANGLE"){
-                const rectShape = shape as Extract<Shapes, { type: "RECTANGLE" }>
-                this.ctx.strokeRect(rectShape.x, rectShape.y, rectShape.width, rectShape.height)
-
-            }
-            else if(shape.type === "CIRCLE"){
-                const circleShape = shape as Extract<Shapes, { type: "CIRCLE" }>
-                this.ctx.beginPath()
-                this.ctx.ellipse(
-                    circleShape.x, 
-                    circleShape.y, 
-                    Math.abs(circleShape.radiusX), 
-                    Math.abs(circleShape.radiusY), 
-                    0, 
-                    0, 
-                    Math.PI * 2
-                )
-                this.ctx.stroke()
-                this.ctx.closePath();
-
-            }
-            else if(shape.type === "LINE"){
-                // this.clearCanvas()
-                this.ctx.beginPath()
-                this.ctx.moveTo(shape.x, shape.y)
-
-                this.ctx.lineTo(shape.points.endX, shape.points.endY)
-                this.ctx.stroke()
-                // this.ctx.closePath();
-            }
-            else if(shape.type === "ARROW"){
-                this.ctx.beginPath()
-                canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY)
-                this.ctx.stroke()
-            }
-            else if(shape.type === "PENCIL"){
-                if(shape.points && shape.points.length > 0){
-                    this.ctx.beginPath()
-                    this.ctx.moveTo(shape.points[0].x, shape.points[0].y)
-                    for(let i=1; i<shape.points.length; i++){
-                        this.ctx.lineTo(shape.points[i].x, shape.points[i].y)
-                    }
-                    this.ctx.stroke()
+        if(shape.type === "RECTANGLE"){
+            this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+        }
+        else if(shape.type === "CIRCLE"){
+            this.ctx.beginPath();
+            this.ctx.ellipse(shape.x, shape.y, Math.abs(shape.radiusX), Math.abs(shape.radiusY), 0, 0, Math.PI*2);
+            this.ctx.stroke();
+            this.ctx.closePath();
+        }
+        else if(shape.type === "LINE"){
+            this.ctx.beginPath();
+            this.ctx.moveTo(shape.x, shape.y);
+            this.ctx.lineTo(shape.points.endX, shape.points.endY);
+            this.ctx.stroke();
+        }
+        else if(shape.type === "ARROW"){
+            this.ctx.beginPath();
+            canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
+            this.ctx.stroke();
+        }
+        else if(shape.type === "PENCIL"){
+            if(shape.points && shape.points.length > 0){
+                this.ctx.beginPath();
+                this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                for(let i=1; i<shape.points.length; i++){
+                    this.ctx.lineTo(shape.points[i].x, shape.points[i].y);
                 }
+                this.ctx.stroke();
             }
-            else if(shape.type === "TEXT"){
-                this.ctx.font = "16px Arial"
-                this.ctx.fillStyle = "rgb(255,255,255)"
-                const text = shape.points.map(point => point.letter).join('')
-                this.ctx.fillText(text, shape.x, shape.y)
-            }
-        })
-    }
+        }
+        else if(shape.type === "TEXT"){
+            this.ctx.font = "16px Arial";
+            this.ctx.fillStyle = "rgb(255,255,255)";
+            const text = shape.points.map(point => point.letter).join('');
+            this.ctx.fillText(text, shape.x, shape.y);
+        }
+      }
 
     socketHandler(){
         this.socket.onmessage = (event) => {
@@ -195,18 +179,21 @@ export class Game{
                 this.existingShapes.push(pencil)
             }
             else if(shape.type === "TEXT"){
+               
                 const textShape: Shapes = {
                     type: "TEXT",
                     x: shape.x,
                     y: shape.y,
                     points: shape.points
                 }
+                console.log("Text shape added:", textShape)
                 this.existingShapes.push(textShape)
+                this.redrawCanvas()
             }
             else {
                 console.warn("Received invalid shape:", shape)
             }
-            this.clearCanvas()
+            this.redrawCanvas()
         }
     }
 
@@ -228,12 +215,7 @@ export class Game{
             this.ctx.beginPath()
             this.ctx.moveTo(point.x, point.y)
         }
-        else if(this.selectedTool === "TEXT"){
-            // this.ctx.font = "28px Arial"
-            // this.ctx.fillStyle = "rgb(255,255,255)"
-            // this.ctx.fillText("hello", this.x, this.y)
-            this.callbacks.onTextStart(e.clientX, e.clientY)
-        }
+
     }
 
     mousemoveHandler(e: MouseEvent){
@@ -245,13 +227,13 @@ export class Game{
         if(this.selectedTool === "RECTANGLE"){
             const width = e.clientX - this.x
             const height = e.clientY - this.y
-            this.clearCanvas()
+            this.redrawCanvas()
             this.ctx.strokeRect(this.x, this.y, width, height)
         }
         else if(this.selectedTool === "CIRCLE"){
             const radiusX = e.clientX - this.x
             const radiusY = e.clientY - this.y
-            this.clearCanvas()
+            this.redrawCanvas()
             this.ctx.beginPath();
             this.ctx.ellipse(this.x, this.y, Math.abs(radiusX), Math.abs(radiusY), 0, 0, Math.PI*2);
             this.ctx.stroke();
@@ -259,7 +241,7 @@ export class Game{
         else if(this.selectedTool === "LINE"){
             const endX = e.clientX
             const endY = e.clientY
-            this.clearCanvas()
+            this.redrawCanvas()
             this.ctx.beginPath()
             this.ctx.moveTo(this.x, this.y)
             this.ctx.lineTo(endX, endY)
@@ -268,7 +250,7 @@ export class Game{
         else if(this.selectedTool === "ARROW"){
             const endX = e.clientX
             const endY = e.clientY
-            this.clearCanvas()
+            this.redrawCanvas()
             this.ctx.beginPath()
             canvas_arrow(this.ctx, this.x, this.y, endX, endY)
             this.ctx.stroke()
@@ -308,7 +290,7 @@ export class Game{
             };
     
             this.existingShapes.push(message.message as Shapes);
-            this.clearCanvas();
+            this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         } 
         else if (this.selectedTool === "CIRCLE") {
@@ -328,7 +310,7 @@ export class Game{
             };
     
             this.existingShapes.push(message.message as Shapes);
-            this.clearCanvas();
+            this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         }
         else if (this.selectedTool === "LINE"){
@@ -350,7 +332,7 @@ export class Game{
             }
 
             this.existingShapes.push(message.message as Shapes);
-            this.clearCanvas();
+            this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         }
         else if(this.selectedTool === "ARROW"){
@@ -372,7 +354,7 @@ export class Game{
             }
 
             this.existingShapes.push(message.message as Shapes)
-            this.clearCanvas()
+            this.redrawCanvas()
             this.socket.send(JSON.stringify(message))
         }
         else if(this.selectedTool === "PENCIL"){
@@ -390,37 +372,28 @@ export class Game{
             this.currentPoints = []
             console.log(this.existingShapes)
         }
-        else if(this.selectedTool === "TEXT"){
-            this.callbacks.onTextEnd(this.x, this.y)
-        }
     }
 
-    addText(text: string, x: number, y: number){
+    addText(text: string, x: number, y: number) {
+        console.log("x & y: " + x + " " +y)
         const letters = text.split('').map(letter => ({ letter }))
+        const textShape: Shapes = {
+            type: "TEXT",
+            x,
+            y,
+            points: letters
+          };
         
-        const message = {
+          this.existingShapes.push(textShape);
+          
+          this.redrawCanvas()
+          
+          this.socket.send(JSON.stringify({
             type: "draw",
             roomId: this.roomId,
-            message: {
-                type: "TEXT",
-                x,
-                y,
-                points: letters
-            }
-        }
-
-        this.existingShapes.push(message.message as Shapes)
-        this.socket.send(JSON.stringify(message))
-        this.clearCanvas()
+            message: textShape
+          }));
     }
-
-    // drawAllTexts(){
-    //     this.ctx.font = "28px Arial"
-    //     this.ctx.fillStyle = "rgb(255,255,255)"
-    //     this.texts.forEach(({text, x, y}) => {
-    //         this.ctx.fillText(text, x, y)
-    //     })
-    // }
 
     mouseEventHandler(){
         this.canvas.addEventListener("mousedown", this.mousedownHandler.bind(this))
@@ -438,7 +411,6 @@ export class Game{
         this.ctx.lineCap = "round";
         return this.ctx;
     }
-
 
     destroy(){
         this.canvas.removeEventListener("mousedown", this.mousedownHandler)
