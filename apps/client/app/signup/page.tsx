@@ -100,7 +100,7 @@ export default function Signup(){
                     <button
                         type="submit"
                         className={`bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg `}
-                        disabled={!isSigningUp}
+                        disabled={isSigningUp}
                     >
                         {isSigningUp ? <Loader className="mx-auto animate-spin" /> : "Sign-up"}
                         

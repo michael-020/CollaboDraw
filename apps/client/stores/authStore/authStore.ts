@@ -37,7 +37,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.post("/user/signin", data)
             set({authUser: res.data})
         } catch (error) {
-            console.error("error while signing up", error)
+            console.error("error while logging in", error)
             set({authUser: null})
         } finally {
             set({isLoggingIn: false})
@@ -50,7 +50,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.get("/user/check")
             set({authUser: res.data})
         } catch (error) {
-            console.error("error while signing up", error)
+            console.error("error while checking auth", error)
             set({authUser: null})
         } finally {
             set({isCheckingAuth: false})
@@ -63,7 +63,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.post("/user/logout")
             set({authUser: null})
         } catch (error) {
-            console.error("error while signing up", error)
+            console.error("error while logging out", error)
         } finally {
             set({isLoggingOut: false})
         }

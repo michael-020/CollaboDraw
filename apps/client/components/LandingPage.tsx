@@ -11,7 +11,6 @@ const LandingPage = () => {
     const router = useRouter()
     useEffect(() => {
         if(authUser){
-
             router.replace("/home-page")
         } 
         else {

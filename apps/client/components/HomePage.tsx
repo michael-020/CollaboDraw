@@ -1,29 +1,24 @@
 "use client"
-// import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "../stores/authStore/authStore"
 import { useEffect } from "react"
 import Link from "next/link"
 
 export default function HomePage() {
-  const { checkAuth, logout } = useAuthStore()
-  // const router = useRouter()
+  const { logout, authUser, checkAuth } = useAuthStore()
+  const router = useRouter()
 
   useEffect(() => {
     checkAuth()
   }, [checkAuth, logout])
 
-  // useEffect(() => {
-  //   if (!authUser) {
-  //     router.replace("/"); 
-  //   }
+  useEffect(() => {
+    if (!authUser) {
+      router.replace("/"); 
+    }
 
-  // }, [authUser, router]);
+  }, [authUser, router]);
 
-  // if (!authUser) {
-  //   return <div className="flex items-center justify-center h-screen text-white text-lg">
-  //       You are not logged in
-  //   </div>; 
-  // }
   
   return (
     <div className="h-screen flex flex-col items-center justify-center text-white p-6 relative">

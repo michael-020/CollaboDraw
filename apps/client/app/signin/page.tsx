@@ -92,9 +92,9 @@ export default function Signin(){
                     <button
                         type="submit"
                         className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
-                        disabled={!isLoggingIn}
+                        disabled={isLoggingIn}
                     >
-                        {isLoggingIn ? <Loader className="animate-spin mx-auto" /> : "Sign-in"}
+                        {isLoggingIn ? <Loader className="animate-spin mx-auto" />  : "Sign-in"}
                         
                     </button>
                 </form>
