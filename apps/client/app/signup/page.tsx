@@ -26,7 +26,7 @@ export default function Signup(){
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         await signup(formData)
-        router.push("/home")
+        router.push("/home-page")
     }
 
     const togglePasswordVisibility = () => {
