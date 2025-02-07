@@ -152,14 +152,12 @@ export class Game{
                 this.existingShapes.push(circleShape)
             }
             else if(shape.type === "LINE"){
-                // console.log("message: ",message)
                 const line: Shapes = {
                     type: "LINE",
                     x: shape.x,
                     y: shape.y,
                     points: shape.points
                 }
-                // console.log("line: ", line)
                 this.existingShapes.push(line)
             }
             else if(shape.type === "ARROW"){
@@ -186,7 +184,6 @@ export class Game{
                     y: shape.y,
                     points: shape.points
                 }
-                console.log("Text shape added:", textShape)
                 this.existingShapes.push(textShape)
                 this.redrawCanvas()
             }
@@ -370,12 +367,10 @@ export class Game{
             this.existingShapes.push(message.message as Shapes)
             this.socket.send(JSON.stringify(message));
             this.currentPoints = []
-            console.log(this.existingShapes)
         }
     }
 
     addText(text: string, x: number, y: number) {
-        console.log("x & y: " + x + " " +y)
         const letters = text.split('').map(letter => ({ letter }))
         const textShape: Shapes = {
             type: "TEXT",
@@ -428,7 +423,7 @@ function canvas_arrow(context: CanvasRenderingContext2D, fromx: number, fromy: n
     const angle = Math.atan2(dy, dx);
     context.moveTo(fromx, fromy);
     context.lineTo(tox, toy);
-    context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     context.moveTo(tox, toy);
+    context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
   }
