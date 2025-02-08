@@ -3,10 +3,13 @@ import { Game } from '@/app/draw/game'
 import React, { useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
+import LeaveRoom from './LeaveRoom'
+import { useAuthStore } from '@/stores/authStore/authStore'
 
 export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT"
 
 const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
+    const { isModalVisible } = useAuthStore()
     const canvasRef = useRef<HTMLCanvasElement>(null)  
     const gameRef = useRef<Game | null>(null)
     const [selectedTool, setSelectedTool] = useState<Tool | "">("")
@@ -81,9 +84,10 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
     }, [roomId, socket])
 
     return (
-        <div>
+        <div className={`z-10 `}>
             <ShapeOptions selectedTool={selectedTool as Tool} setSelectedTool={setSelectedTool} />
             <UsersInRoom roomId={roomId} />
+            <LeaveRoom roomId={roomId} />
             {showTextArea && (
                 <textarea
                     ref={textAreaRef}
@@ -102,7 +106,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
                 ref={canvasRef} 
                 width={window.innerWidth} 
                 height={window.innerHeight}  
-                className='bg-neutral-800' 
+                className={` ${isModalVisible ? "bg-neutral-800/20" : "bg-neutral-800" } z-10`}
                 onClick={handleCanvasClick} 
             />
         </div>

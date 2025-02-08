@@ -15,6 +15,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     isGettingUsers: false,
     isLeavingRoom: false,
     roomId: "",
+    isModalVisible: false,
 
     signup: async (data) => {
         set({isSigningUp: true})
@@ -86,7 +87,8 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
         set({isJoiningRoom: true})
         try {
             const res = await AxiosInstance.post(`/user/join-room/${roomId}`)
-
+            set({roomId: res.data.id})
+            console.log("join roomId: ", res.data.id)
             set((state) => ({
                 usersInRoom: state.authUser ? [...state.usersInRoom, state.authUser] : state.usersInRoom
             }));
@@ -112,12 +114,21 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     leaveRoom: async(roomId) => {
         set({isLeavingRoom: true})
         try {   
+            console.log("users in room before: ", get().usersInRoom)
+            console.log("room: ", roomId)
             const res = await AxiosInstance.put(`/user/leave-room/${roomId}`)
             set({usersInRoom: res.data})
+            console.log("users in room after: ", get().usersInRoom)
         } catch (error) {
             console.error(error)
         } finally {
             set({isLeavingRoom: false})
         }
-    }
+    },
+
+    changeModalVisibility: () => {
+        set((state) => ({
+            isModalVisible: !state.isModalVisible
+        }))
+    },
 }))

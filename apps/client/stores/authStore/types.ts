@@ -21,6 +21,7 @@ export type authState = {
     isLeavingRoom: boolean
     usersInRoom: IUser[]
     roomId: string
+    isModalVisible: boolean
 }
 
 export type authActions = {
@@ -32,4 +33,5 @@ export type authActions = {
     joinRoom: (roomId: string) => void
     getUsers: (roomId: string) => void
     leaveRoom: (roomId: string) => void
+    changeModalVisibility: () => void
 }

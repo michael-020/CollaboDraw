@@ -2,10 +2,12 @@ import React from 'react'
 import { CaseSensitive, Circle, Minus, MoveLeft, Pencil, Square } from 'lucide-react'
 import { Tool } from './Canvas'
 import { IconButton } from './IconButton'
+import { useAuthStore } from '@/stores/authStore/authStore'
 
 export const ShapeOptions = ({selectedTool, setSelectedTool}: {selectedTool: Tool, setSelectedTool: (s: Tool) => void}) => {
+    const {isModalVisible} = useAuthStore()
   return (
-    <div className='w-screen flex justify-center'>
+    <div className={`w-screen flex justify-center ${isModalVisible ? "opacity-30": ""}`}>
         <div className='z-50 fixed top-3 px-2 flex gap-1 items-center bg-gray-100/30 backdrop-blur-sm rounded-md '>
             <IconButton icon={<Square  />} activated={selectedTool === "RECTANGLE"} onClick={() => {
                 setSelectedTool("RECTANGLE")
