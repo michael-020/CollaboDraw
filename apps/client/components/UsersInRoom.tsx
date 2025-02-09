@@ -6,7 +6,7 @@ const UsersInRoom = ({roomId}: {roomId: string}) => {
 
     useEffect(() => {
         getUsers(roomId)
-    }, [getUsers, roomId, usersInRoom])
+    }, [getUsers, roomId, usersInRoom ])
 
   return (
     <div className={`${isModalVisible ? "opacity-40": ""}`}><div className='fixed left-4 flex gap-2 top-2'>{usersInRoom.map(user => (

@@ -192,17 +192,17 @@ wss.on("connection", function connection(ws, request) {
 
       const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
 
-        usersInRoom.forEach(user => {
-          const broadcastMessage = {
-            type: "draw",
-            message: {
-              ...message,
-              type: message.type
-            },
-            roomId
-          };
-          user.ws.send(JSON.stringify(broadcastMessage));
-        });
+      usersInRoom.forEach(user => {
+        const broadcastMessage = {
+          type: "draw",
+          message: {
+            ...message,
+            type: message.type
+          },
+          roomId
+        };
+        user.ws.send(JSON.stringify(broadcastMessage));
+      });
     }
   });
 

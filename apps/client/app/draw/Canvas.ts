@@ -52,6 +52,7 @@ export class Game{
     private selectedTool: Tool | "" = ""
     private currentPoints: Array<{x: number, y: number}> = []
     // private texts: Array<{text: string, x: number, y: number}> = []
+    private shapeStack: Shapes[]
 
     constructor(roomId: string, socket: WebSocket, canvas: HTMLCanvasElement){
         this.roomId = roomId
@@ -60,15 +61,50 @@ export class Game{
         this.ctx = canvas.getContext("2d")!
         this.existingShapes = []
         this.clicked = false
+        this.shapeStack = []
         this.init()
         this.socketHandler()
         this.mouseEventHandler()
     }
 
+    undo (){
+        const lastShape = this.existingShapes[this.existingShapes.length-1]
+        console.log("before popping: ", this.existingShapes)
+        this.existingShapes.pop()
+        console.log("after popping: ", this.existingShapes)
+        this.shapeStack.push(lastShape)
+
+        this.redrawCanvas()
+    }
+
+    getshapeStack() {
+        return this.shapeStack
+    }
+
+    canRedo(): boolean {
+        if(this.shapeStack.length === 0)
+            return false
+        else 
+            return true
+    }
+
+    getExistingShapes(): Shapes[] {
+        return this.existingShapes
+    }
+
+    redo() {
+        const topShape = this.shapeStack[this.shapeStack.length-1]
+        console.log("before pushing: ", this.existingShapes)
+        this.existingShapes.push(topShape)
+        console.log("after pushing: ", this.existingShapes)
+        this.shapeStack.pop()
+        this.redrawCanvas()
+    }
+
     async init(){
 
         this.existingShapes = await getExistingShapes(this.roomId)
-
+        console.log("existing shapes: ", this.existingShapes)
         this.redrawCanvas()
     }
 
@@ -423,7 +459,7 @@ function canvas_arrow(context: CanvasRenderingContext2D, fromx: number, fromy: n
     const angle = Math.atan2(dy, dx);
     context.moveTo(fromx, fromy);
     context.lineTo(tox, toy);
-    context.moveTo(tox, toy);
     context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    context.moveTo(tox, toy);
     context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
   }

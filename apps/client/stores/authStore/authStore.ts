@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { authActions, authState } from "./types";
 import { AxiosInstance } from "../../lib/axios";
+import { Shapes } from "@/app/draw/Canvas";
 
 
 export const useAuthStore = create<authState & authActions>((set, get) => ({
@@ -16,6 +17,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     isLeavingRoom: false,
     roomId: "",
     isModalVisible: false,
+    shapesArray: [],
 
     signup: async (data) => {
         set({isSigningUp: true})
@@ -131,4 +133,8 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             isModalVisible: !state.isModalVisible
         }))
     },
+
+    setShapesArray: (shape: Shapes) => {
+        get().shapesArray.push(shape)
+    }
 }))

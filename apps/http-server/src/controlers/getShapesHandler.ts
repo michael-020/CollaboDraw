@@ -11,7 +11,7 @@ export const getShapesHandler = async (req: Request, res: Response) => {
                 roomId
             },
             orderBy: {
-                id: "desc"
+                createdAt: "asc"
             },
             take: 50
         });

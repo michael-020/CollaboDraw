@@ -5,6 +5,7 @@ import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
 import LeaveRoom from './LeaveRoom'
 import { useAuthStore } from '@/stores/authStore/authStore'
+// import UndoAndRedo from './UndoAndRedo'
 
 export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT" | "CURSOR"
 
@@ -88,6 +89,15 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
             <ShapeOptions selectedTool={selectedTool as Tool} setSelectedTool={setSelectedTool} />
             <UsersInRoom roomId={roomId} />
             <LeaveRoom roomId={roomId} />
+            {/* <UndoAndRedo 
+                game={gameRef.current}
+                undoHandler={() => {
+                    gameRef.current?.undo()
+                }}
+                redoHandler={() => {
+                    gameRef.current?.redo()
+                }} 
+            /> */}
             {showTextArea && (
                 <textarea
                     ref={textAreaRef}
