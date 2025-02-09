@@ -10,6 +10,7 @@ const LeaveRoomModal = ({roomId}: {roomId: string}) => {
         console.log("roomId: ",roomId)
         leaveRoom(roomId)
         router.replace("/home-page")
+        changeModalVisibility()
     } 
   return (
     <div className='absolute top-1/3 left-[42%]'>
