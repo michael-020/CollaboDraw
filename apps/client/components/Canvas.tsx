@@ -1,12 +1,12 @@
 "use client"
-import { Game } from '@/app/draw/game'
+import { Game } from '@/app/draw/Canvas'
 import React, { useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
 import LeaveRoom from './LeaveRoom'
 import { useAuthStore } from '@/stores/authStore/authStore'
 
-export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT"
+export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT" | "CURSOR"
 
 const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
     const { isModalVisible } = useAuthStore()
@@ -98,7 +98,8 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
                         left: `${textAreaPosition.x}px`,
                         top: `${textAreaPosition.y}px`,
                         minWidth: '100px',
-                        minHeight: '50px'
+                        minHeight: '50px',
+                        resize: "none"
                     }}
                 />
             )}
