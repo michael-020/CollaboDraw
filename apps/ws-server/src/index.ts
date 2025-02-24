@@ -96,6 +96,7 @@ wss.on("connection", function connection(ws, request) {
             height: Number(message.height),
             x: Number(message.x),
             y: Number(message.y),
+            color: message.color,
             user: {
               connect: { id: userId }
             },
@@ -113,6 +114,7 @@ wss.on("connection", function connection(ws, request) {
             y: Number(message.y),
             radiusX: Number(message.radiusX),
             radiusY: Number(message.radiusY),
+            color: message.color,
             user: {
               connect: { id: userId }
             },
@@ -130,6 +132,7 @@ wss.on("connection", function connection(ws, request) {
             x: Number(message.x),
             y: Number(message.y),
             points: message.points, // points -> {endX, endY}
+            color: message.color,
             user: {
               connect: { id: userId }
             },
@@ -147,6 +150,7 @@ wss.on("connection", function connection(ws, request) {
             x: Number(message.x),
             y: Number(message.y),
             points: message.points, // points -> {endX, endY}
+            color: message.color,
             user: {
               connect: { id: userId }
             },
@@ -164,6 +168,7 @@ wss.on("connection", function connection(ws, request) {
             x: message.points[0].x,
             y: message.points[0].y,
             points: message.points,
+            color: message.color,
             user: {
               connect: { id: userId}
             },
@@ -180,6 +185,7 @@ wss.on("connection", function connection(ws, request) {
             x: Number(message.x),
             y: Number(message.y),
             points: message.points,
+            color: message.color,
             user: {
               connect: { id: userId }
             },

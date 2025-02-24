@@ -1,18 +1,20 @@
+import { Tool } from "@/hooks/useDraw"
 import { getExistingShapes } from "./http"
-import { Tool } from "@/components/Canvas"
 
 export type Shapes = {
     type: "RECTANGLE",
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
+    color?: string
 } | {
     type: "CIRCLE",
     x: number, 
     y: number, 
     radiusX: number,
-    radiusY: number
+    radiusY: number,
+    color?: string
 } | {
     type: "LINE",
     x: number, 
@@ -20,7 +22,8 @@ export type Shapes = {
     points: {
         endX: number,
         endY: number
-    }
+    },
+    color?: string
 } | {
     type: "ARROW",
     x: number, 
@@ -28,15 +31,18 @@ export type Shapes = {
     points: {
         endX: number,
         endY: number
-    }
+    },
+    color?: string
 } | {
     type: "PENCIL",
-    points: Array<{x: number, y: number}> 
+    points: Array<{x: number, y: number}>,
+    color?: string
 } | {
     type: "TEXT",
     x: number,
     y: number,
-    points: Array<{letter: string}>
+    points: Array<{letter: string}>,
+    color?: string
 }
 
 
@@ -462,4 +468,4 @@ function canvas_arrow(context: CanvasRenderingContext2D, fromx: number, fromy: n
     context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     context.moveTo(tox, toy);
     context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-  }
+}
