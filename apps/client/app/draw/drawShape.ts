@@ -63,6 +63,7 @@ export class DrawShapes{
 
     // Selection state
     public selectedTool: Tool  | "" = "";
+    public selectedShape: Shapes | "" = "";
     private selectedOffsetX: number = 0;
     private selectedOffsetY: number = 0;
 
@@ -141,6 +142,13 @@ export class DrawShapes{
             this.ctx.beginPath()
             this.ctx.moveTo(point.x, point.y)
         }
+        else if(this.selectedTool === "select"){
+            // this.selectedShape = this.existingShapes.find((shape) => {
+            //     if(shape.type === "PENCIL") {
+
+            //     }
+            // })
+        }
     }
 
     handleMouseMove(e: MouseEvent) {
@@ -153,27 +161,19 @@ export class DrawShapes{
             const width = e.clientX - this.x
             const height = e.clientY - this.y
             this.redrawCanvas()
-            this.ctx.strokeStyle = this.color
-            this.ctx.strokeRect(this.x, this.y, width, height)
+            this.drawRectangle(this.ctx, this.x, this.y, width, height, this.color)
         }
         else if(this.selectedTool === "CIRCLE"){
             const radiusX = e.clientX - this.x
             const radiusY = e.clientY - this.y
             this.redrawCanvas()
-            this.ctx.strokeStyle = this.color
-            this.ctx.beginPath();
-            this.ctx.ellipse(this.x, this.y, Math.abs(radiusX), Math.abs(radiusY), 0, 0, Math.PI*2);
-            this.ctx.stroke();
+            this.drawCircle(this.ctx, this.x, this.y, radiusX, radiusY, this.color)
         }
         else if(this.selectedTool === "LINE"){
             const endX = e.clientX
             const endY = e.clientY
             this.redrawCanvas()
-            this.ctx.strokeStyle = this.color
-            this.ctx.beginPath()
-            this.ctx.moveTo(this.x, this.y)
-            this.ctx.lineTo(endX, endY)
-            this.ctx.stroke()
+            this.drawLine(this.ctx, this.x, this.y, {endX, endY}, this.color)
         }
         else if(this.selectedTool === "ARROW"){
             const endX = e.clientX
@@ -329,22 +329,13 @@ export class DrawShapes{
     drawShape(shape: Shapes) {
         this.ctx.strokeStyle = this.color
         if(shape.type === "RECTANGLE"){
-            this.ctx.strokeStyle = shape.color
-            this.ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+            this.drawRectangle(this.ctx, shape.x, shape.y, shape.width, shape.height, shape.color)
         }
         else if(shape.type === "CIRCLE"){
-            this.ctx.strokeStyle = shape.color
-            this.ctx.beginPath();
-            this.ctx.ellipse(shape.x, shape.y, Math.abs(shape.radiusX), Math.abs(shape.radiusY), 0, 0, Math.PI*2);
-            this.ctx.stroke();
-            this.ctx.closePath();
+            this.drawCircle(this.ctx, shape.x, shape.y, shape.radiusX, shape.radiusY, shape.color)
         }
         else if(shape.type === "LINE"){
-            this.ctx.strokeStyle = shape.color
-            this.ctx.beginPath();
-            this.ctx.moveTo(shape.x, shape.y);
-            this.ctx.lineTo(shape.points.endX, shape.points.endY);
-            this.ctx.stroke();
+            this.drawLine(this.ctx, shape.x, shape.y, shape.points, shape.color)
         }
         else if(shape.type === "ARROW"){
             this.ctx.strokeStyle = shape.color
@@ -369,6 +360,27 @@ export class DrawShapes{
             const text = shape.points.map(point => point.letter).join('');
             this.ctx.fillText(text, shape.x, shape.y);
         }
+    }
+
+    drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color?: string){
+        ctx.strokeStyle = color as string
+        ctx.strokeRect(x, y, width, height);
+    }
+
+    drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radiusX: number, radiusY: number, color?: string){
+        ctx.strokeStyle = color as string
+        ctx.beginPath();
+        ctx.ellipse(x, y, Math.abs(radiusX), Math.abs(radiusY), 0, 0, Math.PI*2);
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, points: {endX: number, endY: number}, color?: string){
+        ctx.strokeStyle = color as string
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(points.endX, points.endY);
+        ctx.stroke();
     }
 
     socketHandler(){
