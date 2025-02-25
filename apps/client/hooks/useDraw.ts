@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 export type Tool =
-  | "select"
+  | "SELECT"
   | "PENCIL"
   | "RECTANGLE"
   | "CIRCLE"
