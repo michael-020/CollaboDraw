@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@repo/db": "workspace:*",
     "@repo/backend-common": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/ws": "^8.5.14",
@@ -25,6 +25,7 @@
   "dependencies": {
     "cookie": "^1.0.2",
     "cookies": "^0.9.1",
+    "redis": "^4.7.0",
     "typescript": "^5.7.3"
   }
 }

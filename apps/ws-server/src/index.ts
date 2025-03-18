@@ -2,6 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
+import { pushShape } from "./redis";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -65,7 +66,10 @@ wss.on("connection", function connection(ws, request) {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
       user.rooms.push(parsedData.roomId);
+    }
 
+    if(parsedData.type === "redis"){
+      pushShape(parsedData)
     }
 
     if (parsedData.type === "leave_room") {
