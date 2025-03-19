@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { pushShape } from "./redis";
+import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -81,7 +82,8 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "draw") {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
-
+      
+      insertIntoDB(roomId, message, userId)
       // message -> {
       //   type:  "rect",
       //   startX: 12,
@@ -89,116 +91,6 @@ wss.on("connection", function connection(ws, request) {
       //   width: 123,
       //   height: number
       // }
-
-      // console.log("Processing draw message:", message);
-
-      if(message.type === "RECTANGLE"){
-        await prismaClient.shape.create({
-          data: {
-            type: "RECTANGLE",
-            width: Number(message.width),
-            height: Number(message.height),
-            x: Number(message.x),
-            y: Number(message.y),
-            color: message.color,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      } 
-      else if(message.type === "CIRCLE"){
-        await prismaClient.shape.create({
-          data: {
-            type: "CIRCLE",
-            x: Number(message.x),
-            y: Number(message.y),
-            radiusX: Number(message.radiusX),
-            radiusY: Number(message.radiusY),
-            color: message.color,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
-      else if(message.type === "LINE"){
-        
-        await prismaClient.shape.create({
-          data: {
-            type: "LINE",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points, // points -> {endX, endY}
-            color: message.color,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      } 
-      else if(message.type === "ARROW"){
-
-        await prismaClient.shape.create({
-          data: {
-            type: "ARROW",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points, // points -> {endX, endY}
-            color: message.color,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
-      else if(message.type === "PENCIL"){
-
-        await prismaClient.shape.create({
-          data: {
-            type: "PENCIL",
-            x: message.points[0].x,
-            y: message.points[0].y,
-            points: message.points,
-            color: message.color,
-            user: {
-              connect: { id: userId}
-            },
-            room: {
-              connect: { id: roomId}
-            }
-          }
-        })
-      }
-      else if(message.type === "TEXT"){
-        await prismaClient.shape.create({
-          data: {
-            type: "TEXT",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points,
-            color: message.color,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
 
       const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
 
