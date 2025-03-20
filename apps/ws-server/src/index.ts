@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { pushShape } from "./redis";
-import { insertIntoDB } from "./lib/utils";
+import { insertIntoDB, storeShapeInDB,  } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -28,15 +28,6 @@ const checkUser = (token: string | undefined): string | null => {
 };
 
 wss.on("connection", function connection(ws, request) {
-  // const cookies = request.headers.cookie;
-  // if (!cookies) {
-  //   console.log("No cookies found");
-  //   ws.close();
-  //   return;
-  // }
-
-  // const parsedCookies = parse(cookies);
-  // const token = parsedCookies.jwt;
   const url = request.url;
   if (!url) {
     return;
@@ -69,8 +60,51 @@ wss.on("connection", function connection(ws, request) {
       user.rooms.push(parsedData.roomId);
     }
 
-    if(parsedData.type === "redis"){
-      pushShape(parsedData)
+    if(parsedData.type === "edit"){
+      const roomId = parsedData.roomId;
+      const message = parsedData.message;
+      try {
+        // Make sure we have a valid ID for the shape
+        if (!message.id) {
+          console.error("Shape ID is required for edit operations");
+          ws.send(JSON.stringify({
+            type: "error",
+            message: "Shape ID is required for edit operations"
+          }));
+          return;
+        }
+
+        // Process the edit with Redis
+        await pushShape({
+          id: message.id, // Make sure we include the ID
+          roomId,
+          userId,
+          type: message.type,
+          ...message,
+          timestamp: Date.now()
+        });
+
+        // Broadcast the edit to all users in the room
+        const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
+        
+        usersInRoom.forEach(user => {
+          const broadcastMessage = {
+            type: "draw", // Changed from "draw" to "edit" for clarity
+            message: {
+              ...message,
+              userId // Include the user ID in the broadcast
+            },
+            roomId
+          };
+          user.ws.send(JSON.stringify(broadcastMessage));
+        });
+      } catch (error) {
+        console.error("Error processing edit operation:", error);
+        ws.send(JSON.stringify({
+          type: "error",
+          message: "Failed to process edit operation"
+        }));
+      }
     }
 
     if (parsedData.type === "leave_room") {
@@ -82,8 +116,9 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "draw") {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
-      
-      insertIntoDB(roomId, message, userId)
+
+      const shapeId = await insertIntoDB(roomId, message, userId)
+      console.log("shape id: ", shapeId as string)
       // message -> {
       //   type:  "rect",
       //   startX: 12,
@@ -99,7 +134,8 @@ wss.on("connection", function connection(ws, request) {
           type: "draw",
           message: {
             ...message,
-            type: message.type
+            type: message.type,
+            id: shapeId
           },
           roomId
         };

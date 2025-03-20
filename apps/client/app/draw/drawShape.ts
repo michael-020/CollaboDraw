@@ -2,6 +2,7 @@ import { Color, Stroke, Tool } from "@/hooks/useDraw";
 import { getExistingShapes } from "./http";
 
 export type Shapes = {
+    id?: string,
     type: "RECTANGLE",
     x: number,
     y: number,
@@ -9,6 +10,7 @@ export type Shapes = {
     height: number,
     color: string
 } | {
+    id?: string,
     type: "CIRCLE",
     x: number, 
     y: number, 
@@ -16,6 +18,7 @@ export type Shapes = {
     radiusY: number,
     color: string
 } | {
+    id?: string,
     type: "LINE",
     x: number, 
     y: number, 
@@ -25,6 +28,7 @@ export type Shapes = {
     },
     color: string
 } | {
+    id?: string,
     type: "ARROW",
     x: number, 
     y: number, 
@@ -34,10 +38,12 @@ export type Shapes = {
     },
     color: string
 } | {
+    id?: string,
     type: "PENCIL",
     points: Array<{x: number, y: number}>,
     color: string
 } | {
+    id?: string,
     type: "TEXT",
     x: number,
     y: number,
@@ -104,7 +110,7 @@ export class DrawShapes{
 
     async loadExistingShapes() {
         this.existingShapes = await getExistingShapes(this.roomId)
-        console.log("existing Shapes: ", this.existingShapes)
+        console.log("existing Shapes array: ", this.existingShapes)
         this.redrawCanvas();
     }
       
@@ -907,11 +913,12 @@ export class DrawShapes{
     socketHandler(){
         this.socket.onmessage = (event) => {
             const message = JSON.parse(event.data)
-
+            console.log("message: ", message)
             const shape = message.message
 
             if (shape.type === "RECTANGLE") {
                 const rectangleShape = {
+                    id: shape.id,
                     type: "RECTANGLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -924,6 +931,7 @@ export class DrawShapes{
             } 
             else if (shape.type === "CIRCLE") {
                 const circleShape = {
+                    id: shape.id,
                     type: "CIRCLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -936,6 +944,7 @@ export class DrawShapes{
             }
             else if(shape.type === "LINE"){
                 const line: Shapes = {
+                    id: shape.id,
                     type: "LINE",
                     x: shape.x,
                     y: shape.y,
@@ -946,6 +955,7 @@ export class DrawShapes{
             }
             else if(shape.type === "ARROW"){
                 const arrow: Shapes = {
+                    id: shape.id,
                     type: "ARROW",
                     x: shape.x,
                     y: shape.y,
@@ -956,6 +966,7 @@ export class DrawShapes{
             }
             else if(shape.type === "PENCIL"){
                 const pencil: Shapes = {
+                    id: shape.id,
                     type: "PENCIL",
                     points: shape.points,
                     color: shape.color
@@ -965,6 +976,7 @@ export class DrawShapes{
             else if(shape.type === "TEXT"){
                 
                 const textShape: Shapes = {
+                    id: shape.id,
                     type: "TEXT",
                     x: shape.x,
                     y: shape.y,
@@ -988,7 +1000,6 @@ export class DrawShapes{
 
     public setColor(color: Color) {
         this.color = color;
-        console.log("color: ", this.color)
     }
 
     public setStroke(stroke: Stroke) {

@@ -2,6 +2,7 @@ import { Tool } from "@/hooks/useDraw"
 import { getExistingShapes } from "./http"
 
 export type Shapes = {
+    id?: string,
     type: "RECTANGLE",
     x: number,
     y: number,
@@ -9,6 +10,7 @@ export type Shapes = {
     height: number,
     color?: string
 } | {
+    id?: string,
     type: "CIRCLE",
     x: number, 
     y: number, 
@@ -16,6 +18,7 @@ export type Shapes = {
     radiusY: number,
     color?: string
 } | {
+    id?: string,
     type: "LINE",
     x: number, 
     y: number, 
@@ -25,6 +28,7 @@ export type Shapes = {
     },
     color?: string
 } | {
+    id?: string,
     type: "ARROW",
     x: number, 
     y: number, 
@@ -34,10 +38,12 @@ export type Shapes = {
     },
     color?: string
 } | {
+    id?: string,
     type: "PENCIL",
     points: Array<{x: number, y: number}>,
     color?: string
 } | {
+    id?: string,
     type: "TEXT",
     x: number,
     y: number,
@@ -173,6 +179,7 @@ export class Game{
 
             if (shape.type === "RECTANGLE") {
                 const rectangleShape = {
+                    id: shape.id,
                     type: "RECTANGLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -184,6 +191,7 @@ export class Game{
             } 
             else if (shape.type === "CIRCLE") {
                 const circleShape = {
+                    id: shape.id,
                     type: "CIRCLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -195,6 +203,7 @@ export class Game{
             }
             else if(shape.type === "LINE"){
                 const line: Shapes = {
+                    id: shape.id,
                     type: "LINE",
                     x: shape.x,
                     y: shape.y,
@@ -204,6 +213,7 @@ export class Game{
             }
             else if(shape.type === "ARROW"){
                 const arrow: Shapes = {
+                    id: shape.id,
                     type: "ARROW",
                     x: shape.x,
                     y: shape.y,
@@ -213,6 +223,7 @@ export class Game{
             }
             else if(shape.type === "PENCIL"){
                 const pencil: Shapes = {
+                    id: shape.id,
                     type: "PENCIL",
                     points: shape.points
                 }
@@ -221,6 +232,7 @@ export class Game{
             else if(shape.type === "TEXT"){
                
                 const textShape: Shapes = {
+                    id: shape.id,
                     type: "TEXT",
                     x: shape.x,
                     y: shape.y,
