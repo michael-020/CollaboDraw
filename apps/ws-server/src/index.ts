@@ -2,8 +2,8 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { pushShape } from "./redis";
-import { insertIntoDB, storeShapeInDB,  } from "./lib/utils";
+import { pushShape, updateData, insertIntoDatabase } from "./redis";
+import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -60,7 +60,7 @@ wss.on("connection", function connection(ws, request) {
       user.rooms.push(parsedData.roomId);
     }
 
-    if(parsedData.type === "edit"){
+    if(parsedData.type === "update"){
       const roomId = parsedData.roomId;
       const message = parsedData.message;
       try {
@@ -74,22 +74,14 @@ wss.on("connection", function connection(ws, request) {
           return;
         }
 
-        // Process the edit with Redis
-        await pushShape({
-          id: message.id, // Make sure we include the ID
-          roomId,
-          userId,
-          type: message.type,
-          ...message,
-          timestamp: Date.now()
-        });
+        await updateData(roomId, message, userId);
 
         // Broadcast the edit to all users in the room
         const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
         
         usersInRoom.forEach(user => {
           const broadcastMessage = {
-            type: "draw", // Changed from "draw" to "edit" for clarity
+            type: "update", // Changed from "draw" to "edit" for clarity
             message: {
               ...message,
               userId // Include the user ID in the broadcast
@@ -118,7 +110,6 @@ wss.on("connection", function connection(ws, request) {
       const message = parsedData.message;
 
       const shapeId = await insertIntoDB(roomId, message, userId)
-      console.log("shape id: ", shapeId as string)
       // message -> {
       //   type:  "rect",
       //   startX: 12,

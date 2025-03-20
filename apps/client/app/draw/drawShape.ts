@@ -421,6 +421,11 @@ export class DrawShapes{
 
     }
 
+    removeShapeFromCanvas(shapeId: string) {
+        this.existingShapes = this.existingShapes.filter(shape => shape.id != shapeId)
+        this.redrawCanvas()
+    }
+
     // Helper method to check if a point is inside a shape
     isPointInShape(x: number, y: number, shape: Shapes): boolean {
         if (shape.type === "RECTANGLE") {
@@ -914,82 +919,163 @@ export class DrawShapes{
         this.socket.onmessage = (event) => {
             const message = JSON.parse(event.data)
             console.log("message: ", message)
-            const shape = message.message
+            if(message.type === "draw"){
+                const shape = message.message
 
-            if (shape.type === "RECTANGLE") {
-                const rectangleShape = {
-                    id: shape.id,
-                    type: "RECTANGLE" as const,
-                    x: shape.x,
-                    y: shape.y,
-                    width: shape.width,
-                    height: shape.height,
-                    color: shape.color
-                }
+                if (shape.type === "RECTANGLE") {
+                    const rectangleShape = {
+                        id: shape.id,
+                        type: "RECTANGLE" as const,
+                        x: shape.x,
+                        y: shape.y,
+                        width: shape.width,
+                        height: shape.height,
+                        color: shape.color
+                    }
 
-                this.existingShapes.push(rectangleShape)
-            } 
-            else if (shape.type === "CIRCLE") {
-                const circleShape = {
-                    id: shape.id,
-                    type: "CIRCLE" as const,
-                    x: shape.x,
-                    y: shape.y,
-                    radiusX: shape.radiusX,
-                    radiusY: shape.radiusY,
-                    color: shape.color
-                }
+                    this.existingShapes.push(rectangleShape)
+                } 
+                else if (shape.type === "CIRCLE") {
+                    const circleShape = {
+                        id: shape.id,
+                        type: "CIRCLE" as const,
+                        x: shape.x,
+                        y: shape.y,
+                        radiusX: shape.radiusX,
+                        radiusY: shape.radiusY,
+                        color: shape.color
+                    }
 
-                this.existingShapes.push(circleShape)
-            }
-            else if(shape.type === "LINE"){
-                const line: Shapes = {
-                    id: shape.id,
-                    type: "LINE",
-                    x: shape.x,
-                    y: shape.y,
-                    points: shape.points,
-                    color: shape.color
+                    this.existingShapes.push(circleShape)
                 }
-                this.existingShapes.push(line)
-            }
-            else if(shape.type === "ARROW"){
-                const arrow: Shapes = {
-                    id: shape.id,
-                    type: "ARROW",
-                    x: shape.x,
-                    y: shape.y,
-                    points: shape.points,
-                    color: shape.color
+                else if(shape.type === "LINE"){
+                    const line: Shapes = {
+                        id: shape.id,
+                        type: "LINE",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(line)
                 }
-                this.existingShapes.push(arrow)
-            }
-            else if(shape.type === "PENCIL"){
-                const pencil: Shapes = {
-                    id: shape.id,
-                    type: "PENCIL",
-                    points: shape.points,
-                    color: shape.color
+                else if(shape.type === "ARROW"){
+                    const arrow: Shapes = {
+                        id: shape.id,
+                        type: "ARROW",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(arrow)
                 }
-                this.existingShapes.push(pencil)
-            }
-            else if(shape.type === "TEXT"){
-                
-                const textShape: Shapes = {
-                    id: shape.id,
-                    type: "TEXT",
-                    x: shape.x,
-                    y: shape.y,
-                    points: shape.points,
-                    color: shape.color
+                else if(shape.type === "PENCIL"){
+                    const pencil: Shapes = {
+                        id: shape.id,
+                        type: "PENCIL",
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(pencil)
                 }
-                this.existingShapes.push(textShape)
+                else if(shape.type === "TEXT"){
+                    
+                    const textShape: Shapes = {
+                        id: shape.id,
+                        type: "TEXT",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(textShape)
+                    this.redrawCanvas()
+                }
+                else {
+                    console.warn("Received invalid shape:", shape)
+                }
                 this.redrawCanvas()
             }
-            else {
-                console.warn("Received invalid shape:", shape)
+            else if(message.type === "update"){
+                const shape = message.message
+                const shapeId = shape.id
+                this.removeShapeFromCanvas(shapeId)
+                if (shape.type === "RECTANGLE") {
+                    const rectangleShape = {
+                        id: shape.id,
+                        type: "RECTANGLE" as const,
+                        x: shape.x,
+                        y: shape.y,
+                        width: shape.width,
+                        height: shape.height,
+                        color: shape.color
+                    }
+
+                    this.existingShapes.push(rectangleShape)
+                } 
+                else if (shape.type === "CIRCLE") {
+                    const circleShape = {
+                        id: shape.id,
+                        type: "CIRCLE" as const,
+                        x: shape.x,
+                        y: shape.y,
+                        radiusX: shape.radiusX,
+                        radiusY: shape.radiusY,
+                        color: shape.color
+                    }
+
+                    this.existingShapes.push(circleShape)
+                }
+                else if(shape.type === "LINE"){
+                    const line: Shapes = {
+                        id: shape.id,
+                        type: "LINE",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(line)
+                }
+                else if(shape.type === "ARROW"){
+                    const arrow: Shapes = {
+                        id: shape.id,
+                        type: "ARROW",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(arrow)
+                }
+                else if(shape.type === "PENCIL"){
+                    const pencil: Shapes = {
+                        id: shape.id,
+                        type: "PENCIL",
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(pencil)
+                }
+                else if(shape.type === "TEXT"){
+                    
+                    const textShape: Shapes = {
+                        id: shape.id,
+                        type: "TEXT",
+                        x: shape.x,
+                        y: shape.y,
+                        points: shape.points,
+                        color: shape.color
+                    }
+                    this.existingShapes.push(textShape)
+                    this.redrawCanvas()
+                }
+                else {
+                    console.warn("Received invalid shape:", shape)
+                }
+                this.redrawCanvas()
             }
-            this.redrawCanvas()
         }
     }
 

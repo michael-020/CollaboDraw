@@ -4,10 +4,14 @@ import { prismaClient } from "@repo/db/client";
 const client = createClient();
 let queueProcessorActive = false;
 let processorInterval: NodeJS.Timeout | null = null;
+
+// Initialize Redis connection
 const main = async () => {
     await client.connect();
+    // Start the queue processor immediately
+    startQueueProcessor();
 }
-main()
+main();
 
 export type Shapes = {
     id: string, // Unique identifier for the shape
@@ -19,7 +23,6 @@ export type Shapes = {
     width: number,
     height: number,
     color?: string,
-    timestamp: number
 } | {
     id: string,
     roomId: string,
@@ -30,7 +33,6 @@ export type Shapes = {
     radiusX: number,
     radiusY: number,
     color?: string,
-    timestamp: number
 } | {
     id: string,
     roomId: string,
@@ -43,7 +45,6 @@ export type Shapes = {
         endY: number
     },
     color?: string,
-    timestamp: number
 } | {
     id: string,
     roomId: string,
@@ -56,7 +57,6 @@ export type Shapes = {
         endY: number
     },
     color?: string,
-    timestamp: number
 } | {
     id: string,
     roomId: string,
@@ -64,7 +64,6 @@ export type Shapes = {
     type: "PENCIL",
     points: Array<{x: number, y: number}>,
     color?: string,
-    timestamp: number
 } | {
     id: string,
     roomId: string,
@@ -74,72 +73,22 @@ export type Shapes = {
     y: number,
     points: Array<{letter: string}>,
     color?: string,
-    timestamp: number
 }
 
-// Store the latest state of shapes in a Redis hash for quick lookup
-async function updateShapeCache(shape: Shapes) {
-    const hashKey = `room:${shape.roomId}:shapes`;
-    await client.hSet(hashKey, shape.id, JSON.stringify(shape));
-}
-
-// Push shape update to the queue and trigger processing
-export async function pushShape(shape: Shapes) {
-    // Add timestamp to track when the update occurred
-    const shapeWithTimestamp = {
-        ...shape,
-        timestamp: Date.now()
-    };
-    
-    // Update the cache with the latest state
-    await updateShapeCache(shapeWithTimestamp);
-    
-    // Push to a FIFO queue (Redis List) for ordered processing
+// Push shape to the queue
+export async function pushShape(shape: Shapes) { 
+    // Push to queue (Redis List) for ordered processing
     const queueKey = `queue:room:${shape.roomId}`;
-    await client.rPush(queueKey, JSON.stringify(shapeWithTimestamp));
-    
-    // Notify that we have new data to process
-    await client.publish("queue:updates", shape.roomId);
-    
-    // Also publish for real-time updates to clients
-    await client.publish(`room:${shape.roomId}:updates`, JSON.stringify(shapeWithTimestamp));
+    await client.rPush(queueKey, JSON.stringify(shape));
     
     console.log(`Pushed shape ${shape.id} to queue for room ${shape.roomId}`);
     
-    return shapeWithTimestamp;
-}
-
-// Get the latest state of a shape from cache
-export async function getLatestShape(roomId: string, shapeId: string): Promise<Shapes | null> {
-    const hashKey = `room:${roomId}:shapes`;
-    const shapeData = await client.hGet(hashKey, shapeId);
+    // Ensure the processor is running
+    if (!queueProcessorActive) {
+        startQueueProcessor();
+    }
     
-    if (!shapeData) return null;
-    
-    return JSON.parse(shapeData) as Shapes;
-}
-
-// Get all shapes for a room from cache
-export async function getAllShapesForRoom(roomId: string): Promise<Shapes[]> {
-    const hashKey = `room:${roomId}:shapes`;
-    const allShapes = await client.hGetAll(hashKey);
-    
-    return Object.values(allShapes).map(shape => JSON.parse(shape) as Shapes);
-}
-
-// Subscribe to queue update events
-async function subscribeToQueueEvents() {
-    const subscriber = client.duplicate();
-    await subscriber.connect();
-    
-    await subscriber.subscribe("queue:updates", async (roomId) => {
-        // Start the processor if it's not already running
-        if (!queueProcessorActive) {
-            startQueueProcessor();
-        }
-    });
-    
-    console.log("Subscribed to queue events");
+    return shape.id;
 }
 
 // Process queues in FIFO order
@@ -150,11 +99,10 @@ async function startQueueProcessor() {
     queueProcessorActive = true;
     console.log("Queue processor started");
     
-    // Start with immediate processing
+    // Process immediately
     await processQueues();
     
-    // Set up interval for continued processing
-    // We'll check every 2 seconds if there's still work to do
+    // Set up interval for continued processing (check every 2 seconds)
     processorInterval = setInterval(async () => {
         await processQueues();
     }, 2000);
@@ -167,7 +115,7 @@ async function processQueues() {
         const queueKeys = await client.keys('queue:room:*');
         
         if (queueKeys.length === 0) {
-            // If no queues exist, stop the processor to save resources
+            // No queues exist, stop the processor
             stopQueueProcessor();
             return;
         }
@@ -175,7 +123,7 @@ async function processQueues() {
         let totalItemsProcessed = 0;
         
         for (const queueKey of queueKeys) {
-            // Check queue length first
+            // Check queue length
             const queueLength = await client.lLen(queueKey);
             
             if (queueLength === 0) continue;
@@ -186,56 +134,44 @@ async function processQueues() {
             const batchSize = 20;
             const processCount = Math.min(batchSize, queueLength);
             
-            // Keep track of the latest state for each shape in this batch
-            const batchShapes = new Map<string, Shapes>();
-            
-            // Read items from the queue in batches for efficiency
+            // Process each shape one by one (FIFO order)
             for (let i = 0; i < processCount; i++) {
-                // Get the oldest item in the queue (FIFO)
-                const shapeData = await client.lPop(queueKey);
+                const shapeData = await client.lIndex(queueKey, 0); // Look at the first item
                 if (!shapeData) continue;
                 
                 const shape = JSON.parse(shapeData) as Shapes;
                 
-                // If we already have a newer version of this shape in the batch, compare timestamps
-                if (batchShapes.has(shape.id)) {
-                    const existingShape = batchShapes.get(shape.id)!;
-                    // Keep the newer version based on timestamp
-                    if (shape.timestamp > existingShape.timestamp) {
-                        batchShapes.set(shape.id, shape);
-                    }
-                } else {
-                    // First occurrence of this shape in the batch
-                    batchShapes.set(shape.id, shape);
+                try {
+                    // Update the shape in the database
+                    await updateShapeInDatabase(shape);
+                    
+                    // Only remove from queue after successful DB update
+                    await client.lPop(queueKey);
+                    
+                    totalItemsProcessed++;
+                } catch (error) {
+                    console.error(`Error updating shape ${shape.id}:`, error);
+                    // Skip this item for now and try again later
+                    break;
                 }
-            }
-            
-            // Update database with the latest state of each shape in the batch
-            for (const [_, shape] of batchShapes) {
-                await updateShapeInDatabase(shape);
-                totalItemsProcessed++;
             }
         }
         
-        // If we processed some items but there might be more, check again soon
-        if (totalItemsProcessed > 0) {
-            // Check if there are still items in any queue
-            let hasMoreItems = false;
+        // If we didn't process any items or all queues are empty, stop the processor
+        if (totalItemsProcessed === 0) {
+            let allQueuesEmpty = true;
+            
             for (const queueKey of queueKeys) {
                 const queueLength = await client.lLen(queueKey);
                 if (queueLength > 0) {
-                    hasMoreItems = true;
+                    allQueuesEmpty = false;
                     break;
                 }
             }
             
-            // If no more items, stop the processor
-            if (!hasMoreItems) {
+            if (allQueuesEmpty) {
                 stopQueueProcessor();
             }
-        } else {
-            // If we didn't process any items, stop the processor
-            stopQueueProcessor();
         }
     } catch (error) {
         console.error("Error in queue processor:", error);
@@ -254,82 +190,75 @@ function stopQueueProcessor() {
 
 // Update a single shape in the database
 async function updateShapeInDatabase(shape: Shapes) {
-    try {
-        // Check if the shape exists
-        const existingShape = await prismaClient.shape.findUnique({
-            where: { id: shape.id }
-        });
+    // Check if the shape exists
+    const existingShape = await prismaClient.shape.findUnique({
+        where: { id: shape.id }
+    });
 
-        const shapeData: any = {
-            id: shape.id,
-            roomId: shape.roomId,
-            userId: shape.userId,
-            type: shape.type,
-            color: shape.color,
-            timestamp: shape.timestamp,
-        };
+    const shapeData: any = {
+        id: shape.id,
+        type: shape.type,
+        color: shape.color,
+    };
 
-        // Check if the shape has 'x' and 'y' properties
-        if ('x' in shape && 'y' in shape) {
-            shapeData.x = shape.x;
-            shapeData.y = shape.y;
-        }
-
-        switch (shape.type) {
-            case "RECTANGLE":
-                shapeData.width = shape.width;
-                shapeData.height = shape.height;
-                break;
-            case "CIRCLE":
-                shapeData.radiusX = shape.radiusX;
-                shapeData.radiusY = shape.radiusY;
-                break;
-            case "LINE":
-            case "ARROW":
-                shapeData.points = shape.points;
-                break;
-            case "PENCIL":
-                shapeData.pencilPoints = shape.points;
-                break;
-            case "TEXT":
-                shapeData.textContent = shape.points;
-                break;
-            default:
-                throw new Error(`Unknown shape type`);
-        }
-
-        if (existingShape) {
-            // Update existing shape
-            await prismaClient.shape.update({
-                where: { id: shape.id },
-                data: shapeData
-            });
-        } else {
-            // Create new shape
-            await prismaClient.shape.create({
-                data: shapeData
-            });
-        }
-        
-        console.log(`Shape ${shape.id} saved to database`);
-    } catch (error) {
-        console.error(`Error updating shape ${shape.id} in database:`, error);
-        // If there's an error, add it back to the queue
-        const queueKey = `queue:room:${shape.roomId}`;
-        await client.rPush(queueKey, JSON.stringify(shape));
-        
-        // Ensure processor is active since we added an item back
-        if (!queueProcessorActive) {
-            startQueueProcessor();
-        }
+    // Check if the shape has 'x' and 'y' properties
+    if ('x' in shape && 'y' in shape) {
+        shapeData.x = Number(shape.x);
+        shapeData.y = Number(shape.y);
     }
+
+    switch (shape.type) {
+        case "RECTANGLE":
+            shapeData.width = Number(shape.width);
+            shapeData.height = Number(shape.height);
+            break;
+        case "CIRCLE":
+            shapeData.radiusX = Number(shape.radiusX);
+            shapeData.radiusY = Number(shape.radiusY);
+            break;
+        case "LINE":
+        case "ARROW":
+            shapeData.points = shape.points;
+            break;
+        case "PENCIL":
+            shapeData.pencilPoints = shape.points;
+            break;
+        case "TEXT":
+            shapeData.textContent = shape.points;
+            break;
+        default:
+            throw new Error(`Unknown shape type`);
+    }
+
+    shapeData.room = {
+        connect: { id: shape.roomId } // Connect to the room using its ID
+    };
+
+    shapeData.user = {
+        connect: { id: shape.userId } // Connect to the user using their ID
+    };
+
+    if (existingShape) {
+        // Update existing shape
+        await prismaClient.shape.update({
+            where: { id: shape.id },
+            data: shapeData
+        });
+    } else {
+        // Create new shape
+        await prismaClient.shape.create({
+            data: shapeData
+        });
+    }
+    
+    console.log(`Shape ${shape.id} saved to database`);
 }
 
-// Modified versions of your existing functions
+// Helper functions for the WebSocket server
 export async function updateData(roomId: string, message: any, userId: string) {
     if (!message.id) {
         console.error("Shape ID is required for updates");
-        return;
+        return null;
     }
     
     const shape = {
@@ -337,23 +266,21 @@ export async function updateData(roomId: string, message: any, userId: string) {
         roomId,
         userId,
         ...message,
-        timestamp: Date.now()
     };
     
     return await pushShape(shape as Shapes);
 }
 
-export async function insertIntoDB(roomId: string, message: any, userId: string) {
-    // Generate a unique ID if not provided
-    const shapeId = message.id;
+export async function insertIntoDatabase(roomId: string, message: any, userId: string) {
+    const shapeId = message.id; // Generate ID if not provided
     
     const shape = {
         id: shapeId,
         roomId,
         userId,
         ...message,
-        timestamp: Date.now()
     };
     
-    return await pushShape(shape as Shapes);
+    await pushShape(shape as Shapes);
+    return shapeId;
 }
