@@ -81,18 +81,18 @@ export class DrawShapes{
     private offsetY: number = 0;
 
     // Corner detection flags
-    private isTL: boolean = false;
-    private isTR: boolean = false;
-    private isBL: boolean = false;
-    private isBR: boolean = false;
-    private isELR: boolean = false;
-    private isELL: boolean = false;
-    private isELT: boolean = false;
-    private isELB: boolean = false;
-    private isLNS: boolean = false;
-    private isLNE: boolean = false;
-    private isARRS: boolean = false;
-    private isARRE: boolean = false;
+    private isTL: boolean = false;  // Top-Left
+    private isTR: boolean = false;  // Top-Right
+    private isBL: boolean = false;  // Bottom-Left
+    private isBR: boolean = false;  // Bottom-Right
+    private isELR: boolean = false; // Ellipse Right
+    private isELL: boolean = false; // Ellipse Left
+    private isELT: boolean = false; // Ellipse Top
+    private isELB: boolean = false; // Ellipse Bottom
+    private isLNS: boolean = false; // Line Start
+    private isLNE: boolean = false; // Line End
+    private isARRS: boolean = false; // Arrow Start
+    private isARRE: boolean = false; // Arrow End
 
     constructor(socket: WebSocket, roomId: string, canvas: HTMLCanvasElement, tool: Tool, color: Color, stroke: Stroke | number) {
         this.socket = socket
@@ -300,7 +300,7 @@ export class DrawShapes{
             };
     
             this.existingShapes.push(message.message as Shapes);
-            this.redrawCanvas();
+            // this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         } 
         else if (this.selectedTool === "CIRCLE") {
@@ -422,7 +422,9 @@ export class DrawShapes{
     }
 
     removeShapeFromCanvas(shapeId: string) {
+        console.log("before removal: ", this.existingShapes)
         this.existingShapes = this.existingShapes.filter(shape => shape.id != shapeId)
+        console.log("after removal: ", this.existingShapes)
         this.redrawCanvas()
     }
 
@@ -918,11 +920,12 @@ export class DrawShapes{
     socketHandler(){
         this.socket.onmessage = (event) => {
             const message = JSON.parse(event.data)
-            console.log("message: ", message)
+
             if(message.type === "draw"){
                 const shape = message.message
 
                 if (shape.type === "RECTANGLE") {
+                    
                     const rectangleShape = {
                         id: shape.id,
                         type: "RECTANGLE" as const,
@@ -1002,6 +1005,7 @@ export class DrawShapes{
                 const shapeId = shape.id
                 this.removeShapeFromCanvas(shapeId)
                 if (shape.type === "RECTANGLE") {
+
                     const rectangleShape = {
                         id: shape.id,
                         type: "RECTANGLE" as const,
@@ -1015,6 +1019,7 @@ export class DrawShapes{
                     this.existingShapes.push(rectangleShape)
                 } 
                 else if (shape.type === "CIRCLE") {
+
                     const circleShape = {
                         id: shape.id,
                         type: "CIRCLE" as const,
@@ -1028,6 +1033,7 @@ export class DrawShapes{
                     this.existingShapes.push(circleShape)
                 }
                 else if(shape.type === "LINE"){
+
                     const line: Shapes = {
                         id: shape.id,
                         type: "LINE",
@@ -1039,6 +1045,7 @@ export class DrawShapes{
                     this.existingShapes.push(line)
                 }
                 else if(shape.type === "ARROW"){
+
                     const arrow: Shapes = {
                         id: shape.id,
                         type: "ARROW",
@@ -1050,6 +1057,7 @@ export class DrawShapes{
                     this.existingShapes.push(arrow)
                 }
                 else if(shape.type === "PENCIL"){
+
                     const pencil: Shapes = {
                         id: shape.id,
                         type: "PENCIL",
@@ -1059,7 +1067,7 @@ export class DrawShapes{
                     this.existingShapes.push(pencil)
                 }
                 else if(shape.type === "TEXT"){
-                    
+
                     const textShape: Shapes = {
                         id: shape.id,
                         type: "TEXT",

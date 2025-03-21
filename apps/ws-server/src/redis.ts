@@ -221,7 +221,7 @@ async function updateShapeInDatabase(shape: Shapes) {
             shapeData.points = shape.points;
             break;
         case "PENCIL":
-            shapeData.pencilPoints = shape.points;
+            shapeData.points = shape.points;
             break;
         case "TEXT":
             shapeData.textContent = shape.points;
@@ -269,18 +269,4 @@ export async function updateData(roomId: string, message: any, userId: string) {
     };
     
     return await pushShape(shape as Shapes);
-}
-
-export async function insertIntoDatabase(roomId: string, message: any, userId: string) {
-    const shapeId = message.id; // Generate ID if not provided
-    
-    const shape = {
-        id: shapeId,
-        roomId,
-        userId,
-        ...message,
-    };
-    
-    await pushShape(shape as Shapes);
-    return shapeId;
 }

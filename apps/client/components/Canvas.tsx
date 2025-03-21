@@ -1,5 +1,4 @@
 "use client"
-import { Game } from '@/app/draw/Canvas'
 import React, { CanvasHTMLAttributes, useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
@@ -8,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore/authStore'
 import { Tool, useDraw } from '@/hooks/useDraw'
 import Filterbar from './Filterbar'
 import { DrawShapes } from '@/app/draw/drawShape'
+import SidebarToggle from './SidebarToggle'
 // import UndoAndRedo from './UndoAndRedo'
 
 // export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT" | "CURSOR"
@@ -143,6 +143,7 @@ function Canvas({roomId, socket}: {
     } = useDraw()
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const drawShapeRef = useRef<DrawShapes | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
     useEffect(() => {
         drawShapeRef.current?.setTool(tool as Tool)
@@ -164,14 +165,19 @@ function Canvas({roomId, socket}: {
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
-        <Filterbar
-            color={color}
-            setColor={changeColor}
-            size={size}
-            setSize={changeSize}
-            stroke={stroke}
-            setStroke={changeStroke}
-        />
+        <div onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            <SidebarToggle />
+        </div>
+        {isSidebarOpen &&
+            <Filterbar
+                color={color}
+                setColor={changeColor}
+                size={size}
+                setSize={changeSize}
+                stroke={stroke}
+                setStroke={changeStroke}
+            />
+        }
         <canvas
             ref={canvasRef}
             height={10000}

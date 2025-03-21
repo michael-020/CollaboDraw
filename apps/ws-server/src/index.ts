@@ -2,7 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { pushShape, updateData, insertIntoDatabase } from "./redis";
+import { updateData } from "./redis";
 import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
@@ -57,7 +57,9 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "join_room") {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
-      user.rooms.push(parsedData.roomId);
+      const roomId = String(parsedData.roomId)
+      user.rooms.push(roomId);
+      console.log("new user joined the room: ", user.rooms)
     }
 
     if(parsedData.type === "update"){
@@ -74,11 +76,12 @@ wss.on("connection", function connection(ws, request) {
           return;
         }
 
-        await updateData(roomId, message, userId);
-
-        // Broadcast the edit to all users in the room
-        const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
         
+        // Broadcast the edit to all users in the room
+        const usersInRoom = users.filter(user => 
+          user.rooms.includes(roomId.toString()) && user.userId !== userId
+        );
+        console.log("users in room in update: ", usersInRoom)
         usersInRoom.forEach(user => {
           const broadcastMessage = {
             type: "update", // Changed from "draw" to "edit" for clarity
@@ -90,6 +93,8 @@ wss.on("connection", function connection(ws, request) {
           };
           user.ws.send(JSON.stringify(broadcastMessage));
         });
+        
+        await updateData(roomId, message, userId);
       } catch (error) {
         console.error("Error processing edit operation:", error);
         ws.send(JSON.stringify({
@@ -118,8 +123,10 @@ wss.on("connection", function connection(ws, request) {
       //   height: number
       // }
 
-      const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
-
+      const usersInRoom = users.filter(user => 
+        user.rooms.includes(roomId.toString()) && user.userId !== userId
+      );
+      console.log("users in room: ", usersInRoom)
       usersInRoom.forEach(user => {
         const broadcastMessage = {
           type: "draw",

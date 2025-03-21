@@ -7,7 +7,7 @@
     "build": "tsc -b",
     "start": "node dist/index.js",
     "start:redis": "docker ps -q -f name=redis | grep -q . || docker run -d --name collabodraw-redis -p 6379:6379 redis",
-    "dev": "npm run start:redis && npm run build && npm run start",
+    "dev": "npm run build && npm run start",
     "stop": "pkill -f server.js",
     "restart": "pnpm stop && pnpm start"
   },
