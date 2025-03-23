@@ -13,13 +13,13 @@ export type Tool =
   | "REDO";
 export type Color =
   | "#ffffff"
-  | "#ed9824"
-  | "ff0000"
-  | "#ff0080"
+  | "#FAB072"
+  | "#BB0000"
+  | "#FF69B4"
   | "#9158f4"
-  | "#3bb273";
+  | "#00FF00";
 export type Size = 12 | 16 | 20 | 24;
-export type Stroke = 1 | 2 | 2 | 4 | 5;
+export type Stroke = 1 | 3 | 5;
 
 export const useDraw = () => {
   const [tool, setTool] = useState<Tool | "">("");
