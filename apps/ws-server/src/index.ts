@@ -122,7 +122,8 @@ wss.on("connection", function connection(ws, request) {
       //   width: 123,
       //   height: number
       // }
-
+      console.log("userId: ", userId)
+      console.log("users in room before filter: ", users)
       const usersInRoom = users.filter(user => 
         user.rooms.includes(roomId.toString()) && user.userId !== userId
       );

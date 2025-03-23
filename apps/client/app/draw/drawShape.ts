@@ -298,9 +298,7 @@ export class DrawShapes{
                     color: this.color
                 }
             };
-    
-            this.existingShapes.push(message.message as Shapes);
-            // this.redrawCanvas();
+
             this.socket.send(JSON.stringify(message));
         } 
         else if (this.selectedTool === "CIRCLE") {
@@ -320,8 +318,6 @@ export class DrawShapes{
                 }
             };
     
-            this.existingShapes.push(message.message as Shapes);
-            this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         }
         else if (this.selectedTool === "LINE"){
@@ -343,8 +339,6 @@ export class DrawShapes{
                 }
             }
 
-            this.existingShapes.push(message.message as Shapes);
-            this.redrawCanvas();
             this.socket.send(JSON.stringify(message));
         }
         else if(this.selectedTool === "ARROW"){
@@ -366,8 +360,6 @@ export class DrawShapes{
                 }
             }
 
-            this.existingShapes.push(message.message as Shapes)
-            this.redrawCanvas()
             this.socket.send(JSON.stringify(message))
         }
         else if(this.selectedTool === "PENCIL"){
@@ -381,7 +373,6 @@ export class DrawShapes{
                 }
             }
 
-            this.existingShapes.push(message.message as Shapes)
             this.socket.send(JSON.stringify(message));
             this.currentPoints = []
         }
