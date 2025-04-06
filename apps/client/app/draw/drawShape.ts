@@ -298,7 +298,7 @@ export class DrawShapes{
                     color: this.color
                 }
             };
-
+    
             this.socket.send(JSON.stringify(message));
         } 
         else if (this.selectedTool === "CIRCLE") {
