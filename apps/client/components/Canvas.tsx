@@ -1,6 +1,6 @@
 "use client"
 import { Game } from '@/app/draw/Canvas'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
 import UsersInRoom from './UsersInRoom'
 import LeaveRoom from './LeaveRoom'
@@ -19,7 +19,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
     const [textContent, setTextContent] = useState("")
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-    const getCanvasCoordinates = (clientX: number, clientY: number) => {
+    const getCanvasCoordinates = useCallback((clientX: number, clientY: number) => {
         const canvas = canvasRef.current
         if (!canvas) return { x: 0, y: 0 }
         
@@ -28,7 +28,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
             x: clientX - rect.left,
             y: clientY - rect.top
         }
-    }
+    }, [])
 
     const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (selectedTool === "TEXT") {
@@ -50,7 +50,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
         }
     }
 
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleClickOutside = useCallback((e: MouseEvent) => {
         if (showTextArea && 
             textAreaRef.current && 
             !textAreaRef.current.contains(e.target as Node) &&
@@ -64,7 +64,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
             setShowTextArea(false)
             setTextContent("")
         }
-    }
+    }, [showTextArea, textAreaRef, textContent, textAreaPosition, gameRef, getCanvasCoordinates, setShowTextArea, setTextContent])
 
     useEffect(() => {
         gameRef.current?.setTool(selectedTool as Tool)
@@ -82,7 +82,7 @@ const Canvas = ({roomId, socket}: {roomId: string, socket: WebSocket}) => {
             g.destroy()
             document.removeEventListener('mousedown', handleClickOutside)
         }
-    }, [roomId, socket])
+    }, [roomId, socket, handleClickOutside])
 
     return (
         <div className={`z-10 `}>

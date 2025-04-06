@@ -63,7 +63,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     logout: async () => {
         set({isLoggingOut: true})
         try {
-            const res = await AxiosInstance.post("/user/logout")
+            await AxiosInstance.post("/user/logout")
             set({authUser: null})
         } catch (error) {
             console.error("error while logging out", error)
