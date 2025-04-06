@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { authActions, authState } from "./types";
 import { AxiosInstance } from "../../lib/axios";
-import { Shapes } from "@/app/draw/Canvas";
+import { Shapes } from "@/app/draw/drawShape";
 
 
 export const useAuthStore = create<authState & authActions>((set, get) => ({

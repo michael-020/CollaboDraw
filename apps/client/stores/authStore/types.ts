@@ -1,4 +1,4 @@
-import { Shapes } from "@/app/draw/Canvas";
+import { Shapes } from "@/app/draw/drawShape";
 
 export interface IUser  {
     id: string;           
