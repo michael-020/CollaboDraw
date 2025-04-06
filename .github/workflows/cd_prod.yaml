@@ -14,5 +14,5 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 13.60.244.41 >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ubuntu@13.60.244.41 -t "cd CollaboDraw/ && git pull origin main && source ~/.nvm/nvm.sh && nvm install v22.12.0 && nvm use v22.12.0 && npm install -g pnpm@9.15.1 && pnpm install && pnpm run build && pm2 restart all"
+          ssh-keyscan -H 34.123.196.176 >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no michaelhosamani26@34.123.196.176 -t "cd CollaboDraw/ && git pull origin main && source ~/.nvm/nvm.sh && nvm install v22.12.0 && nvm use v22.12.0 && npm install -g pnpm@9.15.1 && pnpm install && pnpm run build && pm2 restart all"
