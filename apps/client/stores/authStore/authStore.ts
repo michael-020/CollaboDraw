@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { authActions, authState } from "./types";
 import { AxiosInstance } from "../../lib/axios";
 import { Shapes } from "@/app/draw/drawShape";
+import toast from "react-hot-toast";
 
 
 export const useAuthStore = create<authState & authActions>((set, get) => ({
@@ -25,9 +26,10 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.post("/user/signup", data)
             set({authUser: res.data})
 
-            console.log("authUser:", get().authUser)
+            toast.success("Signed up successfully")
         } catch (error) {
             console.error("error while signing up", error)
+            toast.error("failed to signup")
             set({authUser: null})
         } finally {
             set({isSigningUp: false})
@@ -39,8 +41,10 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
         try {
             const res = await AxiosInstance.post("/user/signin", data)
             set({authUser: res.data})
+            toast.success("Logged in successfully")
         } catch (error) {
             console.error("error while logging in", error)
+            toast.error("failed to login")
             set({authUser: null})
         } finally {
             set({isLoggingIn: false})
@@ -63,7 +67,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     logout: async () => {
         set({isLoggingOut: true})
         try {
-            const res = await AxiosInstance.post("/user/logout")
+            await AxiosInstance.post("/user/logout")
             set({authUser: null})
         } catch (error) {
             console.error("error while logging out", error)
