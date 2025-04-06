@@ -24,11 +24,12 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
             <button
                 onClick={() => setTool(t.id)}
                 key={t.id}
-                className={`${t.id == tool ? "bg-purple-200" : ""} p-2 rounded transition-all duration-500 cursor-pointer`}
+                className={`${t.id == tool ? "bg-purple-200" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}
             >
                 <Icon
                 className={`w-4 h-4 transition-all duration-500 text-gray-900`}
                 />
+                {t.id === "ERASER" || t.id === "TEXT" ? <div className='absolute'> <div className='absolute text-red-500 -top-5 -right-5 text-xs bg-gray-200/10 p-1 '>NA</div></div> : null}
             </button>
             );
         })}

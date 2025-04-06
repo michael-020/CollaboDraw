@@ -8,7 +8,8 @@ export type Shapes = {
     y: number,
     width: number,
     height: number,
-    color: string
+    color: string,
+    strokeWidth?: number
 } | {
     id?: string,
     type: "CIRCLE",
@@ -16,7 +17,8 @@ export type Shapes = {
     y: number, 
     radiusX: number,
     radiusY: number,
-    color: string
+    color: string,
+    strokeWidth?: number
 } | {
     id?: string,
     type: "LINE",
@@ -26,7 +28,8 @@ export type Shapes = {
         endX: number,
         endY: number
     },
-    color: string
+    color: string,
+    strokeWidth?: number
 } | {
     id?: string,
     type: "ARROW",
@@ -36,19 +39,22 @@ export type Shapes = {
         endX: number,
         endY: number
     },
-    color: string
+    color: string,
+    strokeWidth?: number
 } | {
     id?: string,
     type: "PENCIL",
     points: Array<{x: number, y: number}>,
-    color: string
+    color: string,
+    strokeWidth?: number
 } | {
     id?: string,
     type: "TEXT",
     x: number,
     y: number,
     points: Array<{letter: string}>,
-    color: string
+    color: string,
+    strokeWidth?: number
 }
 
 export class DrawShapes{
@@ -99,9 +105,9 @@ export class DrawShapes{
         this.roomId = roomId
         this.canvas = canvas
         this.ctx = canvas.getContext("2d")!
-        this.selectedTool = tool,
-        this.color = color,
-        this.stroke = 1
+        this.selectedTool = tool
+        this.color = color
+        this.stroke = stroke as Stroke
         this.existingShapes = []
         this.loadExistingShapes();
         this.socketHandler()
@@ -228,19 +234,19 @@ export class DrawShapes{
             const width = e.clientX - this.x
             const height = e.clientY - this.y
             this.redrawCanvas()
-            this.drawRectangle(this.ctx, this.x, this.y, width, height, this.color)
+            this.drawRectangle(this.ctx, this.x, this.y, width, height, this.color, this.stroke)
         }
         else if(this.selectedTool === "CIRCLE"){
             const radiusX = e.clientX - this.x
             const radiusY = e.clientY - this.y
             this.redrawCanvas()
-            this.drawCircle(this.ctx, this.x, this.y, radiusX, radiusY, this.color)
+            this.drawCircle(this.ctx, this.x, this.y, radiusX, radiusY, this.color, this.stroke)
         }
         else if(this.selectedTool === "LINE"){
             const endX = e.clientX
             const endY = e.clientY
             this.redrawCanvas()
-            this.drawLine(this.ctx, this.x, this.y, {endX, endY}, this.color)
+            this.drawLine(this.ctx, this.x, this.y, {endX, endY}, this.color, this.stroke)
         }
         else if(this.selectedTool === "ARROW"){
             const endX = e.clientX
@@ -286,6 +292,28 @@ export class DrawShapes{
             const width = e.clientX - this.x;
             const height = e.clientY - this.y;
             
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "RECTANGLE" as const,
+                x: this.x,
+                y: this.y,
+                width,
+                height,
+                color: this.color,
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
+            
+            // Send to server
             const message = {
                 type: "draw",
                 roomId: this.roomId,
@@ -295,7 +323,9 @@ export class DrawShapes{
                     y: this.y,
                     width,
                     height,
-                    color: this.color
+                    color: this.color,
+                    strokeWidth: this.stroke,
+                    tempId // Include tempId so we can match it when server responds
                 }
             };
     
@@ -304,6 +334,27 @@ export class DrawShapes{
         else if (this.selectedTool === "CIRCLE") {
             const radiusX = e.clientX - this.x;
             const radiusY = e.clientY - this.y;
+            
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "CIRCLE" as const,
+                x: this.x,
+                y: this.y,
+                radiusX,
+                radiusY,
+                color: this.color,
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
             
             const message = {
                 type: "draw",
@@ -314,7 +365,9 @@ export class DrawShapes{
                     y: this.y,
                     radiusX,
                     radiusY,
-                    color: this.color
+                    color: this.color,
+                    strokeWidth: this.stroke,
+                    tempId
                 }
             };
     
@@ -323,6 +376,29 @@ export class DrawShapes{
         else if (this.selectedTool === "LINE"){
             const endX = e.clientX
             const endY = e.clientY
+            
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "LINE" as const,
+                x: this.x,
+                y: this.y,
+                points: {
+                    endX,
+                    endY
+                },
+                color: this.color,
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
         
             const message = {
                 type: "draw",
@@ -335,7 +411,9 @@ export class DrawShapes{
                         endX,
                         endY
                     },
-                    color: this.color
+                    color: this.color,
+                    strokeWidth: this.stroke,
+                    tempId
                 }
             }
 
@@ -344,6 +422,29 @@ export class DrawShapes{
         else if(this.selectedTool === "ARROW"){
             const endX = e.clientX
             const endY = e.clientY
+            
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "ARROW" as const,
+                x: this.x,
+                y: this.y,
+                points: {
+                    endX,
+                    endY
+                },
+                color: this.color,
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
             
             const message = {
                 type: "draw",
@@ -356,20 +457,42 @@ export class DrawShapes{
                         endX,
                         endY
                     },
-                    color: this.color
+                    color: this.color,
+                    strokeWidth: this.stroke,
+                    tempId
                 }
             }
 
             this.socket.send(JSON.stringify(message))
         }
         else if(this.selectedTool === "PENCIL"){
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "PENCIL" as const,
+                points: this.currentPoints,
+                color: this.color,
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
+            
             const message= {
                 type: "draw",
                 roomId: this.roomId,
                 message: {
                     type: "PENCIL",
                     points: this.currentPoints,
-                    color: this.color
+                    color: this.color,
+                    strokeWidth: this.stroke,
+                    tempId
                 }
             }
 
@@ -837,7 +960,7 @@ export class DrawShapes{
     }
 
     setLineProperties() {
-        this.ctx.lineWidth = 1;
+        this.ctx.lineWidth = this.stroke;
         this.ctx.lineJoin = "round";
         this.ctx.lineCap = "round";
         return this.ctx;
@@ -852,24 +975,29 @@ export class DrawShapes{
     }
 
     drawShape(shape: Shapes) {
-        this.ctx.strokeStyle = this.color
+        this.ctx.strokeStyle = shape.color || this.color;
+        // Apply strokeWidth if available, otherwise use default
+        this.ctx.lineWidth = shape.strokeWidth || this.stroke;
+        
         if(shape.type === "RECTANGLE"){
-            this.drawRectangle(this.ctx, shape.x, shape.y, shape.width, shape.height, shape.color)
+            this.drawRectangle(this.ctx, shape.x, shape.y, shape.width, shape.height, shape.color, shape.strokeWidth);
         }
         else if(shape.type === "CIRCLE"){
-            this.drawCircle(this.ctx, shape.x, shape.y, shape.radiusX, shape.radiusY, shape.color)
+            this.drawCircle(this.ctx, shape.x, shape.y, shape.radiusX, shape.radiusY, shape.color, shape.strokeWidth);
         }
         else if(shape.type === "LINE"){
-            this.drawLine(this.ctx, shape.x, shape.y, shape.points, shape.color)
+            this.drawLine(this.ctx, shape.x, shape.y, shape.points, shape.color, shape.strokeWidth);
         }
         else if(shape.type === "ARROW"){
-            this.ctx.strokeStyle = shape.color
+            this.ctx.strokeStyle = shape.color;
+            this.ctx.lineWidth = shape.strokeWidth || this.stroke;
             this.ctx.beginPath();
             canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
             this.ctx.stroke();
         }
         else if(shape.type === "PENCIL"){
-            this.ctx.strokeStyle = shape.color
+            this.ctx.strokeStyle = shape.color;
+            this.ctx.lineWidth = shape.strokeWidth || this.stroke;
             if(shape.points && shape.points.length > 0){
                 this.ctx.beginPath();
                 this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
@@ -881,27 +1009,30 @@ export class DrawShapes{
         }
         else if(shape.type === "TEXT"){
             this.ctx.font = "16px Arial";
-            this.ctx.fillStyle = this.color;
+            this.ctx.fillStyle = shape.color || this.color;
             const text = shape.points.map(point => point.letter).join('');
             this.ctx.fillText(text, shape.x, shape.y);
         }
     }
 
-    drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color?: string){
-        ctx.strokeStyle = color as string
+    drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color?: string, strokeWidth?: number){
+        ctx.strokeStyle = color as string;
+        ctx.lineWidth = strokeWidth || this.stroke;
         ctx.strokeRect(x, y, width, height);
     }
 
-    drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radiusX: number, radiusY: number, color?: string){
-        ctx.strokeStyle = color as string
+    drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radiusX: number, radiusY: number, color?: string, strokeWidth?: number){
+        ctx.strokeStyle = color as string;
+        ctx.lineWidth = strokeWidth || this.stroke;
         ctx.beginPath();
         ctx.ellipse(x, y, Math.abs(radiusX), Math.abs(radiusY), 0, 0, Math.PI*2);
         ctx.stroke();
         ctx.closePath();
     }
 
-    drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, points: {endX: number, endY: number}, color?: string){
-        ctx.strokeStyle = color as string
+    drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, points: {endX: number, endY: number}, color?: string, strokeWidth?: number){
+        ctx.strokeStyle = color as string;
+        ctx.lineWidth = strokeWidth || this.stroke;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(points.endX, points.endY);
@@ -914,166 +1045,189 @@ export class DrawShapes{
 
             if(message.type === "draw"){
                 const shape = message.message
-
+                
+                // Check if this shape has a tempId (meaning it was drawn by this user)
+                if (shape.tempId) {
+                    // Find the temporary shape in our array
+                    const tempIndex = this.existingShapes.findIndex(s => s.id === shape.tempId);
+                    if (tempIndex >= 0) {
+                        // Update the temporary shape with the server-assigned ID
+                        this.existingShapes[tempIndex].id = shape.id;
+                        // Continue with the rest of the function to avoid duplication
+                        return;
+                    }
+                }
+                
+                // If not our own shape or not found with tempId, create a new shape
+                let newShape: Shapes;
                 if (shape.type === "RECTANGLE") {
-                    
-                    const rectangleShape = {
+                    newShape = {
                         id: shape.id,
                         type: "RECTANGLE" as const,
                         x: shape.x,
                         y: shape.y,
                         width: shape.width,
                         height: shape.height,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-
-                    this.existingShapes.push(rectangleShape)
+                    this.existingShapes.push(newShape);
                 } 
                 else if (shape.type === "CIRCLE") {
-                    const circleShape = {
+                    newShape = {
                         id: shape.id,
                         type: "CIRCLE" as const,
                         x: shape.x,
                         y: shape.y,
                         radiusX: shape.radiusX,
                         radiusY: shape.radiusY,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-
-                    this.existingShapes.push(circleShape)
+                    this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "LINE"){
-                    const line: Shapes = {
+                    newShape = {
                         id: shape.id,
                         type: "LINE",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(line)
+                    this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "ARROW"){
-                    const arrow: Shapes = {
+                    newShape = {
                         id: shape.id,
                         type: "ARROW",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(arrow)
+                    this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "PENCIL"){
-                    const pencil: Shapes = {
+                    newShape = {
                         id: shape.id,
                         type: "PENCIL",
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(pencil)
+                    this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "TEXT"){
-                    
-                    const textShape: Shapes = {
+                    newShape = {
                         id: shape.id,
                         type: "TEXT",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(textShape)
-                    this.redrawCanvas()
+                    this.existingShapes.push(newShape);
                 }
                 else {
                     console.warn("Received invalid shape:", shape)
+                    return;
                 }
-                this.redrawCanvas()
+                this.redrawCanvas();
             }
             else if(message.type === "update"){
                 const shape = message.message
                 const shapeId = shape.id
                 this.removeShapeFromCanvas(shapeId)
+                let updatedShape: Shapes;
                 if (shape.type === "RECTANGLE") {
-
-                    const rectangleShape = {
+                    updatedShape = {
                         id: shape.id,
                         type: "RECTANGLE" as const,
                         x: shape.x,
                         y: shape.y,
                         width: shape.width,
                         height: shape.height,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-
-                    this.existingShapes.push(rectangleShape)
+                    this.existingShapes.push(updatedShape);
                 } 
                 else if (shape.type === "CIRCLE") {
-
-                    const circleShape = {
+                    updatedShape = {
                         id: shape.id,
                         type: "CIRCLE" as const,
                         x: shape.x,
                         y: shape.y,
                         radiusX: shape.radiusX,
                         radiusY: shape.radiusY,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-
-                    this.existingShapes.push(circleShape)
+                    this.existingShapes.push(updatedShape);
                 }
                 else if(shape.type === "LINE"){
-
-                    const line: Shapes = {
+                    updatedShape = {
                         id: shape.id,
                         type: "LINE",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(line)
+                    this.existingShapes.push(updatedShape);
                 }
                 else if(shape.type === "ARROW"){
-
-                    const arrow: Shapes = {
+                    updatedShape = {
                         id: shape.id,
                         type: "ARROW",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(arrow)
+                    this.existingShapes.push(updatedShape);
                 }
                 else if(shape.type === "PENCIL"){
-
-                    const pencil: Shapes = {
+                    updatedShape = {
                         id: shape.id,
                         type: "PENCIL",
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(pencil)
+                    this.existingShapes.push(updatedShape);
                 }
                 else if(shape.type === "TEXT"){
-
-                    const textShape: Shapes = {
+                    updatedShape = {
                         id: shape.id,
                         type: "TEXT",
                         x: shape.x,
                         y: shape.y,
                         points: shape.points,
-                        color: shape.color
+                        color: shape.color,
+                        strokeWidth: shape.strokeWidth
                     }
-                    this.existingShapes.push(textShape)
-                    this.redrawCanvas()
+                    this.existingShapes.push(updatedShape);
                 }
                 else {
                     console.warn("Received invalid shape:", shape)
+                    return;
                 }
-                this.redrawCanvas()
+                this.redrawCanvas();
+                
+                // If the updated shape is selected, update our selection reference
+                if (this.selectedShape && typeof this.selectedShape === 'object' && 
+                    'id' in this.selectedShape && this.selectedShape.id && 
+                    this.selectedShape.id === shapeId) {
+                    this.selectedShape = updatedShape;
+                    this.drawSelectionHandles(this.selectedShape);
+                }
             }
         }
     }

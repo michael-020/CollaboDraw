@@ -10,6 +10,7 @@ interface Message {
     x: number; // x position
     y: number; // y position
     color: string; // color of the shape
+    strokeWidth?: number; // Width of the stroke for all shapes
     width?: number; // Only for RECTANGLE
     height?: number; // Only for RECTANGLE
     radiusX?: number; // Only for CIRCLE
@@ -29,6 +30,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             x: Number(message.x),
             y: Number(message.y),
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
               connect: { id: userId }
             },
@@ -48,6 +50,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             radiusX: Number(message.radiusX),
             radiusY: Number(message.radiusY),
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
                 connect: { id: userId }
             },
@@ -67,6 +70,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             y: Number(message.y),
             points: message.points, // points -> {endX, endY}
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
               connect: { id: userId }
             },
@@ -86,6 +90,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             y: Number(message.y),
             points: message.points, // points -> {endX, endY}
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
                 connect: { id: userId }
             },
@@ -105,6 +110,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             y: message.points[0].y,
             points: message.points,
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
                 connect: { id: userId}
             },
@@ -123,6 +129,7 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             y: Number(message.y),
             points: message.points,
             color: message.color,
+            strokeWidth: Number(message.strokeWidth) || 1,
             user: {
                 connect: { id: userId }
             },
@@ -143,6 +150,7 @@ export async function storeShapeInDB(roomId: string, message: any, userId: strin
         userId: userId,
         type: message.type,
         color: message.color,
+        strokeWidth: Number(message.strokeWidth) || 1,
         timestamp: Date.now(),
       };
   
