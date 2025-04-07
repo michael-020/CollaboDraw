@@ -127,12 +127,10 @@ wss.on("connection", function connection(ws, request) {
 
       const shapeId = await insertIntoDB(roomId, message, userId)
       
-      console.log("userId: ", userId)
-      console.log("users in room before filter: ", users)
       const usersInRoom = users.filter(user => 
         user.rooms.includes(roomId.toString()) && user.userId !== userId
       );
-      console.log("users in room: ", usersInRoom)
+
       usersInRoom.forEach(user => {
         const broadcastMessage = {
           type: "draw",
@@ -144,6 +142,8 @@ wss.on("connection", function connection(ws, request) {
           },
           roomId
         };
+        console.log("hi")
+        console.log("broadcasted to user: ", user.userId)
         user.ws.send(JSON.stringify(broadcastMessage));
       });
       
