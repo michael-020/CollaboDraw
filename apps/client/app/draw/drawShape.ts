@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Color, Stroke, Tool } from "@/hooks/useDraw";
 import { getExistingShapes } from "./http";
 
@@ -67,7 +69,7 @@ export class DrawShapes{
 
     // Drawing state
     private existingShapes: Shapes[] = [];
-    private pencilPath: [] = [];
+    private pencilPath: any[] = [];
     private clicked: boolean = false;
     private x: number = 0;
     private y: number = 0;
@@ -532,7 +534,7 @@ export class DrawShapes{
     }
 
     handleWheel(event: WheelEvent) {
-        console.log("wheel event: ", event)
+        console.log(event)
     }
 
     removeShapeFromCanvas(shapeId: string) {
