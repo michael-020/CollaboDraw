@@ -67,7 +67,7 @@ export class DrawShapes{
 
     // Drawing state
     private existingShapes: Shapes[] = [];
-    private pencilPath: any[] = [];
+    private pencilPath: [] = [];
     private clicked: boolean = false;
     private x: number = 0;
     private y: number = 0;
@@ -532,7 +532,7 @@ export class DrawShapes{
     }
 
     handleWheel(event: WheelEvent) {
-
+        console.log("wheel event: ", event)
     }
 
     removeShapeFromCanvas(shapeId: string) {

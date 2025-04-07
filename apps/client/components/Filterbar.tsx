@@ -74,7 +74,8 @@ const Filterbar = ({
             </div>
           </div>
 
-          <div className="flex flex-col justify-center gap-1">
+          {/* <div className="flex flex-col justify-center gap-1 "> */}
+          <div className="hidden">
             <p className="text-xs text-gray-50 cursor-default">Font size</p>
             <div className="flex flex-wrap gap-2">
               {sizes.map((sz) => {

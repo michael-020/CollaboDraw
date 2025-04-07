@@ -1,9 +1,6 @@
 "use client"
-import React, { CanvasHTMLAttributes, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ShapeOptions } from './ShapeOptions'
-import UsersInRoom from './UsersInRoom'
-import LeaveRoom from './LeaveRoom'
-import { useAuthStore } from '@/stores/authStore/authStore'
 import { Tool, useDraw } from '@/hooks/useDraw'
 import Filterbar from './Filterbar'
 import { DrawShapes } from '@/app/draw/drawShape'
@@ -161,7 +158,7 @@ function Canvas({roomId, socket}: {
                 g.removeEventListeners()
             }
         }
-    }, [])
+    })
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />

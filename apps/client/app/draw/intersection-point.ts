@@ -1,20 +1,21 @@
+import { Shapes } from "./drawShape";
+
 export const findInterSection = (
-  x: any,
-  y: any,
-  existingShape: any,
-  ctx?: any,
+  x: number,
+  y: number,
+  existingShape: Shapes,
 ) => {
-  if (existingShape.type == "pencil") {
+  if (existingShape.type == "PENCIL") {
     let minX = 100000;
     let minY = 10000;
     let maxX = -1;
     let maxY = -1;
 
-    for (let i = 0; i < existingShape.path.length; i++) {
-      minX = Math.min(minX, existingShape.path[i].x);
-      minY = Math.min(minY, existingShape.path[i].y);
-      maxX = Math.max(maxX, existingShape.path[i].x);
-      maxY = Math.max(maxY, existingShape.path[i].y);
+    for (let i = 0; i < existingShape.points.length; i++) {
+      minX = Math.min(minX, existingShape.points[i].x);
+      minY = Math.min(minY, existingShape.points[i].y);
+      maxX = Math.max(maxX, existingShape.points[i].x);
+      maxY = Math.max(maxY, existingShape.points[i].y);
     }
     const truth =
       x >= Math.min(minX, maxX) &&
@@ -24,17 +25,17 @@ export const findInterSection = (
     return truth;
   }
 
-  if (existingShape.type == "ellipse") {
-    const x1 = existingShape.startX;
-    const y1 = existingShape.startY;
-    const radius = existingShape.radius;
+  if (existingShape.type == "CIRCLE") {
+    const x1 = existingShape.x;
+    const y1 = existingShape.y;
+    const radius = existingShape.radiusX;
     const truth = (x - x1) ** 2 + (y - y1) ** 2 <= radius ** 2;
     return truth;
-  } else if (existingShape.type == "rectangle") {
-    const x1 = existingShape.startX;
-    const y1 = existingShape.startY;
-    const x2 = existingShape.width + existingShape.startX;
-    const y2 = existingShape.height + existingShape.startY;
+  } else if (existingShape.type == "RECTANGLE") {
+    const x1 = existingShape.x;
+    const y1 = existingShape.y;
+    const x2 = existingShape.width + existingShape.x;
+    const y2 = existingShape.height + existingShape.y;
     const truth =
       x >= Math.min(x1, x2) &&
       x <= Math.max(x1, x2) &&
@@ -42,10 +43,10 @@ export const findInterSection = (
       y <= Math.max(y1, y2);
     return truth;
   } else {
-    const x1 = existingShape.startX;
-    const y1 = existingShape.startY;
-    const x2 = existingShape.moveX;
-    const y2 = existingShape.moveY;
+    const x1 = existingShape.x;
+    const y1 = existingShape.y;
+    const x2 = existingShape.x;
+    const y2 = existingShape.y;
     const truth =
       x >= Math.min(x1, x2) &&
       x <= Math.max(x1, x2) &&

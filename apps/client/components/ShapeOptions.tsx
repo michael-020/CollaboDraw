@@ -1,10 +1,10 @@
 import React from 'react'
 import { Circle, Eraser, Minus, MousePointer, MoveLeft, Pencil, Square, Type } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore/authStore'
+// import { useAuthStore } from '@/stores/authStore/authStore'
 import { Tool } from '@/hooks/useDraw'
 
 export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) => void}) => {
-    const {isModalVisible} = useAuthStore()
+    // const {isModalVisible} = useAuthStore()
     const tools = [
         { id: "RECTANGLE" as Tool, icon: Square },
         { id: "CIRCLE" as Tool, icon: Circle },

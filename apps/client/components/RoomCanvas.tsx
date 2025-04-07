@@ -1,11 +1,12 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Canvas from './Canvas'
 import { WS_URL } from '@/lib/config'
 import { AxiosInstance } from '@/lib/axios'
 
 const RoomCanvas = ({roomId}: {roomId: string}) => {
   const [socket, setSocket] = useState<WebSocket | null>(null)
+  const socketRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
     const connectWebSocket = async () => {
@@ -14,6 +15,7 @@ const RoomCanvas = ({roomId}: {roomId: string}) => {
         const ws = new WebSocket(`${WS_URL}?token=${data.token}`);
         
         ws.onopen = () => {
+          socketRef.current = ws;
           setSocket(ws);
           ws.send(JSON.stringify({
             type: "join_room",
@@ -28,7 +30,7 @@ const RoomCanvas = ({roomId}: {roomId: string}) => {
     connectWebSocket();
   
     return () => {
-      if (socket) socket.close();
+      if (socketRef.current) socketRef.current.close();
     };
   }, [roomId])
 
