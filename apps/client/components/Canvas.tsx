@@ -158,7 +158,7 @@ function Canvas({roomId, socket}: {
                 g.removeEventListeners()
             }
         }
-    })
+    }, [roomId, socket])
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />

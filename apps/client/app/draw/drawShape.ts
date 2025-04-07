@@ -140,18 +140,23 @@ export class DrawShapes{
         if (!(e.target instanceof HTMLCanvasElement)) 
             return;
         this.clicked = true
-        this.x = e.clientX
-        this.y = e.clientY
+        
+        // Account for scroll position
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
+        this.x = e.clientX + scrollX
+        this.y = e.clientY + scrollY
 
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
+        
         if(this.selectedTool === "PENCIL"){
             this.currentPoints = []
-            const elementRect = e.target.getBoundingClientRect()
             const point = {
-                x: e.clientX - elementRect.left,
-                y: e.clientY - elementRect.top
+                x: mouseX,
+                y: mouseY
             }
             this.currentPoints.push(point)
             this.setLineProperties()
@@ -194,9 +199,11 @@ export class DrawShapes{
     handleMouseMove(e: MouseEvent) {
         if (!(e.target instanceof HTMLCanvasElement)) 
             return;
-        // if(!this.clicked)
-        //     return
-
+        
+        // Account for scroll position
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
         const rect = this.canvas.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
@@ -231,26 +238,26 @@ export class DrawShapes{
         }
 
         if(this.selectedTool === "RECTANGLE"){
-            const width = e.clientX - this.x
-            const height = e.clientY - this.y
+            const width = (e.clientX + scrollX) - this.x
+            const height = (e.clientY + scrollY) - this.y
             this.redrawCanvas()
             this.drawRectangle(this.ctx, this.x, this.y, width, height, this.color, this.stroke)
         }
         else if(this.selectedTool === "CIRCLE"){
-            const radiusX = e.clientX - this.x
-            const radiusY = e.clientY - this.y
+            const radiusX = (e.clientX + scrollX) - this.x
+            const radiusY = (e.clientY + scrollY) - this.y
             this.redrawCanvas()
             this.drawCircle(this.ctx, this.x, this.y, radiusX, radiusY, this.color, this.stroke)
         }
         else if(this.selectedTool === "LINE"){
-            const endX = e.clientX
-            const endY = e.clientY
+            const endX = e.clientX + scrollX
+            const endY = e.clientY + scrollY
             this.redrawCanvas()
             this.drawLine(this.ctx, this.x, this.y, {endX, endY}, this.color, this.stroke)
         }
         else if(this.selectedTool === "ARROW"){
-            const endX = e.clientX
-            const endY = e.clientY
+            const endX = e.clientX + scrollX
+            const endY = e.clientY + scrollY
             this.redrawCanvas()
             this.ctx.strokeStyle = this.color
             this.ctx.beginPath()
@@ -258,10 +265,9 @@ export class DrawShapes{
             this.ctx.stroke()
         }
         else if(this.selectedTool === "PENCIL"){
-            const elementRect = e.target.getBoundingClientRect()
             const point = {
-                x: e.clientX - elementRect.left,
-                y: e.clientY - elementRect.top
+                x: mouseX,
+                y: mouseY
             }
             this.currentPoints.push(point)
             this.ctx.strokeStyle = this.color
@@ -285,12 +291,16 @@ export class DrawShapes{
 
     handleMouseUp(e: MouseEvent) {
         if (!this.clicked) return;
-    
+        
+        // Account for scroll position
+        const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        
         this.clicked = false;
         
         if (this.selectedTool === "RECTANGLE") {
-            const width = e.clientX - this.x;
-            const height = e.clientY - this.y;
+            const width = (e.clientX + scrollX) - this.x;
+            const height = (e.clientY + scrollY) - this.y;
             
             // Create a temporary ID for local tracking
             const tempId = `temp-${Date.now()}`;
@@ -332,8 +342,8 @@ export class DrawShapes{
             this.socket.send(JSON.stringify(message));
         } 
         else if (this.selectedTool === "CIRCLE") {
-            const radiusX = e.clientX - this.x;
-            const radiusY = e.clientY - this.y;
+            const radiusX = (e.clientX + scrollX) - this.x;
+            const radiusY = (e.clientY + scrollY) - this.y;
             
             // Create a temporary ID for local tracking
             const tempId = `temp-${Date.now()}`;
@@ -374,8 +384,8 @@ export class DrawShapes{
             this.socket.send(JSON.stringify(message));
         }
         else if (this.selectedTool === "LINE"){
-            const endX = e.clientX
-            const endY = e.clientY
+            const endX = e.clientX + scrollX
+            const endY = e.clientY + scrollY
             
             // Create a temporary ID for local tracking
             const tempId = `temp-${Date.now()}`;
@@ -420,8 +430,8 @@ export class DrawShapes{
             this.socket.send(JSON.stringify(message));
         }
         else if(this.selectedTool === "ARROW"){
-            const endX = e.clientX
-            const endY = e.clientY
+            const endX = e.clientX + scrollX
+            const endY = e.clientY + scrollY
             
             // Create a temporary ID for local tracking
             const tempId = `temp-${Date.now()}`;
@@ -532,6 +542,8 @@ export class DrawShapes{
     }
 
     handleWheel(event: WheelEvent) {
+        // Implement scroll handling if needed
+
         console.log("wheel event: ", event)
     }
 
