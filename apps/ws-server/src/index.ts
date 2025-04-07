@@ -142,7 +142,6 @@ wss.on("connection", function connection(ws, request) {
           },
           roomId
         };
-        console.log("hi")
         console.log("broadcasted to user: ", user.userId)
         user.ws.send(JSON.stringify(broadcastMessage));
       });
