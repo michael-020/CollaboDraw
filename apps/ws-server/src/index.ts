@@ -2,6 +2,8 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
+import { updateData } from "./redis";
+import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -26,15 +28,6 @@ const checkUser = (token: string | undefined): string | null => {
 };
 
 wss.on("connection", function connection(ws, request) {
-  // const cookies = request.headers.cookie;
-  // if (!cookies) {
-  //   console.log("No cookies found");
-  //   ws.close();
-  //   return;
-  // }
-
-  // const parsedCookies = parse(cookies);
-  // const token = parsedCookies.jwt;
   const url = request.url;
   if (!url) {
     return;
@@ -56,7 +49,16 @@ wss.on("connection", function connection(ws, request) {
     return;
   }
 
-  users.push({ userId, rooms: [], ws });
+  // Check if this user already exists in the same room before adding
+  const existingUserIndex = users.findIndex(u => u.userId === userId);
+  if (existingUserIndex >= 0) {
+    // User exists, update their websocket connection
+    users[existingUserIndex]!.ws = ws;
+  } else {
+    // New user, add them to the array
+    users.push({ userId, rooms: [], ws });
+  }
+
   ws.on("message", async function message(data) {
     const messageData = typeof data === "string" ? data : data.toString();
     const parsedData = JSON.parse(messageData);
@@ -64,8 +66,51 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "join_room") {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
-      user.rooms.push(parsedData.roomId);
+      const roomId = String(parsedData.roomId)
+      user.rooms.push(roomId);
+      console.log("new user joined the room: ", user.rooms)
+    }
 
+    if(parsedData.type === "update"){
+      const roomId = parsedData.roomId;
+      const message = parsedData.message;
+      try {
+        // Make sure we have a valid ID for the shape
+        if (!message.id) {
+          console.error("Shape ID is required for edit operations");
+          ws.send(JSON.stringify({
+            type: "error",
+            message: "Shape ID is required for edit operations"
+          }));
+          return;
+        }
+
+        
+        // Broadcast the edit to all users in the room
+        const usersInRoom = users.filter(user => 
+          user.rooms.includes(roomId.toString()) && user.userId !== userId
+        );
+        console.log("users in room in update: ", usersInRoom)
+        usersInRoom.forEach(user => {
+          const broadcastMessage = {
+            type: "update", // Changed from "draw" to "edit" for clarity
+            message: {
+              ...message,
+              userId // Include the user ID in the broadcast
+            },
+            roomId
+          };
+          user.ws.send(JSON.stringify(broadcastMessage));
+        });
+        
+        await updateData(roomId, message, userId);
+      } catch (error) {
+        console.error("Error processing edit operation:", error);
+        ws.send(JSON.stringify({
+          type: "error",
+          message: "Failed to process edit operation"
+        }));
+      }
     }
 
     if (parsedData.type === "leave_room") {
@@ -78,131 +123,45 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      // message -> {
-      //   type:  "rect",
-      //   startX: 12,
-      //   startY: 123,
-      //   width: 123,
-      //   height: number
-      // }
+      console.log("message: ", message);
 
-      // console.log("Processing draw message:", message);
-
-      if(message.type === "RECTANGLE"){
-        await prismaClient.shape.create({
-          data: {
-            type: "RECTANGLE",
-            width: Number(message.width),
-            height: Number(message.height),
-            x: Number(message.x),
-            y: Number(message.y),
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      } 
-      else if(message.type === "CIRCLE"){
-        await prismaClient.shape.create({
-          data: {
-            type: "CIRCLE",
-            x: Number(message.x),
-            y: Number(message.y),
-            radiusX: Number(message.radiusX),
-            radiusY: Number(message.radiusY),
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
-      else if(message.type === "LINE"){
-        
-        await prismaClient.shape.create({
-          data: {
-            type: "LINE",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points, // points -> {endX, endY}
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      } 
-      else if(message.type === "ARROW"){
-
-        await prismaClient.shape.create({
-          data: {
-            type: "ARROW",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points, // points -> {endX, endY}
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
-      else if(message.type === "PENCIL"){
-
-        await prismaClient.shape.create({
-          data: {
-            type: "PENCIL",
-            x: message.points[0].x,
-            y: message.points[0].y,
-            points: message.points,
-            user: {
-              connect: { id: userId}
-            },
-            room: {
-              connect: { id: roomId}
-            }
-          }
-        })
-      }
-      else if(message.type === "TEXT"){
-        await prismaClient.shape.create({
-          data: {
-            type: "TEXT",
-            x: Number(message.x),
-            y: Number(message.y),
-            points: message.points,
-            user: {
-              connect: { id: userId }
-            },
-            room: {
-              connect: { id: roomId }
-            }
-          }
-        })
-      }
-
-      const usersInRoom = users.filter(user => user.rooms.includes(roomId.toString()));
+      const shapeId = await insertIntoDB(roomId, message, userId)
+      
+      const usersInRoom = users.filter(user => 
+        user.rooms.includes(roomId.toString()) && user.userId !== userId
+      );
 
       usersInRoom.forEach(user => {
         const broadcastMessage = {
           type: "draw",
           message: {
             ...message,
-            type: message.type
+            type: message.type,
+            id: shapeId,
+            tempId: message.tempId // Pass along the tempId if it exists
           },
           roomId
         };
+        console.log("hi")
+        console.log("broadcasted to user: ", user.userId)
         user.ws.send(JSON.stringify(broadcastMessage));
       });
+      
+      // Send the ID back to the original user so they can update their temporary ID
+      const originalUser = users.find(user => user.userId === userId);
+      if (originalUser) {
+        const responseMessage = {
+          type: "draw",
+          message: {
+            ...message,
+            type: message.type,
+            id: shapeId,
+            tempId: message.tempId
+          },
+          roomId
+        };
+        originalUser.ws.send(JSON.stringify(responseMessage));
+      }
     }
   });
 

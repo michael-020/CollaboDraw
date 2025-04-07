@@ -1,42 +1,54 @@
+import { Tool } from "@/hooks/useDraw"
 import { getExistingShapes } from "./http"
-import { Tool } from "@/components/Canvas"
 
 export type Shapes = {
+    id?: string,
     type: "RECTANGLE",
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
+    color?: string
 } | {
+    id?: string,
     type: "CIRCLE",
     x: number, 
     y: number, 
     radiusX: number,
-    radiusY: number
+    radiusY: number,
+    color?: string
 } | {
+    id?: string,
     type: "LINE",
     x: number, 
     y: number, 
     points: {
         endX: number,
         endY: number
-    }
+    },
+    color?: string
 } | {
+    id?: string,
     type: "ARROW",
     x: number, 
     y: number, 
     points: {
         endX: number,
         endY: number
-    }
+    },
+    color?: string
 } | {
+    id?: string,
     type: "PENCIL",
-    points: Array<{x: number, y: number}> 
+    points: Array<{x: number, y: number}>,
+    color?: string
 } | {
+    id?: string,
     type: "TEXT",
     x: number,
     y: number,
-    points: Array<{letter: string}>
+    points: Array<{letter: string}>,
+    color?: string
 }
 
 
@@ -167,6 +179,7 @@ export class Game{
 
             if (shape.type === "RECTANGLE") {
                 const rectangleShape = {
+                    id: shape.id,
                     type: "RECTANGLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -178,6 +191,7 @@ export class Game{
             } 
             else if (shape.type === "CIRCLE") {
                 const circleShape = {
+                    id: shape.id,
                     type: "CIRCLE" as const,
                     x: shape.x,
                     y: shape.y,
@@ -189,6 +203,7 @@ export class Game{
             }
             else if(shape.type === "LINE"){
                 const line: Shapes = {
+                    id: shape.id,
                     type: "LINE",
                     x: shape.x,
                     y: shape.y,
@@ -198,6 +213,7 @@ export class Game{
             }
             else if(shape.type === "ARROW"){
                 const arrow: Shapes = {
+                    id: shape.id,
                     type: "ARROW",
                     x: shape.x,
                     y: shape.y,
@@ -207,6 +223,7 @@ export class Game{
             }
             else if(shape.type === "PENCIL"){
                 const pencil: Shapes = {
+                    id: shape.id,
                     type: "PENCIL",
                     points: shape.points
                 }
@@ -215,6 +232,7 @@ export class Game{
             else if(shape.type === "TEXT"){
                
                 const textShape: Shapes = {
+                    id: shape.id,
                     type: "TEXT",
                     x: shape.x,
                     y: shape.y,
@@ -462,4 +480,4 @@ function canvas_arrow(context: CanvasRenderingContext2D, fromx: number, fromy: n
     context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
     context.moveTo(tox, toy);
     context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
-  }
+}

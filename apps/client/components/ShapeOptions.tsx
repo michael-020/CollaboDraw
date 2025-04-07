@@ -1,37 +1,38 @@
 import React from 'react'
-import { CaseSensitive, Circle, Minus, MousePointer, MoveLeft, Pencil, Square } from 'lucide-react'
-import { Tool } from './Canvas'
-import { IconButton } from './IconButton'
-import { useAuthStore } from '@/stores/authStore/authStore'
+import { Circle, Eraser, Minus, MousePointer, MoveLeft, Pencil, Square, Type } from 'lucide-react'
+// import { useAuthStore } from '@/stores/authStore/authStore'
+import { Tool } from '@/hooks/useDraw'
 
-export const ShapeOptions = ({selectedTool, setSelectedTool}: {selectedTool: Tool, setSelectedTool: (s: Tool) => void}) => {
-    const {isModalVisible} = useAuthStore()
+export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) => void}) => {
+    // const {isModalVisible} = useAuthStore()
+    const tools = [
+        { id: "RECTANGLE" as Tool, icon: Square },
+        { id: "CIRCLE" as Tool, icon: Circle },
+        { id: "LINE" as Tool, icon: Minus },
+        { id: "ARROW" as Tool, icon: MoveLeft },
+        { id: "PENCIL" as Tool, icon: Pencil },
+        { id: "TEXT" as Tool, icon: Type },
+        { id: "ERASER" as Tool, icon: Eraser },
+        { id: "SELECT" as Tool, icon: MousePointer },
+      ];
   return (
-    <div className={`w-screen flex justify-center ${isModalVisible ? "opacity-30": ""}`}>
-        <div className='z-50 fixed top-3 px-2 flex gap-1 items-center bg-gray-100/30 backdrop-blur-sm rounded-md '>
-            <IconButton icon={<MousePointer className='size-[1.4rem] mt-1' />} activated={selectedTool === "CURSOR"} onClick={() => {
-                setSelectedTool("CURSOR")
-            }} />
-            <IconButton icon={<Square  />} activated={selectedTool === "RECTANGLE"} onClick={() => {
-                setSelectedTool("RECTANGLE")
-            }} />
-            <IconButton icon={<Circle />} isCircle={true} activated={selectedTool === "CIRCLE"} onClick={() => {
-                setSelectedTool("CIRCLE")
-            }} />
-            <IconButton icon={<Minus className='p-1 size-8 hover:scale-110' />}  isCircle={true} activated={selectedTool === "LINE" } onClick={() => {
-                setSelectedTool("LINE")
-            }} />
-            <IconButton icon={<MoveLeft className='p-1 size-7 hover:scale-110' />}  isCircle={false} activated={selectedTool === "ARROW" } onClick={() => {
-                setSelectedTool("ARROW")
-            }} />
-            <IconButton icon={<Pencil className='p-1 hover:scale-110' />}  isCircle={false} activated={selectedTool === "PENCIL" } onClick={() => {
-                setSelectedTool("PENCIL")
-            }} />
-             <IconButton icon={<CaseSensitive className='p-1 size-9 hover:scale-105' />}  isCircle={false} activated={selectedTool === "TEXT" } onClick={() => {
-                setSelectedTool("TEXT")
-            }} />
+    <div className="fixed top-3 left-1/2 -translate-x-1/2 bg-gray-100/30 backdrop-blur-sm rounded-md ">
+        <div className="flex gap-2 px-2 py-2 rounded shadow-lg">
+        {tools.map((t) => {
+            const Icon = t.icon;
+            return (
+            <button
+                onClick={() => setTool(t.id)}
+                key={t.id}
+                className={`${t.id == tool ? "bg-purple-200" : ""} ${t.id === "ERASER" || t.id === "TEXT" ? "hidden" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}
+            >
+                <Icon
+                className={`w-4 h-4 transition-all duration-500 text-gray-900`}
+                />
+            </button>
+            );
+        })}
         </div>
     </div>
-    
   )
 }

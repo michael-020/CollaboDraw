@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc -b",
     "start": "node dist/index.js",
+    "start:redis": "docker ps -q -f name=redis | grep -q . || docker run -d --name collabodraw-redis -p 6379:6379 redis",
     "dev": "npm run build && npm run start",
     "stop": "pkill -f server.js",
     "restart": "pnpm stop && pnpm start"
@@ -14,8 +15,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@repo/db": "workspace:*",
     "@repo/backend-common": "workspace:*",
+    "@repo/db": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/ws": "^8.5.14",
@@ -25,6 +26,7 @@
   "dependencies": {
     "cookie": "^1.0.2",
     "cookies": "^0.9.1",
+    "redis": "^4.7.0",
     "typescript": "^5.7.3"
   }
 }
