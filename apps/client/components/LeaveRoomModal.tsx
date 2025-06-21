@@ -3,12 +3,11 @@ import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
-const LeaveRoomModal = ({roomId}: {roomId: string}) => {
-    const {leaveRoom, changeModalVisibility} = useAuthStore()
+const LeaveRoomModal = () => {
+    const { changeModalVisibility} = useAuthStore()
     const router = useRouter()
     const leaveRoomHandler = () => {
-        console.log("roomId: ",roomId)
-        leaveRoom(roomId)
+
         router.replace("/home-page")
         changeModalVisibility()
     } 
@@ -18,7 +17,7 @@ const LeaveRoomModal = ({roomId}: {roomId: string}) => {
             <div className='bg-gray-700 h-44 w-64 flex flex-col items-center justify-evenly rounded-lg relative '>
                 <X  className='absolute top-2 left-2 cursor-pointer' onClick={changeModalVisibility} />
                 <div className='text-center'>
-                    <h2 className='text-2xl'>Leave Room</h2>
+                    <h2 className='text-2xl'>Exit Room</h2>
                     <h3 className='text-md text-white/60'>Are you Sure?</h3>
                 </div>
                 <div className='flex gap-4'>

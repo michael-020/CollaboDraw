@@ -5,6 +5,7 @@ import { Tool, useDraw } from '@/hooks/useDraw'
 import Filterbar from './Filterbar'
 import { DrawShapes } from '@/app/draw/drawShape'
 import SidebarToggle from './SidebarToggle'
+import LeaveRoom from './LeaveRoom'
 // import UndoAndRedo from './UndoAndRedo'
 
 // export type Tool = "CIRCLE" | "RECTANGLE" | "LINE" | "ARROW" | "PENCIL" | "TEXT" | "CURSOR"
@@ -214,6 +215,7 @@ function Canvas({roomId, socket}: {
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
+        <LeaveRoom />
         {showTextArea && <textarea 
             ref={textAreaRef}
             className="fixed bg-neutral-800/0 text-white w-auto focus:outline-none p-2"

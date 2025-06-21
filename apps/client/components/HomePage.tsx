@@ -24,12 +24,20 @@ export default function HomePage() {
     <div className="h-screen flex flex-col items-center justify-center text-white p-6 relative">
       
       {/* Logout Button */}
-      <button 
-        onClick={logout} 
-        className="absolute top-6 right-6  px-4 py-2 rounded-md text-white font-semibold border border-gray-50 transition hover:bg-gray-700 "
-      >
-        Logout
-      </button>
+      <div className="flex absolute top-6 right-6 gap-3">
+        <button 
+          onClick={() => router.push("/rooms")} 
+          className="px-4 py-2 rounded-md text-white bg-neutral-700 font-semibold border border-gray-50 transition hover:bg-neutral-600 "
+        >
+          Rooms
+        </button>
+        <button 
+          onClick={logout} 
+          className="px-4 py-2 rounded-md text-white font-semibold border border-gray-50 transition hover:bg-gray-700 "
+        >
+          Logout
+        </button>
+      </div>
 
       {/* Heading */}
       <h1 className="text-4xl font-bold mb-6 text-center">
