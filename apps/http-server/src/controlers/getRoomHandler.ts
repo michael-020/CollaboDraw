@@ -4,10 +4,10 @@ import { Request, Response } from "express";
 
 export const getRoomHandler = async (req: Request, res: Response) => {
     try {
-        const slug = req.params.slug;
+        const roomId = req.params.roomId;
         const room = await prismaClient.room.findFirst({
             where: {
-                slug
+                id: roomId
             }
         });
 

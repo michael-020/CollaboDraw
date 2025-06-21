@@ -35,7 +35,7 @@ userRouter.get("/getUsers/:roomId", getUsers)
         
 userRouter.get("/shapes/:roomId", getShapesHandler);
 
-userRouter.get("/room/:slug", getRoomHandler);
+userRouter.get("/room/:roomId", getRoomHandler);
 
 userRouter.get("/room", getUsersRoomHandler);
 
