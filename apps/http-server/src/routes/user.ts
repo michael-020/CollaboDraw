@@ -12,6 +12,7 @@ import { getUsers } from "../controlers/getUsers";
 import { deleteRoomHandler } from "../controlers/deleteRoomHandler";
 import { tokenHandler } from "../controlers/tokenHandler";
 import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
+import { getUsersRoomHandler } from "../controlers/getUsersRoomsHandler";
 
 const userRouter: Router = Router();
 
@@ -25,9 +26,9 @@ userRouter.post("/create-room", createRoomHandler);
 
 userRouter.post("/join-room/:roomId", joinRoomHandler)
 
-// todo: leave room and delete room
 userRouter.put("/leave-room/:roomId", leaveRoomHandler);
 
+// todo: delete room
 userRouter.delete("/delete-room/:roomId", deleteRoomHandler);
 
 userRouter.get("/getUsers/:roomId", getUsers)
@@ -35,6 +36,8 @@ userRouter.get("/getUsers/:roomId", getUsers)
 userRouter.get("/shapes/:roomId", getShapesHandler);
 
 userRouter.get("/room/:slug", getRoomHandler);
+
+userRouter.get("/room", getUsersRoomHandler);
 
 userRouter.get("/check", checkAuth)
 
