@@ -143,23 +143,34 @@ export async function updateShapeInDatabase(shape: Shapes) {
 
     switch (shape.type) {
         case "RECTANGLE":
-            shapeData.width = Number(shape.width);
-            shapeData.height = Number(shape.height);
-            break;
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.width = Number(shape.width);
+          shapeData.height = Number(shape.height);
+          break;
         case "CIRCLE":
-            shapeData.radiusX = Number(shape.radiusX);
-            shapeData.radiusY = Number(shape.radiusY);
-            break;
-        case "LINE":
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.radiusX = Number(shape.radiusX);
+          shapeData.radiusY = Number(shape.radiusY);
+          break;
+        case "LINE":  
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.points = shape.points;
         case "ARROW":
-            shapeData.points = shape.points;
-            break;
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.points = shape.points;
+          break;
         case "PENCIL":
-            shapeData.points = shape.points;
-            break;
+          shapeData.points = shape.points;
+          break;
         case "TEXT":
-            shapeData.textContent = shape.points;
-            break;
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.textContent = shape.textContent;
+          break;
         default:
             throw new Error(`Unknown shape type`);
     }
