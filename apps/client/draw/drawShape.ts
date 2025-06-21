@@ -544,7 +544,7 @@ export class DrawShapes{
     }
 
     handleWheel(event: WheelEvent) {
-        console.log(event)
+        event = event
     }
 
     removeShapeFromCanvas(shapeId: string) {
@@ -1070,8 +1070,8 @@ export class DrawShapes{
             roomId: this.roomId,
             message: {
                 type: "TEXT",
-                x: this.x,
-                y: this.y,
+                x,
+                y,
                 color: this.color,
                 strokeWidth: this.stroke,
                 textContent,
@@ -1168,9 +1168,9 @@ export class DrawShapes{
                     newShape = {
                         id: shape.id,
                         type: "TEXT",
-                        x: shape.x+26,
-                        y: shape.y+8,
-                        textContent: shape.textContentt,
+                        x: shape.x,
+                        y: shape.y,
+                        textContent: shape.textContent,
                         color: shape.color,
                         strokeWidth: shape.strokeWidth
                     }

@@ -43,14 +43,13 @@ function Canvas({roomId, socket}: {
     const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
         if (tool === "TEXT") {
             if (showTextArea && textContent.trim()) {
-                const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
                 if(textContent.length === 0){
                     return
                 }
-                drawShapeRef.current?.addText(textContent, coords.x+8, coords.y+26)
+                drawShapeRef.current?.addText(textContent, textAreaPosition.x+8, textAreaPosition.y+26)
             }
-            
-            setTextAreaPosition({ x: e.clientX, y: e.clientY })
+            const coords = getCanvasCoordinates(e.clientX, e.clientY)
+            setTextAreaPosition(coords)
             setShowTextArea(true)
             setTextContent("")
             
@@ -65,8 +64,7 @@ function Canvas({roomId, socket}: {
             !(e.target instanceof HTMLCanvasElement)) {
             
             if (textContent.trim()) {
-                const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
-                drawShapeRef.current?.addText(textContent, coords.x, coords.y)
+                drawShapeRef.current?.addText(textContent, textAreaPosition.x+8, textAreaPosition.y+24)
             }
             
             setShowTextArea(false)
@@ -100,8 +98,8 @@ function Canvas({roomId, socket}: {
             ref={textAreaRef}
             className={`fixed bg-neutral-800/0 text-white w-auto focus:outline-none p-2 text-[${color}]`}
             style={{
-                left: `${textAreaPosition.x}px`,
-                top: `${textAreaPosition.y}px`,
+                left: `${textAreaPosition.x + (canvasRef.current?.getBoundingClientRect().left || 0)}px`,
+                top: `${textAreaPosition.y + (canvasRef.current?.getBoundingClientRect().top || 0)}px`,
                 resize: "none",
                 whiteSpace: 'pre',
                 color: color,          
