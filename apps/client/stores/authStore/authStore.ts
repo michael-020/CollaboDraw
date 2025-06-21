@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { authActions, authState } from "./types";
 import { AxiosInstance } from "../../lib/axios";
-import { Shapes } from "@/app/draw/drawShape";
+import { Shapes } from "@/draw/drawShape";
 import toast from "react-hot-toast";
 
 
