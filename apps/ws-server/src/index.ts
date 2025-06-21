@@ -1,6 +1,5 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
-import { prismaClient } from "@repo/db/client";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { updateData } from "./redis";
 import { insertIntoDB } from "./lib/utils";
@@ -66,9 +65,8 @@ wss.on("connection", function connection(ws, request) {
     if (parsedData.type === "join_room") {
       const user = users.find((u) => u.ws === ws);
       if (!user) return;
-      const roomId = String(parsedData.roomId)
+      const roomId = (parsedData.roomId)
       user.rooms.push(roomId);
-      console.log("new user joined the room: ", user.rooms)
     }
 
     if(parsedData.type === "update"){
@@ -90,10 +88,10 @@ wss.on("connection", function connection(ws, request) {
         const usersInRoom = users.filter(user => 
           user.rooms.includes(roomId.toString()) && user.userId !== userId
         );
-        console.log("users in room in update: ", usersInRoom)
+
         usersInRoom.forEach(user => {
           const broadcastMessage = {
-            type: "update", // Changed from "draw" to "edit" for clarity
+            type: "update",
             message: {
               ...message,
               userId // Include the user ID in the broadcast
@@ -103,7 +101,7 @@ wss.on("connection", function connection(ws, request) {
           user.ws.send(JSON.stringify(broadcastMessage));
         });
         
-        await updateData(roomId, message, userId);
+        await updateData(roomId, message, userId); // redis takes care of it
       } catch (error) {
         console.error("Error processing edit operation:", error);
         ws.send(JSON.stringify({
@@ -138,15 +136,13 @@ wss.on("connection", function connection(ws, request) {
             ...message,
             type: message.type,
             id: shapeId,
-            tempId: message.tempId // Pass along the tempId if it exists
+            tempId: message.tempId 
           },
           roomId
         };
-        console.log("broadcasted to user: ", user.userId)
         user.ws.send(JSON.stringify(broadcastMessage));
       });
       
-      // Send the ID back to the original user so they can update their temporary ID
       const originalUser = users.find(user => user.userId === userId);
       if (originalUser) {
         const responseMessage = {

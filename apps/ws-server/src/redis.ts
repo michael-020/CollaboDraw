@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { prismaClient } from "@repo/db/client";
+import { updateShapeInDatabase } from "./lib/utils";
 
 const client = createClient();
 let queueProcessorActive = false;
@@ -14,7 +15,7 @@ const main = async () => {
 main();
 
 export type Shapes = {
-    id: string, // Unique identifier for the shape
+    id: string,
     roomId: string,
     userId: string,
     type: "RECTANGLE",
@@ -69,6 +70,7 @@ export type Shapes = {
     roomId: string,
     userId: string,
     type: "TEXT",
+    textContent: string,
     x: number,
     y: number,
     points: Array<{letter: string}>,
@@ -80,8 +82,6 @@ export async function pushShape(shape: Shapes) {
     // Push to queue (Redis List) for ordered processing
     const queueKey = `queue:room:${shape.roomId}`;
     await client.rPush(queueKey, JSON.stringify(shape));
-    
-    console.log(`Pushed shape ${shape.id} to queue for room ${shape.roomId}`);
     
     // Ensure the processor is running
     if (!queueProcessorActive) {
@@ -96,8 +96,7 @@ async function startQueueProcessor() {
     // Only start if not already running
     if (queueProcessorActive) return;
     
-    queueProcessorActive = true;
-    console.log("Queue processor started");
+    queueProcessorActive = true; // queue processor started
     
     // Process immediately
     await processQueues();
@@ -111,8 +110,8 @@ async function startQueueProcessor() {
 // Process all pending queue items
 async function processQueues() {
     try {
-        // Get all room queues
-        const queueKeys = await client.keys('queue:room:*');
+        // Get all room queues - queues are stored as queue:room:roomId
+        const queueKeys = await client.keys('queue:room:*'); // this will get all the queues with names starting with queue:room:
         
         if (queueKeys.length === 0) {
             // No queues exist, stop the processor
@@ -128,8 +127,6 @@ async function processQueues() {
             
             if (queueLength === 0) continue;
             
-            console.log(`Processing queue ${queueKey} with ${queueLength} items`);
-            
             // Process up to 20 shapes at a time from this queue
             const batchSize = 20;
             const processCount = Math.min(batchSize, queueLength);
@@ -139,7 +136,7 @@ async function processQueues() {
                 const shapeData = await client.lIndex(queueKey, 0); // Look at the first item
                 if (!shapeData) continue;
                 
-                const shape = JSON.parse(shapeData) as Shapes;
+                const shape = JSON.parse(shapeData);
                 
                 try {
                     // Update the shape in the database
@@ -185,73 +182,6 @@ function stopQueueProcessor() {
         processorInterval = null;
     }
     queueProcessorActive = false;
-    console.log("Queue processor stopped - no more items to process");
-}
-
-// Update a single shape in the database
-async function updateShapeInDatabase(shape: Shapes) {
-    // Check if the shape exists
-    const existingShape = await prismaClient.shape.findUnique({
-        where: { id: shape.id }
-    });
-
-    const shapeData: any = {
-        id: shape.id,
-        type: shape.type,
-        color: shape.color,
-    };
-
-    // Check if the shape has 'x' and 'y' properties
-    if ('x' in shape && 'y' in shape) {
-        shapeData.x = Number(shape.x);
-        shapeData.y = Number(shape.y);
-    }
-
-    switch (shape.type) {
-        case "RECTANGLE":
-            shapeData.width = Number(shape.width);
-            shapeData.height = Number(shape.height);
-            break;
-        case "CIRCLE":
-            shapeData.radiusX = Number(shape.radiusX);
-            shapeData.radiusY = Number(shape.radiusY);
-            break;
-        case "LINE":
-        case "ARROW":
-            shapeData.points = shape.points;
-            break;
-        case "PENCIL":
-            shapeData.points = shape.points;
-            break;
-        case "TEXT":
-            shapeData.textContent = shape.points;
-            break;
-        default:
-            throw new Error(`Unknown shape type`);
-    }
-
-    shapeData.room = {
-        connect: { id: shape.roomId } // Connect to the room using its ID
-    };
-
-    shapeData.user = {
-        connect: { id: shape.userId } // Connect to the user using their ID
-    };
-
-    if (existingShape) {
-        // Update existing shape
-        await prismaClient.shape.update({
-            where: { id: shape.id },
-            data: shapeData
-        });
-    } else {
-        // Create new shape
-        await prismaClient.shape.create({
-            data: shapeData
-        });
-    }
-    
-    console.log(`Shape ${shape.id} saved to database`);
 }
 
 // Helper functions for the WebSocket server

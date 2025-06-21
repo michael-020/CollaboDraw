@@ -46,8 +46,9 @@ model Shape {
   radiusX     Float?    
   radiusY     Float?
   points      Json?     
-  color       String?    
+  color       String? 
   strokeWidth Float?     @default(1)
+  textContent String?
   fill        Boolean?   @default(true)
   zIndex      Int?       @default(0)
   userId      String    
