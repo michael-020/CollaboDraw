@@ -7,7 +7,6 @@ interface Point {
 }
 
 export const insertIntoDB = async (roomId: string, message: any, userId: string) => {
-    // console.log("Message received:", message);
   let newShape;
   if(message.type === "RECTANGLE"){
     newShape = await prismaClient.shape.create({
