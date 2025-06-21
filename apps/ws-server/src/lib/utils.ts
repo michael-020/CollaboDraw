@@ -107,15 +107,14 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
     return newShape.id
   }
   else if(message.type === "TEXT"){
-    if(message.content){
+    if(message.textContent){
       newShape = await prismaClient.shape.create({
         data: {
           type: "TEXT",
           x: Number(message.x),
           y: Number(message.y),
-          points: message.points,
           color: message.color,
-          textContent: message.content,
+          textContent: message.textContent,
           strokeWidth: Number(message.strokeWidth) || 1,
           user: {
               connect: { id: userId }

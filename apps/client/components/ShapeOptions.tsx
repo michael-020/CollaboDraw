@@ -22,9 +22,12 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
             const Icon = t.icon;
             return (
             <button
-                onClick={() => setTool(t.id)}
+                onClick={() =>{ 
+                    setTool(t.id)
+                    console.log("selected tool: ", t.id)
+                }}
                 key={t.id}
-                className={`${t.id == tool ? "bg-purple-200" : ""} ${t.id === "ERASER" || t.id === "TEXT" ? "hidden" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}
+                className={`${t.id == tool ? "bg-purple-200" : ""} ${t.id === "ERASER" ? "hidden" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}
             >
                 <Icon
                 className={`w-4 h-4 transition-all duration-500 text-gray-900`}

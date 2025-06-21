@@ -425,23 +425,23 @@
 //     }
 
 //     addText(text: string, x: number, y: number) {
-//         const letters = text.split('').map(letter => ({ letter }))
-//         const textShape: Shapes = {
-//             type: "TEXT",
-//             x,
-//             y,
-//             points: letters
-//           };
+        // const letters = text.split('').map(letter => ({ letter }))
+        // const textShape: Shapes = {
+        //     type: "TEXT",
+        //     x,
+        //     y,
+        //     points: letters
+        //   };
         
-//           this.existingShapes.push(textShape);
+        //   this.existingShapes.push(textShape);
           
-//           this.redrawCanvas()
+        //   this.redrawCanvas()
           
-//           this.socket.send(JSON.stringify({
-//             type: "draw",
-//             roomId: this.roomId,
-//             message: textShape
-//           }));
+        //   this.socket.send(JSON.stringify({
+        //     type: "draw",
+        //     roomId: this.roomId,
+        //     message: textShape
+        //   }));
 //     }
 
 //     mouseEventHandler(){

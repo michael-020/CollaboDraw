@@ -14,57 +14,57 @@ import SidebarToggle from './SidebarToggle'
 //     const canvasRef = useRef<HTMLCanvasElement>(null)  
 //     const gameRef = useRef<Game | null>(null)
 //     const [selectedTool, setSelectedTool] = useState<Tool | "">("")
-//     const [showTextArea, setShowTextArea] = useState(false)
-//     const [textAreaPosition, setTextAreaPosition] = useState({ x: 0, y: 0 })
-//     const [textContent, setTextContent] = useState("")
-//     const textAreaRef = useRef<HTMLTextAreaElement>(null)
+    // const [showTextArea, setShowTextArea] = useState(false)
+    // const [textAreaPosition, setTextAreaPosition] = useState({ x: 0, y: 0 })
+    // const [textContent, setTextContent] = useState("")
+    // const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-//     const getCanvasCoordinates = (clientX: number, clientY: number) => {
-//         const canvas = canvasRef.current
-//         if (!canvas) return { x: 0, y: 0 }
+    // const getCanvasCoordinates = (clientX: number, clientY: number) => {
+    //     const canvas = canvasRef.current
+    //     if (!canvas) return { x: 0, y: 0 }
         
-//         const rect = canvas.getBoundingClientRect()
-//         return {
-//             x: clientX - rect.left,
-//             y: clientY - rect.top
-//         }
-//     }
+    //     const rect = canvas.getBoundingClientRect()
+    //     return {
+    //         x: clientX - rect.left,
+    //         y: clientY - rect.top
+    //     }
+    // }
 
-//     const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-//         if (selectedTool === "TEXT") {
-//             if (showTextArea && textContent.trim()) {
-//                 const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
-//                 if(textContent.length === 0){
-//                     return
-//                 }
-//                 gameRef.current?.addText(textContent, coords.x+8, coords.y+26)
-//             }
+    // const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    //     if (selectedTool === "TEXT") {
+    //         if (showTextArea && textContent.trim()) {
+    //             const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
+    //             if(textContent.length === 0){
+    //                 return
+    //             }
+    //             gameRef.current?.addText(textContent, coords.x+8, coords.y+26)
+    //         }
             
-//             setTextAreaPosition({ x: e.clientX, y: e.clientY })
-//             setShowTextArea(true)
-//             setTextContent("")
+    //         setTextAreaPosition({ x: e.clientX, y: e.clientY })
+    //         setShowTextArea(true)
+    //         setTextContent("")
             
-//             setTimeout(() => {
-//                 textAreaRef.current?.focus()
-//             }, 0)
-//         }
-//     }
+    //         setTimeout(() => {
+    //             textAreaRef.current?.focus()
+    //         }, 0)
+    //     }
+    // }
 
-//     const handleClickOutside = (e: MouseEvent) => {
-//         if (showTextArea && 
-//             textAreaRef.current && 
-//             !textAreaRef.current.contains(e.target as Node) &&
-//             !(e.target instanceof HTMLCanvasElement)) {
+    // const handleClickOutside = (e: MouseEvent) => {
+    //     if (showTextArea && 
+    //         textAreaRef.current && 
+    //         !textAreaRef.current.contains(e.target as Node) &&
+    //         !(e.target instanceof HTMLCanvasElement)) {
             
-//             if (textContent.trim()) {
-//                 const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
-//                 gameRef.current?.addText(textContent, coords.x, coords.y)
-//             }
+    //         if (textContent.trim()) {
+    //             const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
+    //             gameRef.current?.addText(textContent, coords.x, coords.y)
+    //         }
             
-//             setShowTextArea(false)
-//             setTextContent("")
-//         }
-//     }
+    //         setShowTextArea(false)
+    //         setTextContent("")
+    //     }
+    // }
 
 //     useEffect(() => {
 //         gameRef.current?.setTool(selectedTool as Tool)
@@ -103,14 +103,14 @@ import SidebarToggle from './SidebarToggle'
 //                     ref={textAreaRef}
 //                     value={textContent}
 //                     onChange={(e) => setTextContent(e.target.value)}
-//                     className="fixed bg-neutral-800/0 text-white focus:outline-none p-2"
-//                     style={{
-//                         left: `${textAreaPosition.x}px`,
-//                         top: `${textAreaPosition.y}px`,
-//                         minWidth: '100px',
-//                         minHeight: '50px',
-//                         resize: "none"
-//                     }}
+                    // className="fixed bg-neutral-800/0 text-white focus:outline-none p-2"
+                    // style={{
+                    //     left: `${textAreaPosition.x}px`,
+                    //     top: `${textAreaPosition.y}px`,
+                    //     minWidth: '100px',
+                    //     minHeight: '50px',
+                    //     resize: "none"
+                    // }}
 //                 />
 //             )}
 //             <canvas 
@@ -141,6 +141,57 @@ function Canvas({roomId, socket}: {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const drawShapeRef = useRef<DrawShapes | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const [showTextArea, setShowTextArea] = useState(false)
+    const [textAreaPosition, setTextAreaPosition] = useState({ x: 0, y: 0 })
+    const [textContent, setTextContent] = useState("")
+    const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
+    const getCanvasCoordinates = (clientX: number, clientY: number) => {
+        const canvas = canvasRef.current
+        if (!canvas) return { x: 0, y: 0 }
+        
+        const rect = canvas.getBoundingClientRect()
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        }
+    }
+
+    const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (tool === "TEXT") {
+            if (showTextArea && textContent.trim()) {
+                const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
+                if(textContent.length === 0){
+                    return
+                }
+                drawShapeRef.current?.addText(textContent, coords.x+8, coords.y+26)
+            }
+            
+            setTextAreaPosition({ x: e.clientX, y: e.clientY })
+            setShowTextArea(true)
+            setTextContent("")
+            
+            setTimeout(() => {
+                textAreaRef.current?.focus()
+            }, 0)
+        }
+    }
+
+    const handleClickOutside = (e: MouseEvent) => {
+        if (showTextArea && 
+            textAreaRef.current && 
+            !textAreaRef.current.contains(e.target as Node) &&
+            !(e.target instanceof HTMLCanvasElement)) {
+            
+            if (textContent.trim()) {
+                const coords = getCanvasCoordinates(textAreaPosition.x, textAreaPosition.y)
+                drawShapeRef.current?.addText(textContent, coords.x, coords.y)
+            }
+            
+            setShowTextArea(false)
+            setTextContent("")
+        }
+    }
 
     useEffect(() => {
         drawShapeRef.current?.setTool(tool as Tool)
@@ -153,15 +204,36 @@ function Canvas({roomId, socket}: {
             const canvas = canvasRef.current
             const g = new DrawShapes(socket, roomId, canvas, tool as Tool, color, stroke)
             drawShapeRef.current = g
-
+            document.addEventListener('mousedown', handleClickOutside)
             return () => {
                 g.removeEventListeners()
+                document.removeEventListener('mousedown', handleClickOutside)
             }
         }
     }, [roomId, socket])
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
+        {showTextArea && <textarea 
+            ref={textAreaRef}
+            className="fixed bg-neutral-800/0 text-white w-auto focus:outline-none p-2"
+            style={{
+                left: `${textAreaPosition.x}px`,
+                top: `${textAreaPosition.y}px`,
+                resize: "none",
+                whiteSpace: 'pre'
+            }}
+            value={textContent}
+            onChange={(e) => {
+                setTextContent(e.target.value);
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.width = 'auto';
+                target.style.height = target.scrollHeight + 'px';
+                target.style.width = target.scrollWidth + 'px';
+            }}
+            rows={1}
+        />}
         <div onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <SidebarToggle />
         </div>
@@ -179,6 +251,7 @@ function Canvas({roomId, socket}: {
             ref={canvasRef}
             height={10000}
             width={10000}
+            onClick={handleCanvasClick}
             className='bg-neutral-800 bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:8rem_6rem]'
         />
     </div>

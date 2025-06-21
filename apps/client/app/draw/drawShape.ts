@@ -54,7 +54,7 @@ export type Shapes = {
     type: "TEXT",
     x: number,
     y: number,
-    points: Array<{letter: string}>,
+    textContent: string
     color: string,
     strokeWidth?: number
 }
@@ -634,7 +634,7 @@ export class DrawShapes{
         if (textShape.type !== "TEXT") return 0;
         
         this.ctx.font = "16px Arial";
-        const text = textShape.points.map(point => point.letter).join('');
+        const text = textShape.textContent;
         return this.ctx.measureText(text).width;
     }
 
@@ -1022,7 +1022,8 @@ export class DrawShapes{
         else if(shape.type === "TEXT"){
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = shape.color || this.color;
-            const text = shape.points.map(point => point.letter).join('');
+            const text = shape.textContent;
+            console.log("text: ", text)
             this.ctx.fillText(text, shape.x, shape.y);
         }
     }
@@ -1049,6 +1050,36 @@ export class DrawShapes{
         ctx.moveTo(x, y);
         ctx.lineTo(points.endX, points.endY);
         ctx.stroke();
+    }
+
+    addText(textContent: string, x: number, y: number) {
+        const tempId = `temp-${Date.now()}`;
+        const shapeData: Shapes = {
+            id: tempId,
+            type: "TEXT",
+            x,
+            y,
+            textContent,
+            color: this.color,
+          };
+        
+        this.existingShapes.push(shapeData);
+        this.redrawCanvas()
+        const message = {
+            type: "draw",
+            roomId: this.roomId,
+            message: {
+                type: "TEXT",
+                x: this.x,
+                y: this.y,
+                color: this.color,
+                strokeWidth: this.stroke,
+                textContent,
+                tempId
+            }
+        }
+          
+        this.socket.send(JSON.stringify(message));
     }
 
     socketHandler(){
@@ -1133,12 +1164,13 @@ export class DrawShapes{
                     this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "TEXT"){
+                    console.log("recieved msg: ", shape)
                     newShape = {
                         id: shape.id,
                         type: "TEXT",
-                        x: shape.x,
-                        y: shape.y,
-                        points: shape.points,
+                        x: shape.x+26,
+                        y: shape.y+8,
+                        textContent: shape.textContentt,
                         color: shape.color,
                         strokeWidth: shape.strokeWidth
                     }
@@ -1221,7 +1253,7 @@ export class DrawShapes{
                         type: "TEXT",
                         x: shape.x,
                         y: shape.y,
-                        points: shape.points,
+                        textContent: shape.textContent,
                         color: shape.color,
                         strokeWidth: shape.strokeWidth
                     }
