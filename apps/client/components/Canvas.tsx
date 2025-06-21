@@ -172,9 +172,7 @@ function Canvas({roomId, socket}: {
             setShowTextArea(true)
             setTextContent("")
             
-            setTimeout(() => {
-                textAreaRef.current?.focus()
-            }, 0)
+            textAreaRef.current?.focus()
         }
     }
 

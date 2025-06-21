@@ -2,42 +2,48 @@ import { useAuthStore } from '@/stores/authStore/authStore'
 import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React from 'react'
+import { createPortal } from "react-dom";
 
 const LeaveRoomModal = () => {
-    const { changeModalVisibility} = useAuthStore()
-    const router = useRouter()
-    const leaveRoomHandler = () => {
+  const { changeModalVisibility } = useAuthStore()
+  const router = useRouter()
+  const leaveRoomHandler = () => {
+    router.replace("/home-page")
+    changeModalVisibility()
+  }
 
-        router.replace("/home-page")
-        changeModalVisibility()
-    } 
-  return (
-    <div className='absolute top-1/3 left-[42%]'>
-        <div className='flex z-50 h-full '>
-            <div className='bg-gray-700 h-44 w-64 flex flex-col items-center justify-evenly rounded-lg relative '>
-                <X  className='absolute top-2 left-2 cursor-pointer' onClick={changeModalVisibility} />
-                <div className='text-center'>
-                    <h2 className='text-2xl'>Exit Room</h2>
-                    <h3 className='text-md text-white/60'>Are you Sure?</h3>
-                </div>
-                <div className='flex gap-4'>
-                    <button 
-                        onClick={leaveRoomHandler} 
-                        className="bg-blue-700 text-white w-16 py-2 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300"
-                    >
-                        Yes
-                    </button>
-                    <button
-                        className="bg-white text-blue-600 w-16 py-2 rounded-xl font-semibold hover:bg-opacity-90 transition duration-300"
-                        onClick={changeModalVisibility}
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-sm text-center relative border border-emerald-700">
+        {/* X mark */}
+        <button
+          className="absolute top-4 left-4 text-emerald-400 hover:text-white transition"
+          onClick={changeModalVisibility}
+          aria-label="Close"
+        >
+          <X size={22} />
+        </button>
+        <h2 className="text-xl font-bold text-white mb-4">Exit Room</h2>
+        <h3 className="text-md text-white/60 mb-6">Are you sure you want to leave?</h3>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={leaveRoomHandler}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition"
+          >
+            Yes
+          </button>
+          <button
+            className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-semibold transition"
+            onClick={changeModalVisibility}
+          >
+            No
+          </button>
+        </div>
       </div>
     </div>
-  )
+  );
+  if (typeof window === "undefined") return null;
+  return createPortal(modalContent, document.body);
 }
 
-export default LeaveRoomModal
+export default LeaveRoomModal;

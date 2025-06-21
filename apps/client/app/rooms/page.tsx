@@ -48,7 +48,7 @@ export default function Rooms() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col gap-2 justify-center items-center">
+      <div className="min-h-screen bg-black flex flex-col gap-2 justify-center items-center">
           <Loader2 className="size-16 animate-spin text-gray-50" />
           <p className="text-white text-xl">Loading rooms...</p>
       </div>
@@ -56,7 +56,7 @@ export default function Rooms() {
   }
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header with back button */}
         <div className="flex items-center justify-between mb-8">
@@ -73,7 +73,7 @@ export default function Rooms() {
           
           {/* Optional: Add new room button */}
           <Link href={"/create-room"}>
-            <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+            <button className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
                 <Plus size={20} />
                 <span>New Room</span>
             </button>
@@ -91,7 +91,7 @@ export default function Rooms() {
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">No rooms found</h3>
               <p className="text-gray-400 mb-6">Create your first room to get started</p>
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
+              <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200">
                 Create Room
               </button>
             </div>

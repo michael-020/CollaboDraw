@@ -51,8 +51,8 @@ const RoomCard: React.FC<RoomCardProps> = ({ id, name, onDelete }) => {
 
         {/* Room icon */}
         <div className="flex justify-center mb-4">
-          <div className="bg-blue-600/20 p-4 rounded-full">
-            <Users className="text-blue-400" size={32} />
+          <div className="bg-emerald-600/20 p-4 rounded-full">
+            <Users className="text-emerald-400" size={32} />
           </div>
         </div>
 
@@ -66,7 +66,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ id, name, onDelete }) => {
         {/* Join button */}
         <div className="absolute bottom-4 left-4 right-4">
           <button
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors duration-200 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
+            className="w-full bg-emerald-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-emerald-700 transition-colors duration-200 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
             onClick={(e) => {
               e.stopPropagation();
               handleJoin();
@@ -77,7 +77,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ id, name, onDelete }) => {
         </div>
 
         {/* Subtle glow effect */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-600/5 to-purple-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       </div>
       {showModal && (
         <DeleteRoomModal

@@ -37,14 +37,14 @@ const JoinRoom = () => {
                     <input
                         type="text"
                         placeholder="Enter Room ID..."
-                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         onChange={onChangeHandler}
                         value={formData.roomId}
                         name="roomId"
                     />
                     <button
                         type="submit"
-                        className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
                     >
                         Join Room
                     </button>

@@ -46,7 +46,7 @@ const CreateRoom = () => {
                     {/* <input
                         type="text"
                         placeholder="Enter Room Slug..."
-                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         onChange={onChangeHandler}
                         value={formData.slug}
                         name="slug"
@@ -54,14 +54,14 @@ const CreateRoom = () => {
                     <input
                         type="text"
                         placeholder="Enter Room Name..."
-                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         onChange={onChangeHandler}
                         value={formData.name}
                         name="name"
                     />
                     <button
                         type="submit"
-                        className="bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
                     >
                         Create Room
                     </button>
@@ -86,7 +86,7 @@ const CreateRoom = () => {
                 <div className="bg-gray-700 p-6 rounded-xl mt-6 text-center relative">
                     <h2 className="text-lg font-semibold">Room Created Successfully!</h2>
                     <div className="flex justify-center items-center gap-3">
-                        <h3 className="text-blue-400 font-bold text-xl mt-2">{roomId}</h3>
+                        <h3 className="text-emerald-400 font-bold text-xl mt-2">{roomId}</h3>
                         <button
                             className="hover:text-white hover:scale-105 relative top-1 text-gray-400 text-xl"
                             onClick={copyToClipboard}
@@ -95,7 +95,7 @@ const CreateRoom = () => {
                         </button>
                     </div>
                     <Link href={`/canvas/${roomId}`}>
-                        <button className="mt-4 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" onClick={handleJoinRoom} >
+                        <button className="mt-4 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" onClick={handleJoinRoom} >
                             Join Room
                         </button>
                     </Link>
