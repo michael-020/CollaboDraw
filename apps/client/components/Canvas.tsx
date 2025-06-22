@@ -129,13 +129,16 @@ function Canvas({roomId, socket}: {
                 setStroke={changeStroke}
             />
         }
+        <div className=''>
+
         <canvas
             ref={canvasRef}
             height={10000}
             width={10000}
             onClick={handleCanvasClick}
-            className='bg-neutral-800 bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:8rem_6rem]'
-        />
+            className='bg-neutral-800 pointer-events-auto bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:8rem_6rem]'
+            />
+        </div>
     </div>
 }
 

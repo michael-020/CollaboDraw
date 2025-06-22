@@ -7,7 +7,6 @@ import { FeatureCard } from "../components/FeatureCard"
 import { useAuthStore } from "@/stores/authStore/authStore"
 import { useRouter } from "next/navigation"
 
-// Background Grid Component
 const BackgroundGrid = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -147,7 +146,6 @@ const LandingPage = () => {
         <motion.div variants={itemVariants} className="mb-6">
           <motion.h1
             className="text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-white via-emerald-200 to-emerald-400 bg-clip-text text-transparent"
-            whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
             CollaboDraw

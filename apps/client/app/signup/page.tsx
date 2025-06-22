@@ -105,6 +105,9 @@ export default function Signup(){
                         {isSigningUp ? <Loader className="mx-auto animate-spin" /> : "Sign-up"}
                         
                     </button>
+                    <div className="text-center">
+                        <p>Already have an Account? <span onClick={() => { router.push("/signin") }} className="hover:underline text-emerald-400 cursor-pointer">Sign in</span></p>
+                    </div>
                 </form>
             </div>
         </div>
