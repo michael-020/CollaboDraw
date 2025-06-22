@@ -49,8 +49,8 @@ export default function Rooms() {
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex flex-col gap-2 justify-center items-center">
-          <Loader2 className="size-16 animate-spin text-gray-50" />
-          <p className="text-white text-xl">Loading rooms...</p>
+          <Loader2 className="size-16 animate-spin text-emerald-400" />
+          <p className="text-xl text-emerald-400">Loading rooms...</p>
       </div>
     );
   }

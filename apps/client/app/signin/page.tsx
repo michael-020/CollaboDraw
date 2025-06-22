@@ -98,7 +98,7 @@ export default function Signin(){
                         
                     </button>
                     <div className="text-center">
-                        <p>Don't have an Account? <span onClick={() => { router.push("/signup") }} className="hover:underline text-emerald-400 cursor-pointer">Sign up</span></p>
+                        <p>Don&#39;t have an Account? <span onClick={() => { router.push("/signup") }} className="hover:underline text-emerald-400 cursor-pointer">Sign up</span></p>
                     </div>
                 </form>
             </div>
