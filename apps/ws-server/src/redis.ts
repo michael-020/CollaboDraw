@@ -75,6 +75,13 @@ export type Shapes = {
     y: number,
     points: Array<{letter: string}>,
     color?: string,
+} | {
+    id: string,
+    roomId: string,
+    userId: string,
+    type: "ERASER",
+    points: Array<{x: number, y: number}>,
+    color?: string,
 }
 
 // Push shape to the queue

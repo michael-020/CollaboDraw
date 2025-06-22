@@ -57,6 +57,12 @@ export type Shapes = {
     textContent: string
     color: string,
     strokeWidth?: number
+} | {
+    id?: string,
+    type: "ERASER",
+    points: Array<{x: number, y: number}>,
+    color: string,
+    strokeWidth?: number
 }
 
 export class DrawShapes{
@@ -155,6 +161,17 @@ export class DrawShapes{
         const mouseY = e.clientY - rect.top;
         
         if(this.selectedTool === "PENCIL"){
+            this.currentPoints = []
+            const point = {
+                x: mouseX,
+                y: mouseY
+            }
+            this.currentPoints.push(point)
+            this.setLineProperties()
+            this.ctx.beginPath()
+            this.ctx.moveTo(point.x, point.y)
+        }
+        else if(this.selectedTool === "ERASER"){
             this.currentPoints = []
             const point = {
                 x: mouseX,
@@ -288,6 +305,16 @@ export class DrawShapes{
             
             this.redrawCanvas();
             this.drawSelectionHandles(this.selectedShape);
+        }
+        else if(this.selectedTool === "ERASER"){
+            const point = {
+                x: mouseX,
+                y: mouseY
+            }
+            this.currentPoints.push(point)
+            this.ctx.strokeStyle = "#262626"
+            this.ctx.lineTo(point.x, point.y)
+            this.ctx.stroke()
         }
     }
 
@@ -540,6 +567,40 @@ export class DrawShapes{
                 this.redrawCanvas();
                 this.drawSelectionHandles(this.selectedShape);
             }
+        }
+        else if(this.selectedTool === "ERASER"){
+            // Create a temporary ID for local tracking
+            const tempId = `temp-${Date.now()}`;
+            
+            // Create the shape object
+            const shapeData = {
+                id: tempId,
+                type: "ERASER" as const,
+                points: this.currentPoints,
+                color: "#262626",
+                strokeWidth: this.stroke
+            };
+            
+            // Add to local collection first
+            this.existingShapes.push(shapeData);
+            
+            // Redraw canvas to show the new shape
+            this.redrawCanvas();
+            
+            const message= {
+                type: "draw",
+                roomId: this.roomId,
+                message: {
+                    type: "ERASER",
+                    points: this.currentPoints,
+                    color: "#262626",
+                    strokeWidth: this.stroke,
+                    tempId
+                }
+            }
+
+            this.socket.send(JSON.stringify(message));
+            this.currentPoints = []
         }
     }
 
@@ -1026,6 +1087,18 @@ export class DrawShapes{
             console.log("text: ", text)
             this.ctx.fillText(text, shape.x, shape.y);
         }
+        else if(shape.type === "ERASER"){
+            this.ctx.strokeStyle = "#262626";
+            this.ctx.lineWidth = shape.strokeWidth || this.stroke;
+            if(shape.points && shape.points.length > 0){
+                this.ctx.beginPath();
+                this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                for(let i=1; i<shape.points.length; i++){
+                    this.ctx.lineTo(shape.points[i].x, shape.points[i].y);
+                }
+                this.ctx.stroke();
+            }
+        }
     }
 
     drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color?: string, strokeWidth?: number){
@@ -1172,6 +1245,16 @@ export class DrawShapes{
                         y: shape.y,
                         textContent: shape.textContent,
                         color: shape.color,
+                        strokeWidth: shape.strokeWidth
+                    }
+                    this.existingShapes.push(newShape);
+                }
+                else if(shape.type === "ERASER"){
+                    newShape = {
+                        id: shape.id,
+                        type: "ERASER",
+                        points: shape.points,
+                        color: "#262626",
                         strokeWidth: shape.strokeWidth
                     }
                     this.existingShapes.push(newShape);

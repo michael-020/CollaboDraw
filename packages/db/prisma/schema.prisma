@@ -66,4 +66,5 @@ enum ShapeType {
   ARROW
   PENCIL
   TEXT
+  ERASER
 }

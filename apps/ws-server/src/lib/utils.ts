@@ -126,6 +126,25 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
       return newShape.id
     }
   }
+  else if(message.type === "ERASER"){
+    newShape = await prismaClient.shape.create({
+      data: {
+        type: "ERASER",
+        x: message.points[0].x,
+        y: message.points[0].y,
+        points: message.points,
+        color: message.color,
+        strokeWidth: Number(message.strokeWidth) || 1,
+        user: {
+            connect: { id: userId}
+        },
+        room: {
+            connect: { id: roomId}
+        }
+      }
+    })
+    return newShape.id
+  }
 }
 
 export async function updateShapeInDatabase(shape: Shapes) {

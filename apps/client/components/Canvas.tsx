@@ -129,17 +129,26 @@ function Canvas({roomId, socket}: {
                 setStroke={changeStroke}
             />
         }
-        <div className=''>
-
         <canvas
             ref={canvasRef}
             height={10000}
             width={10000}
             onClick={handleCanvasClick}
-            className='bg-neutral-800 pointer-events-auto bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:8rem_6rem]'
-            />
-        </div>
+            className={`bg-neutral-800 `}
+            style={{
+                cursor: tool === "ERASER" 
+                    ? ERASER_CURSOR
+                    : tool === "SELECT" 
+                    ? "default"
+                    : tool === "AI"
+                    ? "default" 
+                    : tool === "TEXT"
+                    ? "text"
+                    : "crosshair"
+            }}
+        />
     </div>
 }
+const ERASER_CURSOR = "url('data:image/svg+xml;utf8,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"%3E%3Crect x=\"6\" y=\"4\" width=\"12\" height=\"8\" rx=\"1\" fill=\"%\" stroke=\"white\" stroke-width=\"1.5\" transform=\"rotate(15 12 8)\"/%3E%3C/svg%3E') 10 10, auto";
 
 export default Canvas

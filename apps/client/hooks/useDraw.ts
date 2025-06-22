@@ -10,7 +10,8 @@ export type Tool =
   | "TEXT"
   | "ERASER"
   | "UNDO"
-  | "REDO";
+  | "REDO"
+  | "AI";
 export type Color =
   | "#ffffff"
   | "#FAB072"
