@@ -13,6 +13,7 @@ import { deleteRoomHandler } from "../controlers/deleteRoomHandler";
 import { tokenHandler } from "../controlers/tokenHandler";
 import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 import { getUsersRoomHandler } from "../controlers/getUsersRoomsHandler";
+import { generateDrawingHandler } from "../controlers/generateDrawingHandler";
 
 const userRouter: Router = Router();
 
@@ -44,5 +45,7 @@ userRouter.get("/check", checkAuth)
 userRouter.post("/logout", logoutHandler)
 
 userRouter.get("/get-token", tokenHandler)
+
+userRouter.post("/generate-drawing", generateDrawingHandler)
 
 export default userRouter;
