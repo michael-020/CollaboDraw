@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Loader2, X } from "lucide-react";
 import { createPortal } from "react-dom";
 
@@ -16,10 +16,28 @@ const DeleteRoomModal: React.FC<DeleteRoomModalProps> = ({
   onCancel,
   deleting = false,
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Handle outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(e.target as Node)
+      ) {
+        if (!deleting) onCancel();
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [onCancel, deleting]);
+
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-sm text-center relative border border-red-400">
-        {/* X mark */}
+      <div
+        ref={modalRef}
+        className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-sm text-center relative border border-red-400"
+      >
         <button
           className="absolute top-4 left-4 text-red-400 hover:text-white transition"
           onClick={onCancel}

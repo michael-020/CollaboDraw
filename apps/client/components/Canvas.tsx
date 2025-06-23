@@ -6,6 +6,7 @@ import Filterbar from './Filterbar'
 import { DrawShapes } from '@/draw/drawShape'
 import SidebarToggle from './SidebarToggle'
 import LeaveRoom from './LeaveRoom'
+import AIModal from "./AIModal";
 
 function Canvas({roomId, socket}: {
     roomId: string,
@@ -28,6 +29,7 @@ function Canvas({roomId, socket}: {
     const [textAreaPosition, setTextAreaPosition] = useState({ x: 0, y: 0 })
     const [textContent, setTextContent] = useState("")
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
+    const [showAIModal, setShowAIModal] = useState(false);
 
     const getCanvasCoordinates = (clientX: number, clientY: number) => {
         const canvas = canvasRef.current
@@ -78,20 +80,23 @@ function Canvas({roomId, socket}: {
         drawShapeRef.current?.setStroke(stroke)
     }, [tool, color, stroke])
 
-    const cursorStyle = (tool: string): string => {
-        if(tool === "ERASER"){
-            return ERASER_CURSOR
+    const cursorStyle = (tool: string): string | undefined => {
+        if (tool === "ERASER") {
+            return ERASER_CURSOR;
+        } else if (tool === "AI" || tool === "") {
+            return "default";
+        } else if (tool === "PENCIL") {
+            return PENCIL_CURSOR;
+        } else if (
+            tool === "RECTANGLE" ||
+            tool === "CIRCLE" ||
+            tool === "LINE" ||
+            tool === "ARROW"
+        ) {
+            return "crosshair";
         }
-        else if(tool === "SELECT" || tool === "AI" || tool === ""){
-            return "default"
-        }
-        else if(tool === "PENCIL"){
-            return PENCIL_CURSOR
-        }
-        else{
-            return "crosshair"
-        }
-    }
+        return undefined;
+    };
     
     useEffect(() => {
         if(canvasRef.current){
@@ -105,6 +110,11 @@ function Canvas({roomId, socket}: {
             }
         }
     }, [roomId, socket])
+
+    useEffect(() => {
+        if (tool === "AI") setShowAIModal(true);
+        else setShowAIModal(false);
+    }, [tool]);
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
@@ -151,8 +161,13 @@ function Canvas({roomId, socket}: {
             onClick={handleCanvasClick}
             className={`bg-neutral-800 `}
             style={{
-                cursor: cursorStyle(tool)
+                ...(cursorStyle(tool) ? { cursor: cursorStyle(tool) } : {})
             }}
+        />
+        <AIModal
+            open={showAIModal}
+            onClose={() => setShowAIModal(false)}
+            changeTool={changeTool}
         />
     </div>
 }

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 export type Tool =
+  | ""
   | "SELECT"
   | "PENCIL"
   | "RECTANGLE"
