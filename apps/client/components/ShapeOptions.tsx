@@ -1,7 +1,7 @@
 import React from 'react'
-import { Atom, Circle, Eraser, Minus, MousePointer, MoveLeft, Pencil, Square, Type } from 'lucide-react'
-// import { useAuthStore } from '@/stores/authStore/authStore'
+import { Circle, Eraser, Minus, MousePointer, MoveLeft, Pencil, Square, Type } from 'lucide-react'
 import { Tool } from '@/hooks/useDraw'
+import AiIcon from '@/icons/AiIcon';
 
 export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) => void}) => {
     // const {isModalVisible} = useAuthStore()
@@ -14,7 +14,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
         { id: "TEXT" as Tool, icon: Type },
         { id: "ERASER" as Tool, icon: Eraser },
         { id: "SELECT" as Tool, icon: MousePointer },
-        { id: "AI" as Tool, icon: Atom },
+        { id: "AI" as Tool, icon: AiIcon },
       ];
   return (
     <div className="fixed top-3 left-1/2 -translate-x-1/2 bg-gray-100/30 backdrop-blur-sm rounded-md ">

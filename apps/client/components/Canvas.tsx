@@ -77,6 +77,21 @@ function Canvas({roomId, socket}: {
         drawShapeRef.current?.setColor(color)
         drawShapeRef.current?.setStroke(stroke)
     }, [tool, color, stroke])
+
+    const cursorStyle = (tool: string): string => {
+        if(tool === "ERASER"){
+            return ERASER_CURSOR
+        }
+        else if(tool === "SELECT" || tool === "AI" || tool === ""){
+            return "default"
+        }
+        else if(tool === "PENCIL"){
+            return PENCIL_CURSOR
+        }
+        else{
+            return "crosshair"
+        }
+    }
     
     useEffect(() => {
         if(canvasRef.current){
@@ -136,19 +151,13 @@ function Canvas({roomId, socket}: {
             onClick={handleCanvasClick}
             className={`bg-neutral-800 `}
             style={{
-                cursor: tool === "ERASER" 
-                    ? ERASER_CURSOR
-                    : tool === "SELECT" 
-                    ? "default"
-                    : tool === "AI"
-                    ? "default" 
-                    : tool === "TEXT"
-                    ? "text"
-                    : "crosshair"
+                cursor: cursorStyle(tool)
             }}
         />
     </div>
 }
+
 const ERASER_CURSOR = "url('data:image/svg+xml;utf8,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 20 20\"%3E%3Crect x=\"6\" y=\"4\" width=\"12\" height=\"8\" rx=\"1\" fill=\"%\" stroke=\"white\" stroke-width=\"1.5\" transform=\"rotate(15 12 8)\"/%3E%3C/svg%3E') 10 10, auto";
+const PENCIL_CURSOR = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"white\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" viewBox=\"0 0 24 24\"><path d=\"m18 2 4 4-14.5 14.5a2.121 2.121 0 0 1-3 0 2.121 2.121 0 0 1 0-3Z\"/><path d=\"m15 5 4 4\"/><path d=\"M2 22h4\"/></svg>') 0 20, auto";
 
 export default Canvas
