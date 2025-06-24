@@ -1,18 +1,19 @@
 "use client";
 import { Tool } from "@/hooks/useDraw";
 import { X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "@/lib/axios";
-import { DrawShapes } from "@/draw/drawShape"; // Make sure this import exists
+import { DrawShapes } from "@/draw/drawShape";
 
 interface AIModalProps {
   open: boolean;
   onClose: () => void;
   onSubmit?: (objectPrompt: string, flowPrompt: string) => void;
-  changeTool?: (tool: Tool) => void; 
+  changeTool?: (tool: Tool) => void;
+  drawShapeRef: RefObject<DrawShapes | null>;
 }
 
-const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool }) => {
+const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeRef }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [objectPrompt, setObjectPrompt] = useState("");
   const [flowPrompt, setFlowPrompt] = useState("");
@@ -41,7 +42,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool }) => {
     if (response && Array.isArray(response) && previewCanvasRef.current) {
       const ctx = previewCanvasRef.current.getContext("2d");
       if (ctx) {
-        DrawShapes.drawGeneratedShapes(ctx, response);
+        drawShapeRef.current?.drawGeneratedShapes(ctx, response);
       }
     }
   }, [response]);

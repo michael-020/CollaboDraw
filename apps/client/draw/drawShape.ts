@@ -1376,7 +1376,7 @@ export class DrawShapes{
         this.stroke = stroke;
     }
 
-    static drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[]) {
+    drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[]) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         for (const shape of shapes) {
             if (shape.type === "RECTANGLE") {
@@ -1408,6 +1408,11 @@ export class DrawShapes{
                 ctx.fillText(shape.textContent, shape.x, shape.y);
             }
         }
+        this.generatedShapes.push(...shapes)
+    }
+
+    pushToExistingShapes(){
+        this.existingShapes.push(...this.generatedShapes);
     }
 
 }

@@ -168,6 +168,7 @@ function Canvas({roomId, socket}: {
             open={showAIModal}
             onClose={() => setShowAIModal(false)}
             changeTool={changeTool}
+            drawShapeRef={drawShapeRef}
         />
     </div>
 }
