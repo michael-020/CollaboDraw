@@ -2,6 +2,8 @@
 import { Tool } from "@/hooks/useDraw";
 import { X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { AxiosInstance } from "@/lib/axios";
+import { DrawShapes } from "@/draw/drawShape"; // Make sure this import exists
 
 interface AIModalProps {
   open: boolean;
@@ -10,24 +12,53 @@ interface AIModalProps {
   changeTool?: (tool: Tool) => void; 
 }
 
-const AIModal: React.FC<AIModalProps> = ({ open, onClose, onSubmit, changeTool }) => {
+const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [objectPrompt, setObjectPrompt] = useState("");
   const [flowPrompt, setFlowPrompt] = useState("");
   const [activeSection, setActiveSection] = useState<"object" | "flow" | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Handle outside click
   useEffect(() => {
     if (!open) return;
     const handleClick = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         if (changeTool) changeTool("");
         onClose();
+        setActiveSection(null);
+        setResponse(null);
+        setError(null);
       }
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open, onClose, changeTool]);
+
+  useEffect(() => {
+    if (response && Array.isArray(response) && previewCanvasRef.current) {
+      const ctx = previewCanvasRef.current.getContext("2d");
+      if (ctx) {
+        DrawShapes.drawGeneratedShapes(ctx, response);
+      }
+    }
+  }, [response]);
+
+  const handleSubmit = async (type: "OBJECT" | "FLOWCHART", content: string) => {
+    setLoading(true);
+    setResponse(null);
+    setError(null);
+    try {
+      const res = await AxiosInstance.post("/user/generate-drawing", { type, content });
+      setResponse(res.data.result || res.data);
+    } catch (err: any) {
+      setError(err?.response?.data?.msg || "Failed to generate drawing.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!open) return null;
 
@@ -35,13 +66,19 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, onSubmit, changeTool }
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div
         ref={modalRef}
-        className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-md text-center border border-emerald-700 relative"
+        className={`bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-md text-center border border-emerald-700 relative transition-all duration-300 ${
+          response ? "max-w-2xl" : "max-w-md"
+        }`}
+        style={response ? { minHeight: 500 } : {}}
       >
         <button
           className="absolute top-4 left-4 text-emerald-400 hover:text-white transition"
           onClick={() => {
             if (changeTool) changeTool("");
             onClose();
+            setActiveSection(null);
+            setResponse(null);
+            setError(null);
           }}
           aria-label="Close"
         >
@@ -69,12 +106,16 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, onSubmit, changeTool }
         {activeSection === "object" && (
           <div>
             <div className="text-left">
-                <button
+              <button
                 className="mb-4 text-emerald-400 hover:text-white transition font-semibold"
-                onClick={() => setActiveSection(null)}
-                >
+                onClick={() => {
+                  setActiveSection(null);
+                  setResponse(null);
+                  setError(null);
+                }}
+              >
                 ← Back
-                </button>
+              </button>
             </div>
             <div className="mb-6 text-left">
               <label className="block text-emerald-300 font-semibold mb-2">
@@ -86,31 +127,54 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, onSubmit, changeTool }
                 placeholder="e.g. house, snow man..."
                 value={objectPrompt}
                 onChange={e => setObjectPrompt(e.target.value)}
+                disabled={loading}
               />
             </div>
             <button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition"
-              onClick={() => {
-                if (onSubmit) onSubmit(objectPrompt, "");
-                if (changeTool) changeTool("");
-                onClose();
-              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-60"
+              onClick={() => handleSubmit("OBJECT", objectPrompt)}
+              disabled={loading || !objectPrompt.trim()}
             >
-              Submit
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Generating...
+                </span>
+              ) : (
+                "Submit"
+              )}
             </button>
+            {error && <div className="mt-4 text-red-400">{error}</div>}
+            {response && (
+              <div className="mt-6 text-left bg-neutral-800 rounded-lg p-4 flex flex-col items-center">
+                <div className="text-emerald-300 font-semibold mb-2">AI Preview:</div>
+                <canvas
+                  ref={previewCanvasRef}
+                  width={800}
+                  height={600}
+                  style={{ background: "#222", borderRadius: 8, maxWidth: "100%", border: "1px solid #444" }}
+                />
+              </div>
+            )}
           </div>
         )}
 
-        {/* Flow chart input section */}
         {activeSection === "flow" && (
           <div>
             <div className="text-left">
-                <button
+              <button
                 className="mb-4 text-purple-400 hover:text-white transition font-semibold"
-                onClick={() => setActiveSection(null)}
-                >
+                onClick={() => {
+                  setActiveSection(null);
+                  setResponse(null);
+                  setError(null);
+                }}
+              >
                 ← Back
-                </button>
+              </button>
             </div>
             <div className="mb-6 text-left">
               <label className="block text-purple-300 font-semibold mb-2">
@@ -121,18 +185,35 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, onSubmit, changeTool }
                 placeholder="e.g. receive request - validate input - query DB - return response"
                 value={flowPrompt}
                 onChange={e => setFlowPrompt(e.target.value)}
+                disabled={loading}
               />
             </div>
             <button
-              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition"
-              onClick={() => {
-                if (onSubmit) onSubmit("", flowPrompt);
-                if (changeTool) changeTool("");
-                onClose();
-              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-60"
+              onClick={() => handleSubmit("FLOWCHART", flowPrompt)}
+              disabled={loading || !flowPrompt.trim()}
             >
-              Submit
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Generating...
+                </span>
+              ) : (
+                "Submit"
+              )}
             </button>
+            {error && <div className="mt-4 text-red-400">{error}</div>}
+            {response && (
+              <div className="mt-6 text-left bg-neutral-800 rounded-lg p-4 max-h-64 overflow-auto">
+                <div className="text-purple-300 font-semibold mb-2">AI Response:</div>
+                <pre className="text-white text-xs whitespace-pre-wrap break-all">
+                  {JSON.stringify(response, null, 2)}
+                </pre>
+              </div>
+            )}
           </div>
         )}
       </div>

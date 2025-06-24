@@ -75,7 +75,7 @@ export class DrawShapes{
 
     // Drawing state
     private existingShapes: Shapes[] = [];
-    private pencilPath: any[] = [];
+    public generatedShapes: Shapes[] = [];
     private clicked: boolean = false;
     private x: number = 0;
     private y: number = 0;
@@ -193,7 +193,11 @@ export class DrawShapes{
                     if (shape.type === "PENCIL") {
                         this.selectedOffsetX = mouseX - shape.points[0].x;
                         this.selectedOffsetY = mouseY - shape.points[0].y;
-                    } else {
+                    }
+                    else if(shape.type === "ERASER"){
+                        return
+                    } 
+                    else {
                         this.selectedOffsetX = mouseX - shape.x;
                         this.selectedOffsetY = mouseY - shape.y;
                     }
@@ -1370,6 +1374,40 @@ export class DrawShapes{
 
     public setStroke(stroke: Stroke) {
         this.stroke = stroke;
+    }
+
+    static drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[]) {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        for (const shape of shapes) {
+            if (shape.type === "RECTANGLE") {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
+            } else if (shape.type === "CIRCLE") {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.beginPath();
+                ctx.ellipse(shape.x, shape.y, Math.abs(shape.radiusX), Math.abs(shape.radiusY), 0, 0, Math.PI * 2);
+                ctx.stroke();
+            } else if (shape.type === "LINE") {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.beginPath();
+                ctx.moveTo(shape.x, shape.y);
+                ctx.lineTo(shape.points.endX, shape.points.endY);
+                ctx.stroke();
+            } else if (shape.type === "ARROW") {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.beginPath();
+                canvas_arrow(ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
+                ctx.stroke();
+            } else if (shape.type === "TEXT") {
+                ctx.fillStyle = shape.color;
+                ctx.font = "16px Arial";
+                ctx.fillText(shape.textContent, shape.x, shape.y);
+            }
+        }
     }
 
 }
