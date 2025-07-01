@@ -21,7 +21,7 @@ export interface IUser  {
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const token = req.cookies.jwt
+        const token = req.cookies.collabodraw_jwt
 
         const decoded = jwt.verify(token, JWT_SECRET as jwt.Secret)
 
