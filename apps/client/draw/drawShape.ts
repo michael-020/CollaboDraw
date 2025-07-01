@@ -1169,7 +1169,9 @@ export class DrawShapes{
                     if (tempIndex >= 0) {
                         // Update the temporary shape with the server-assigned ID
                         this.existingShapes[tempIndex].id = shape.id;
-                        // Continue with the rest of the function to avoid duplication
+                        // Redraw the canvas to reflect the update
+                        this.redrawCanvas();
+                        // Do NOT continue to add the shape again!
                         return;
                     }
                 }
@@ -1373,7 +1375,13 @@ export class DrawShapes{
 
     drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[]) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        for (const shape of shapes) {
+
+        const shapesWithTempId = shapes.map(shape => {
+            const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+            return { ...shape, id: tempId } as Shapes;
+        });
+
+        for (const shape of shapesWithTempId) {
             if (shape.type === "RECTANGLE") {
                 ctx.strokeStyle = shape.color;
                 ctx.lineWidth = shape.strokeWidth || 2;
@@ -1403,20 +1411,94 @@ export class DrawShapes{
                 ctx.fillText(shape.textContent, shape.x, shape.y);
             }
         }
-        this.generatedShapes.push(...shapes)
+        this.generatedShapes = shapesWithTempId; 
     }
 
     pushToExistingShapes(){
-        this.existingShapes.push(...this.generatedShapes);
+        this.generatedShapes.forEach((shape: Shapes) => {
+            let messageShape: any = {};
 
-        this.generatedShapes.forEach(shape => {
+            if (shape.type === "RECTANGLE") {
+                messageShape = {
+                    type: "RECTANGLE",
+                    x: shape.x,
+                    y: shape.y,
+                    width: shape.width,
+                    height: shape.height,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: shape.id
+                };
+            } else if (shape.type === "CIRCLE") {
+                messageShape = {
+                    type: "CIRCLE",
+                    x: shape.x,
+                    y: shape.y,
+                    radiusX: shape.radiusX,
+                    radiusY: shape.radiusY,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: shape.id
+                };
+            } else if (shape.type === "LINE") {
+                messageShape = {
+                    type: "LINE",
+                    x: shape.x,
+                    y: shape.y,
+                    points: shape.points,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: (shape as any).tempId
+                };
+            } else if (shape.type === "ARROW") {
+                messageShape = {
+                    type: "ARROW",
+                    x: shape.x,
+                    y: shape.y,
+                    points: shape.points,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: (shape as any).tempId
+                };
+            } else if (shape.type === "PENCIL") {
+                messageShape = {
+                    type: "PENCIL",
+                    points: shape.points,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: (shape as any).tempId
+                };
+            } else if (shape.type === "TEXT") {
+                messageShape = {
+                    type: "TEXT",
+                    x: shape.x,
+                    y: shape.y,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    textContent: shape.textContent,
+                    tempId: (shape as any).tempId
+                };
+            } else if (shape.type === "ERASER") {
+                messageShape = {
+                    type: "ERASER",
+                    points: shape.points,
+                    color: shape.color,
+                    strokeWidth: shape.strokeWidth,
+                    tempId: (shape as any).tempId
+                };
+            }
+
             const message = {
-                type: "draw", 
+                type: "draw",
                 roomId: this.roomId,
-                message: shape
+                message: messageShape
             };
             this.socket.send(JSON.stringify(message));
         });
+
+        this.existingShapes.push(...this.generatedShapes);
+        
+        this.redrawCanvas();
 
         this.generatedShapes = [];
     }
