@@ -1408,6 +1408,17 @@ export class DrawShapes{
 
     pushToExistingShapes(){
         this.existingShapes.push(...this.generatedShapes);
+
+        this.generatedShapes.forEach(shape => {
+            const message = {
+                type: "draw", 
+                roomId: this.roomId,
+                message: shape
+            };
+            this.socket.send(JSON.stringify(message));
+        });
+
+        this.generatedShapes = [];
     }
 
 }

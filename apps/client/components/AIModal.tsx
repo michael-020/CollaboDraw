@@ -1,6 +1,6 @@
 "use client";
 import { Tool } from "@/hooks/useDraw";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "@/lib/axios";
 import { DrawShapes } from "@/draw/drawShape";
@@ -21,6 +21,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string>("");
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -51,15 +52,29 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     setLoading(true);
     setResponse(null);
     setError(null);
+    setLastPrompt(content); // Save the prompt for display
     try {
       const res = await AxiosInstance.post("/user/generate-drawing", { type, content });
       setResponse(res.data.result || res.data);
+      setObjectPrompt(""); // Clear input after submit
+      setFlowPrompt("");   // Clear input after submit
     } catch (err: any) {
       setError(err?.response?.data?.msg || "Failed to generate drawing.");
     } finally {
       setLoading(false);
     }
   };
+
+  const insertIntoCanvas = () => {
+    drawShapeRef.current?.pushToExistingShapes();
+    setActiveSection(null);
+    setResponse(null);
+    setError(null);
+    setObjectPrompt("");
+    setFlowPrompt("");
+    setLastPrompt("");
+    onClose();
+  }
 
   if (!open) return null;
 
@@ -138,10 +153,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
+                  <Loader2 className="animate-spin"/>
                   Generating...
                 </span>
               ) : (
@@ -150,14 +162,42 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
             </button>
             {error && <div className="mt-4 text-red-400">{error}</div>}
             {response && (
-              <div className="mt-6 text-left bg-neutral-800 rounded-lg p-4 flex flex-col items-center">
-                <div className="text-emerald-300 font-semibold mb-2">AI Preview:</div>
-                <canvas
-                  ref={previewCanvasRef}
-                  width={800}
-                  height={600}
-                  style={{ background: "#222", borderRadius: 8, maxWidth: "100%", border: "1px solid #444" }}
-                />
+              <div className="mt-4 flex flex-col items-center w-full">
+                <div className="text-emerald-300 font-semibold mb-2">
+                  Click generated object for: <span className="text-white">{lastPrompt}</span>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: 480,
+                    maxHeight: 320,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <canvas
+                    ref={previewCanvasRef}
+                    width={480}
+                    height={320}
+                    style={{
+                      background: "#222",
+                      borderRadius: 8,
+                      width: "100%",
+                      height: "auto",
+                      maxWidth: 480,
+                      maxHeight: 320,
+                      border: "1px solid #444",
+                      display: "block",
+                    }}
+                  />
+                </div>
+                <button
+                  className="mt-4 px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition"
+                  onClick={insertIntoCanvas}
+                >
+                  Insert into Canvas
+                </button>
               </div>
             )}
           </div>
