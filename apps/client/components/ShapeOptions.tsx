@@ -18,7 +18,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
       ];
   return (
     <div className="fixed top-3 left-1/2 -translate-x-1/2 bg-gray-100/30 backdrop-blur-sm rounded-md ">
-        <div className="flex gap-2 px-2 py-2 rounded shadow-lg">
+        <div className="flex gap-0.5 px-2 py-2 rounded shadow-lg">
         {tools.map((t) => {
             const Icon = t.icon;
             return (
@@ -27,7 +27,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
                     setTool(t.id)
                 }}
                 key={t.id}
-                className={`${t.id == tool ? "bg-emerald-400" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}
+                className={`${t.id == tool ? "bg-emerald-400" : ""} px-3 p-2 rounded transition-all relative duration-500 cursor-pointer`}
             >
                 <Icon
                 className={`w-4 h-4 transition-all duration-500 text-gray-900`}
