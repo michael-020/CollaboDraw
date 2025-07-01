@@ -1,5 +1,6 @@
 import { prismaClient } from "@repo/db/client"
-import { Shapes } from "../redis";
+import { Shapes } from "./types";
+
 
 interface Point {
   x: number;

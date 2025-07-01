@@ -1,7 +1,7 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { updateData } from "./redis";
+import { updateData } from "./queues/shapeQueue";
 import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
