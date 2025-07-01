@@ -1,7 +1,6 @@
 import { prismaClient } from "@repo/db/client"
 import { Shapes } from "./types";
 
-
 interface Point {
   x: number;
   y: number;
@@ -149,69 +148,76 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
 }
 
 export async function updateShapeInDatabase(shape: Shapes) {
-    // Check if the shape exists
-    const existingShape = await prismaClient.shape.findUnique({
-        where: { id: shape.id }
-    });
+  if(!shape.id){
+    console.error("shape id is not found");
+    return;
+  };
 
-    const shapeData: any = {
-        id: shape.id,
-        type: shape.type,
-        color: shape.color,
-    };
+  const existingShape = await prismaClient.shape.findUnique({
+      where: { id: shape.id }
+  });
 
-    switch (shape.type) {
-        case "RECTANGLE":
-          shapeData.x = shape.x;
-          shapeData.y = shape.y;
-          shapeData.width = Number(shape.width);
-          shapeData.height = Number(shape.height);
-          break;
-        case "CIRCLE":
-          shapeData.x = shape.x;
-          shapeData.y = shape.y;
-          shapeData.radiusX = Number(shape.radiusX);
-          shapeData.radiusY = Number(shape.radiusY);
-          break;
-        case "LINE":  
-          shapeData.x = shape.x;
-          shapeData.y = shape.y;
-          shapeData.points = shape.points;
-        case "ARROW":
-          shapeData.x = shape.x;
-          shapeData.y = shape.y;
-          shapeData.points = shape.points;
-          break;
-        case "PENCIL":
-          shapeData.points = shape.points;
-          break;
-        case "TEXT":
-          shapeData.x = shape.x;
-          shapeData.y = shape.y;
-          shapeData.textContent = shape.textContent;
-          break;
-        default:
-            throw new Error(`Unknown shape type`);
-    }
+  if(!existingShape){
+    console.error("shape is not found");
+    return;
+  };
 
-    shapeData.room = {
-        connect: { id: shape.roomId } // Connect to the room using its ID
-    };
+  const shapeData: any = {
+      id: shape.id,
+      type: shape.type,
+      color: shape.color,
+  };
 
-    shapeData.user = {
-        connect: { id: shape.userId } // Connect to the user using their ID
-    };
+  switch (shape.type) {
+      case "RECTANGLE":
+        shapeData.x = shape.x;
+        shapeData.y = shape.y;
+        shapeData.width = Number(shape.width);
+        shapeData.height = Number(shape.height);
+        break;
+      case "CIRCLE":
+        shapeData.x = shape.x;
+        shapeData.y = shape.y;
+        shapeData.radiusX = Number(shape.radiusX);
+        shapeData.radiusY = Number(shape.radiusY);
+        break;
+      case "LINE":  
+        shapeData.x = shape.x;
+        shapeData.y = shape.y;
+        shapeData.points = shape.points;
+      case "ARROW":
+        shapeData.x = shape.x;
+        shapeData.y = shape.y;
+        shapeData.points = shape.points;
+        break;
+      case "PENCIL":
+        shapeData.points = shape.points;
+        break;
+      case "TEXT":
+        shapeData.x = shape.x;
+        shapeData.y = shape.y;
+        shapeData.textContent = shape.textContent;
+        break;
+      default:
+          throw new Error(`Unknown shape type`);
+  }
 
-    if (existingShape) {
-        // Update existing shape
-        await prismaClient.shape.update({
-            where: { id: shape.id },
-            data: shapeData
-        });
-    } else {
-        // Create new shape
-        await prismaClient.shape.create({
-            data: shapeData
-        });
-    }
+  shapeData.room = {
+      connect: { id: shape.roomId } 
+  };
+
+  shapeData.user = {
+      connect: { id: shape.userId } 
+  };
+
+  if (existingShape) {
+      await prismaClient.shape.update({
+          where: { id: shape.id },
+          data: shapeData
+      });
+  } else {
+      await prismaClient.shape.create({
+          data: shapeData
+      });
+  }
 }

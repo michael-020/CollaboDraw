@@ -25,7 +25,6 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
             <button
                 onClick={() =>{ 
                     setTool(t.id)
-                    console.log("selected tool: ", t.id)
                 }}
                 key={t.id}
                 className={`${t.id == tool ? "bg-emerald-400" : ""} p-2 rounded transition-all relative duration-500 cursor-pointer`}

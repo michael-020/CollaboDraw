@@ -57,7 +57,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
             })
         }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.status(500).json({
             msg: "Internal server error in middleware",
             error

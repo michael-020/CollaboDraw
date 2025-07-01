@@ -48,7 +48,7 @@ export const signinHandler = async (req: Request, res: Response) => {
                 name: checkUser.name
             });
         } catch (error) {
-            console.log("Error while signing in", error);
+            console.error("Error while signing in", error);
             res.status(500).json({
                 msg: "internal server error",
             });

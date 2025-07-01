@@ -24,7 +24,6 @@ export const getUsers = async (req: Request, res: Response) => {
             return
         }
 
-        // console.log("usrs: ", room.users)
         res.status(200).json(room.users)
     } catch (error) {
         console.error(error)

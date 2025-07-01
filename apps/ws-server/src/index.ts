@@ -1,8 +1,7 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { updateData } from "./queues/shapeQueue";
-import { insertIntoDB } from "./lib/utils";
+import { createData, updateData } from "./queues/shapeQueue";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -48,13 +47,10 @@ wss.on("connection", function connection(ws, request) {
     return;
   }
 
-  // Check if this user already exists in the same room before adding
   const existingUserIndex = users.findIndex(u => u.userId === userId);
   if (existingUserIndex >= 0) {
-    // User exists, update their websocket connection
     users[existingUserIndex]!.ws = ws;
   } else {
-    // New user, add them to the array
     users.push({ userId, rooms: [], ws });
   }
 
@@ -72,8 +68,8 @@ wss.on("connection", function connection(ws, request) {
     if(parsedData.type === "update"){
       const roomId = parsedData.roomId;
       const message = parsedData.message;
+
       try {
-        // Make sure we have a valid ID for the shape
         if (!message.id) {
           console.error("Shape ID is required for edit operations");
           ws.send(JSON.stringify({
@@ -83,8 +79,6 @@ wss.on("connection", function connection(ws, request) {
           return;
         }
 
-        
-        // Broadcast the edit to all users in the room
         const usersInRoom = users.filter(user => 
           user.rooms.includes(roomId.toString()) && user.userId !== userId
         );
@@ -94,14 +88,14 @@ wss.on("connection", function connection(ws, request) {
             type: "update",
             message: {
               ...message,
-              userId // Include the user ID in the broadcast
+              userId
             },
             roomId
           };
           user.ws.send(JSON.stringify(broadcastMessage));
         });
         
-        await updateData(roomId, message, userId); // redis takes care of it
+        await updateData(roomId, message, userId); 
       } catch (error) {
         console.error("Error processing edit operation:", error);
         ws.send(JSON.stringify({
@@ -121,9 +115,7 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      console.log("message: ", message);
-
-      const shapeId = await insertIntoDB(roomId, message, userId)
+      await createData(roomId, message, userId);
       
       const usersInRoom = users.filter(user => 
         user.rooms.includes(roomId.toString()) && user.userId !== userId
@@ -135,7 +127,6 @@ wss.on("connection", function connection(ws, request) {
           message: {
             ...message,
             type: message.type,
-            id: shapeId,
             tempId: message.tempId 
           },
           roomId
@@ -150,7 +141,6 @@ wss.on("connection", function connection(ws, request) {
           message: {
             ...message,
             type: message.type,
-            id: shapeId,
             tempId: message.tempId
           },
           roomId

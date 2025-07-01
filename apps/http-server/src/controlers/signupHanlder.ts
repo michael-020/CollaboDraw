@@ -39,7 +39,7 @@ export const signupHandler = async (req: Request, res: Response) => {
            username: newUser.name
         });
     } catch (error) {
-        console.log("Error while signing up", error);
+        console.error("Error while signing up", error);
         res.status(500).json({
             msg: "internal server error",
             error: (error as Error).message

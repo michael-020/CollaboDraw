@@ -20,7 +20,7 @@ export const createRoomHandler = async (req: Request, res: Response) => {
             roomId: room.id
         });
     } catch (error) {
-        console.log("Error while creating room", error);
+        console.error("Error while creating room", error);
         res.status(500).json({
             msg: "internal server error",
             error: (error as Error).message

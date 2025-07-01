@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { prismaClient } from "@repo/db/client";
-import { updateShapeInDatabase } from "../lib/utils";
+import { insertIntoDB, updateShapeInDatabase } from "../lib/utils";
 import { Shapes } from "../lib/types";
 
 const client = createClient();
@@ -13,7 +13,7 @@ const main = async () => {
 }
 main();
 
-export async function pushShape(shape: Shapes) { 
+export async function pushShape(shape: ShapeQueueItem) { 
     const queueKey = `queue:room:${shape.roomId}`;
     await client.rPush(queueKey, JSON.stringify(shape));
     
@@ -62,7 +62,11 @@ async function processQueues() {
                 const shape = JSON.parse(shapeData);
                 
                 try {
-                    await updateShapeInDatabase(shape);
+                    if(shape.action === "create"){
+                        await insertIntoDB(shape.roomId, shape.message, shape.userId)
+                    } else if (shape.action === "update"){
+                        await updateShapeInDatabase(shape.message);
+                    }
                     
                     await client.lPop(queueKey);
                     
@@ -112,8 +116,29 @@ export async function updateData(roomId: string, message: any, userId: string) {
         id: message.id,
         roomId,
         userId,
-        ...message,
+        message,
+        action: "update"
     };
     
-    return await pushShape(shape as Shapes);
+    return await pushShape(shape as ShapeQueueItem);
 }
+
+export async function createData(roomId: string, message: any, userId: string) {    
+    const shape = {
+        id: message.id,
+        roomId,
+        userId,
+        message,
+        action: "create"
+    };
+    
+    return await pushShape(shape as ShapeQueueItem);
+}
+
+type ShapeQueueItem = {
+    id: string;
+    roomId: string;
+    userId: string;
+    message: any;
+    action: "create" | "update";
+};

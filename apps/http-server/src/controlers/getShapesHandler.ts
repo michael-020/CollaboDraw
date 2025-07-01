@@ -17,7 +17,7 @@ export const getShapesHandler = async (req: Request, res: Response) => {
         });
         res.json(messages);
     } catch (error) {
-        console.log("Error while fetching chats", error);
+        console.error("Error while fetching chats", error);
         res.status(500).json({
             msg: "internal server error",
             error: (error as Error).message

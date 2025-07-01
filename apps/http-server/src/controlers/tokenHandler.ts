@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 
 export const tokenHandler = (req: Request, res: Response) => {
     try {
-        const token = req.cookies.jwt;
+        const token = req.cookies.collabodraw_jwt;
         if (!token) {
             res.status(401).json({ error: 'No token found' });
             return

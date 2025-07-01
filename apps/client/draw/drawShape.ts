@@ -124,7 +124,6 @@ export class DrawShapes{
 
     async loadExistingShapes() {
         this.existingShapes = await getExistingShapes(this.roomId)
-        console.log("existing Shapes array: ", this.existingShapes)
         this.redrawCanvas();
     }
       
@@ -613,9 +612,7 @@ export class DrawShapes{
     }
 
     removeShapeFromCanvas(shapeId: string) {
-        console.log("before removal: ", this.existingShapes)
         this.existingShapes = this.existingShapes.filter(shape => shape.id != shapeId)
-        console.log("after removal: ", this.existingShapes)
         this.redrawCanvas()
     }
 
@@ -1088,7 +1085,6 @@ export class DrawShapes{
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = shape.color || this.color;
             const text = shape.textContent;
-            console.log("text: ", text)
             this.ctx.fillText(text, shape.x, shape.y);
         }
         else if(shape.type === "ERASER"){
@@ -1241,7 +1237,6 @@ export class DrawShapes{
                     this.existingShapes.push(newShape);
                 }
                 else if(shape.type === "TEXT"){
-                    console.log("recieved msg: ", shape)
                     newShape = {
                         id: shape.id,
                         type: "TEXT",

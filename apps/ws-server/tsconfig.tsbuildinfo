@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/redis.ts","./src/lib/utils.ts"],"version":"5.7.3"}
+{"root":["./src/index.ts","./src/lib/types.ts","./src/lib/utils.ts","./src/queues/shapequeue.ts"],"version":"5.7.3"}

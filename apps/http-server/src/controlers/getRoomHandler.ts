@@ -15,7 +15,7 @@ export const getRoomHandler = async (req: Request, res: Response) => {
             room
         });
     } catch (error) {
-        console.log("Error while fetching room", error);
+        console.error("Error while fetching room", error);
         res.status(500).json({
             msg: "internal server error",
             error: (error as Error).message
