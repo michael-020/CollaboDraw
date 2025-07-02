@@ -127,10 +127,18 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
         )}
 
         {activeSection === "object" && (
-          <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              if (!loading && objectPrompt.trim()) {
+                handleSubmit("OBJECT", objectPrompt);
+              }
+            }}
+          >
             <div className="text-left">
               <button
                 className="mb-4 text-emerald-400 hover:text-white transition font-semibold"
+                type="button"
                 onClick={() => {
                   setActiveSection(null);
                   setResponse(null);
@@ -155,8 +163,8 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
               {error && <div className="text-red-400">{error}</div>}
             </div>
             <button
+              type="submit"
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-60"
-              onClick={() => handleSubmit("OBJECT", objectPrompt)}
               disabled={loading || !objectPrompt.trim()}
             >
               {loading ? (
@@ -205,14 +213,22 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
                 </button>
               </div>
             )}
-          </div>
+          </form>
         )}
 
         {activeSection === "flow" && (
-          <div>
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              if (!loading && flowPrompt.trim()) {
+                handleSubmit("FLOWCHART", flowPrompt);
+              }
+            }}
+          >
             <div className="text-left">
               <button
                 className="mb-4 text-purple-400 hover:text-white transition font-semibold"
+                type="button"
                 onClick={() => {
                   setActiveSection(null);
                   setResponse(null);
@@ -235,8 +251,8 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
               />
             </div>
             <button
+              type="submit"
               className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-60"
-              onClick={() => handleSubmit("FLOWCHART", flowPrompt)}
               disabled={loading || !flowPrompt.trim()}
             >
               {loading ? (
@@ -260,7 +276,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
                 </pre>
               </div>
             )}
-          </div>
+          </form>
         )}
       </div>
     </div>
