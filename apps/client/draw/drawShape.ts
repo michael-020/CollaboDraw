@@ -1420,12 +1420,9 @@ export class DrawShapes{
             }
             else if(message.type === "delete"){
                 const shapeId = message.message?.id || message.shapeId;
-                console.log("shapeId-1: ", shapeId)
-                console.log("existing shapes before: ", this.existingShapes)
                 if (shapeId) {
                     this.removeShapeFromCanvas(shapeId);
                 }
-                console.log("existing shapes after: ", this.existingShapes)
             }
         }
     }
@@ -1646,7 +1643,7 @@ export class DrawShapes{
 
         this.generatedShapes.forEach((shape: Shapes) => {
             let messageShape: any = { ...shape, roomId: this.roomId, userId }; 
-            console.log("user id in push to existing shape: ", userId)
+
             if (shape.type === "RECTANGLE") {
                 messageShape = {
                     type: "RECTANGLE",

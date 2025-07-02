@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 export const logoutHandler = async (req: Request, res: Response) => {
     try {
-        res.clearCookie("jwt")
+        res.clearCookie("collabodraw_jwt")
 
         res.status(200).json({
             msg: "Logged out successfully"

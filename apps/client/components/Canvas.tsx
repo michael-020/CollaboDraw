@@ -126,8 +126,6 @@ function Canvas({roomId, socket}: {
         else setShowAIModal(false);
     }, [tool]);
 
-    console.log("user: ", authUser)
-
     if (!authUser || isCheckingAuth) {
         return createPortal(
             <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]">

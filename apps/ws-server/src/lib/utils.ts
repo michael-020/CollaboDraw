@@ -242,7 +242,6 @@ export async function updateShapeInDatabase(shape: Shapes) {
 }
 
 export async function deleteShapeFromDatabase(shapeId: string) {
-    console.log("shapeId: ", shapeId)
     try {
         await prismaClient.shape.delete({
             where: { id: shapeId }

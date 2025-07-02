@@ -154,7 +154,6 @@ wss.on("connection", function connection(ws, request) {
     }
 
     if (parsedData.type === "delete") {
-      console.log("delete message: ", parsedData)
       await deleteShapeFromDatabase(parsedData.shapeId);
 
       const usersInRoom = users.filter(user => 

@@ -22,7 +22,10 @@ export interface IUser  {
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const token = req.cookies.collabodraw_jwt
-
+        if (!token) {
+            res.status(401).json({ msg: "No token provided" });
+            return;
+        }
         const decoded = jwt.verify(token, JWT_SECRET as jwt.Secret)
 
         if(decoded){

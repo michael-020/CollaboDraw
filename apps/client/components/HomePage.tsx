@@ -3,9 +3,10 @@ import { useRouter } from "next/navigation"
 import { useAuthStore } from "../stores/authStore/authStore"
 import { useEffect } from "react"
 import Link from "next/link"
+import { Loader2 } from "lucide-react";
 
 export default function HomePage() {
-  const { logout, authUser, checkAuth } = useAuthStore()
+  const { logout, authUser, checkAuth, isLoggingOut } = useAuthStore();
   const router = useRouter()
 
   useEffect(() => {
@@ -32,10 +33,14 @@ export default function HomePage() {
           Rooms
         </button>
         <button 
-          onClick={logout} 
-          className="px-4 py-2 rounded-md text-white font-semibold border border-gray-50 transition hover:bg-gray-700 "
+          onClick={logout}
+          disabled={isLoggingOut}
+          className="px-4 py-2 rounded-md text-white font-semibold border border-gray-50 transition hover:bg-gray-700 flex items-center justify-center min-w-[90px]"
         >
-          Logout
+          {isLoggingOut ? (
+            <Loader2 className="animate-spin size-5 mr-2" />
+          ) : null}
+          {isLoggingOut ? "Logging out..." : "Logout"}
         </button>
       </div>
 
