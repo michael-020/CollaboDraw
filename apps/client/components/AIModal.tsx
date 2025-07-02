@@ -74,6 +74,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     setFlowPrompt("");
     setLastPrompt("");
     onClose();
+    if(changeTool) changeTool("")
   }
 
   if (!open) return null;
@@ -139,12 +140,13 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
               </label>
               <input
                 type="text"
-                className="w-full px-4 py-2 rounded bg-neutral-800 text-white focus:outline-none mb-4"
+                className="w-full px-4 py-2 rounded bg-neutral-800 text-white focus:outline-none mb-1"
                 placeholder="e.g. house, snow man..."
                 value={objectPrompt}
                 onChange={e => setObjectPrompt(e.target.value)}
                 disabled={loading}
               />
+              {error && <div className="text-red-400">{error}</div>}
             </div>
             <button
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold transition disabled:opacity-60"
@@ -160,11 +162,10 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
                 "Submit"
               )}
             </button>
-            {error && <div className="mt-4 text-red-400">{error}</div>}
             {response && (
               <div className="mt-4 flex flex-col items-center w-full">
                 <div className="text-emerald-300 font-semibold mb-2">
-                  Click generated object for: <span className="text-white">{lastPrompt}</span>
+                  Generated object for: <span className="text-white">{lastPrompt}</span>
                 </div>
                 <div
                   style={{

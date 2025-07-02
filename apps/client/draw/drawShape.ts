@@ -1360,7 +1360,7 @@ export class DrawShapes{
         }
     }
 
-    // Public methods for external control
+    // Public methods for external controltue
     public setTool(tool: Tool) {
         this.selectedTool = tool;
     }

@@ -6,14 +6,6 @@ import { createObjectDrawingPrompt, generateUniqueId } from "../lib/utils";
 const drawingSchema = z.object({
   type: z.enum(["OBJECT", "FLOWCHART"]),
   content: z.string(),
-}).refine((data) => {
-  if (data.type === "OBJECT") {
-    return /^[^\s]+$/.test(data.content);
-  }
-  return true;
-}, {
-  message: "Content must be a single word when type is OBJECT",
-  path: ["content"],
 });
 
 
