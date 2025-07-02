@@ -113,6 +113,8 @@ export class DrawShapes{
     private isARRS: boolean = false; // Arrow Start
     private isARRE: boolean = false; // Arrow End
 
+    private hoveredShapeId: string | null = null;
+
     constructor(socket: WebSocket, roomId: string, canvas: HTMLCanvasElement, tool: Tool, color: Color, stroke: Stroke | number) {
         this.socket = socket
         this.roomId = roomId
@@ -176,15 +178,19 @@ export class DrawShapes{
             this.ctx.moveTo(point.x, point.y)
         }
         else if(this.selectedTool === "ERASER"){
-            this.currentPoints = []
-            const point = {
-                x: mouseX,
-                y: mouseY
+            const rect = this.canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            let found = false;
+            for (const shape of this.existingShapes) {
+                if (this.isPointInShape(mouseX, mouseY, shape)) {
+                    this.hoveredShapeId = shape.id || null;
+                    found = true;
+                    break;
+                }
             }
-            this.currentPoints.push(point)
-            this.setLineProperties()
-            this.ctx.beginPath()
-            this.ctx.moveTo(point.x, point.y)
+            if (!found) this.hoveredShapeId = null;
         }
         else if(this.selectedTool === "SELECT"){
             // Find if user clicked on an existing shape
@@ -323,6 +329,18 @@ export class DrawShapes{
             this.ctx.strokeStyle = "#262626"
             this.ctx.lineTo(point.x, point.y)
             this.ctx.stroke()
+
+            let found = false;
+            for (const shape of this.existingShapes) {
+                if (this.isPointInShape(mouseX, mouseY, shape)) {
+                    this.hoveredShapeId = shape.id || null;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) this.hoveredShapeId = null;
+
+            this.redrawCanvas();
         }
     }
 
@@ -470,7 +488,6 @@ export class DrawShapes{
             const endX = e.clientX + scrollX
             const endY = e.clientY + scrollY
             
-            // Create a temporary ID for local tracking
             const tempId = `temp-${Date.now()}`;
             
             // Create the shape object
@@ -577,7 +594,6 @@ export class DrawShapes{
             }
         }
         else if(this.selectedTool === "ERASER"){
-            // 1. Check for intersection with existing shapes
             const erasedShapeIds: string[] = [];
             for (const shape of this.existingShapes) {
                 if (!shape.id) continue;
@@ -586,10 +602,8 @@ export class DrawShapes{
                 }
             }
 
-            // 2. Remove erased shapes locally and notify server
             for (const shapeId of erasedShapeIds) {
                 this.removeShapeFromCanvas(shapeId);
-                // Send delete message to server
                 const message = {
                     type: "delete",
                     roomId: this.roomId,
@@ -598,7 +612,6 @@ export class DrawShapes{
                 this.socket.send(JSON.stringify(message));
             }
 
-            // 3. Optionally, clear eraser path and redraw
             this.currentPoints = [];
             this.redrawCanvas();
         }
@@ -1077,6 +1090,16 @@ export class DrawShapes{
     }
 
     drawShape(shape: Shapes) {
+        // Lower opacity if hovered and eraser is selected
+        if (
+            this.selectedTool === "ERASER" &&
+            this.hoveredShapeId &&
+            shape.id === this.hoveredShapeId
+        ) {
+            this.ctx.save();
+            this.ctx.globalAlpha = 0.3;
+        }
+
         this.ctx.strokeStyle = shape.color || this.color;
         // Apply strokeWidth if available, otherwise use default
         this.ctx.lineWidth = shape.strokeWidth || this.stroke;
@@ -1126,6 +1149,16 @@ export class DrawShapes{
                 }
                 this.ctx.stroke();
             }
+        }
+
+        // Restore alpha if changed
+        if (
+            this.selectedTool === "ERASER" &&
+            this.hoveredShapeId &&
+            shape.id === this.hoveredShapeId
+        ) {
+            this.ctx.globalAlpha = 1.0;
+            this.ctx.restore();
         }
     }
 

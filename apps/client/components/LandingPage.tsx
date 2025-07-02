@@ -36,14 +36,16 @@ const BackgroundGrid = () => {
 }
 
 const LandingPage = () => {
-  const { authUser } = useAuthStore()
+  const { authUser, checkAuth } = useAuthStore()
   const router = useRouter()
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
 
   useEffect(() => {
     if (authUser) {
       router.replace("/home-page")
-    } else {
-      router.replace("/")
     }
   }, [authUser, router])
 
