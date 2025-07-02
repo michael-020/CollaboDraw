@@ -3,67 +3,72 @@
 import { Color, Stroke, Tool } from "@/hooks/useDraw";
 import { getExistingShapes } from "./http";
 
-export type Shapes = {
-    id?: string,
-    type: "RECTANGLE",
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "CIRCLE",
-    x: number, 
-    y: number, 
-    radiusX: number,
-    radiusY: number,
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "LINE",
-    x: number, 
-    y: number, 
-    points: {
-        endX: number,
-        endY: number
-    },
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "ARROW",
-    x: number, 
-    y: number, 
-    points: {
-        endX: number,
-        endY: number
-    },
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "PENCIL",
-    points: Array<{x: number, y: number}>,
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "TEXT",
-    x: number,
-    y: number,
-    textContent: string
-    color: string,
-    strokeWidth?: number
-} | {
-    id?: string,
-    type: "ERASER",
-    points: Array<{x: number, y: number}>,
-    color: string,
-    strokeWidth?: number
-}
+export type Shapes = (
+    {
+        id?: string,
+        type: "RECTANGLE",
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "CIRCLE",
+        x: number, 
+        y: number, 
+        radiusX: number,
+        radiusY: number,
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "LINE",
+        x: number, 
+        y: number, 
+        points: {
+            endX: number,
+            endY: number
+        },
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "ARROW",
+        x: number, 
+        y: number, 
+        points: {
+            endX: number,
+            endY: number
+        },
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "PENCIL",
+        points: Array<{x: number, y: number}>,
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "TEXT",
+        x: number,
+        y: number,
+        textContent: string
+        color: string,
+        strokeWidth?: number
+    } | {
+        id?: string,
+        type: "ERASER",
+        points: Array<{x: number, y: number}>,
+        color: string,
+        strokeWidth?: number
+    }
+) & {
+    roomId?: string;
+    userId?: string;
+};
 
 export class DrawShapes{
     private socket: WebSocket
@@ -1373,12 +1378,12 @@ export class DrawShapes{
         this.stroke = stroke;
     }
 
-    drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[]) {
+    drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[], roomId: string, userId: string) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         const shapesWithTempId = shapes.map(shape => {
             const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-            return { ...shape, id: tempId } as Shapes;
+            return { ...shape, id: tempId, roomId, userId } as Shapes;
         });
 
         for (const shape of shapesWithTempId) {
@@ -1414,9 +1419,9 @@ export class DrawShapes{
         this.generatedShapes = shapesWithTempId; 
     }
 
-    pushToExistingShapes(){
+    pushToExistingShapes(userId: string) {
         this.generatedShapes.forEach((shape: Shapes) => {
-            let messageShape: any = {};
+            let messageShape: any = { ...shape, roomId: this.roomId, userId }; 
 
             if (shape.type === "RECTANGLE") {
                 messageShape = {
@@ -1497,9 +1502,7 @@ export class DrawShapes{
         });
 
         this.existingShapes.push(...this.generatedShapes);
-        
         this.redrawCanvas();
-
         this.generatedShapes = [];
     }
 

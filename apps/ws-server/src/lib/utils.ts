@@ -148,76 +148,85 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
 }
 
 export async function updateShapeInDatabase(shape: Shapes) {
-  if(!shape.id){
-    console.error("shape id is not found");
-    return;
-  };
+    const room = await prismaClient.room.findUnique({
+        where: { id: shape.roomId }
+    });
+    if (!room) {
+        console.error(`Room not found: ${shape.roomId}. Skipping shape update.`);
+        return; 
+    }
 
-  const existingShape = await prismaClient.shape.findUnique({
-      where: { id: shape.id }
-  });
+    const user = await prismaClient.user.findUnique({
+        where: { id: shape.userId }
+    });
+    if (!user) {
+        console.error(`User not found: ${shape.userId}. Skipping shape update.`);
+        return;
+    }
 
-  if(!existingShape){
-    console.error("shape is not found");
-    return;
-  };
+    // Check if the shape exists
+    const existingShape = await prismaClient.shape.findUnique({
+        where: { id: shape.id }
+    });
 
-  const shapeData: any = {
-      id: shape.id,
-      type: shape.type,
-      color: shape.color,
-  };
+    const shapeData: any = {
+        id: shape.id,
+        type: shape.type,
+        color: shape.color,
+    };
 
-  switch (shape.type) {
-      case "RECTANGLE":
-        shapeData.x = shape.x;
-        shapeData.y = shape.y;
-        shapeData.width = Number(shape.width);
-        shapeData.height = Number(shape.height);
-        break;
-      case "CIRCLE":
-        shapeData.x = shape.x;
-        shapeData.y = shape.y;
-        shapeData.radiusX = Number(shape.radiusX);
-        shapeData.radiusY = Number(shape.radiusY);
-        break;
-      case "LINE":  
-        shapeData.x = shape.x;
-        shapeData.y = shape.y;
-        shapeData.points = shape.points;
-      case "ARROW":
-        shapeData.x = shape.x;
-        shapeData.y = shape.y;
-        shapeData.points = shape.points;
-        break;
-      case "PENCIL":
-        shapeData.points = shape.points;
-        break;
-      case "TEXT":
-        shapeData.x = shape.x;
-        shapeData.y = shape.y;
-        shapeData.textContent = shape.textContent;
-        break;
-      default:
-          throw new Error(`Unknown shape type`);
-  }
+    switch (shape.type) {
+        case "RECTANGLE":
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.width = Number(shape.width);
+          shapeData.height = Number(shape.height);
+          break;
+        case "CIRCLE":
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.radiusX = Number(shape.radiusX);
+          shapeData.radiusY = Number(shape.radiusY);
+          break;
+        case "LINE":  
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.points = shape.points;
+        case "ARROW":
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.points = shape.points;
+          break;
+        case "PENCIL":
+          shapeData.points = shape.points;
+          break;
+        case "TEXT":
+          shapeData.x = shape.x;
+          shapeData.y = shape.y;
+          shapeData.textContent = shape.textContent;
+          break;
+        default:
+            throw new Error(`Unknown shape type`);
+    }
 
-  shapeData.room = {
-      connect: { id: shape.roomId } 
-  };
+    shapeData.room = {
+        connect: { id: shape.roomId } // Connect to the room using its ID
+    };
 
-  shapeData.user = {
-      connect: { id: shape.userId } 
-  };
+    shapeData.user = {
+        connect: { id: shape.userId } // Connect to the user using their ID
+    };
 
-  if (existingShape) {
-      await prismaClient.shape.update({
-          where: { id: shape.id },
-          data: shapeData
-      });
-  } else {
-      await prismaClient.shape.create({
-          data: shapeData
-      });
-  }
+    if (existingShape) {
+        // Update existing shape
+        await prismaClient.shape.update({
+            where: { id: shape.id },
+            data: shapeData
+        });
+    } else {
+        // Create new shape
+        await prismaClient.shape.create({
+            data: shapeData
+        });
+    }
 }

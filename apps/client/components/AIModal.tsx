@@ -6,6 +6,8 @@ import { AxiosInstance } from "@/lib/axios";
 import { DrawShapes } from "@/draw/drawShape";
 
 interface AIModalProps {
+  roomId: string,
+  userId: string,
   open: boolean;
   onClose: () => void;
   onSubmit?: (objectPrompt: string, flowPrompt: string) => void;
@@ -13,7 +15,7 @@ interface AIModalProps {
   drawShapeRef: RefObject<DrawShapes | null>;
 }
 
-const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeRef }) => {
+const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeRef, roomId, userId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [objectPrompt, setObjectPrompt] = useState("");
   const [flowPrompt, setFlowPrompt] = useState("");
@@ -43,7 +45,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     if (response && Array.isArray(response) && previewCanvasRef.current) {
       const ctx = previewCanvasRef.current.getContext("2d");
       if (ctx) {
-        drawShapeRef.current?.drawGeneratedShapes(ctx, response);
+        drawShapeRef.current?.drawGeneratedShapes(ctx, response, roomId, userId);
       }
     }
   }, [response]);
@@ -66,7 +68,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
   };
 
   const insertIntoCanvas = () => {
-    drawShapeRef.current?.pushToExistingShapes();
+    drawShapeRef.current?.pushToExistingShapes(userId);
     setActiveSection(null);
     setResponse(null);
     setError(null);

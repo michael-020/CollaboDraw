@@ -7,6 +7,7 @@ import { DrawShapes } from '@/draw/drawShape'
 import SidebarToggle from './SidebarToggle'
 import LeaveRoom from './LeaveRoom'
 import AIModal from "./AIModal";
+import { useAuthStore } from '@/stores/authStore/authStore'
 
 function Canvas({roomId, socket}: {
     roomId: string,
@@ -30,6 +31,7 @@ function Canvas({roomId, socket}: {
     const [textContent, setTextContent] = useState("")
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
     const [showAIModal, setShowAIModal] = useState(false);
+    const { authUser } = useAuthStore();
 
     const getCanvasCoordinates = (clientX: number, clientY: number) => {
         const canvas = canvasRef.current
@@ -165,6 +167,8 @@ function Canvas({roomId, socket}: {
             }}
         />
         <AIModal
+            userId={authUser?.id as string}
+            roomId={roomId}
             open={showAIModal}
             onClose={() => setShowAIModal(false)}
             changeTool={changeTool}

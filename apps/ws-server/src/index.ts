@@ -1,7 +1,8 @@
 import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
-import { createData, updateData } from "./queues/shapeQueue";
+import { updateData } from "./queues/shapeQueue";
+import { insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -68,7 +69,9 @@ wss.on("connection", function connection(ws, request) {
     if(parsedData.type === "update"){
       const roomId = parsedData.roomId;
       const message = parsedData.message;
-
+      message.roomId = roomId
+      console.log("roomId: ", roomId)
+      console.log("update message: ", parsedData)
       try {
         if (!message.id) {
           console.error("Shape ID is required for edit operations");
@@ -92,9 +95,10 @@ wss.on("connection", function connection(ws, request) {
             },
             roomId
           };
+
           user.ws.send(JSON.stringify(broadcastMessage));
         });
-        
+
         await updateData(roomId, message, userId); 
       } catch (error) {
         console.error("Error processing edit operation:", error);
@@ -115,7 +119,8 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      await createData(roomId, message, userId);
+      console.log("draw message: ", parsedData)
+      const shapeId = await insertIntoDB(roomId, message, userId);
       
       const usersInRoom = users.filter(user => 
         user.rooms.includes(roomId.toString()) && user.userId !== userId
@@ -127,6 +132,7 @@ wss.on("connection", function connection(ws, request) {
           message: {
             ...message,
             type: message.type,
+            id: shapeId,
             tempId: message.tempId 
           },
           roomId
@@ -141,6 +147,7 @@ wss.on("connection", function connection(ws, request) {
           message: {
             ...message,
             type: message.type,
+            id: shapeId,
             tempId: message.tempId
           },
           roomId
