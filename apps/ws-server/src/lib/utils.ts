@@ -7,113 +7,37 @@ interface Point {
 }
 
 export const insertIntoDB = async (roomId: string, message: any, userId: string) => {
-  let newShape;
-  if(message.type === "RECTANGLE"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "RECTANGLE",
-        width: Number(message.width),
-        height: Number(message.height),
-        x: Number(message.x),
-        y: Number(message.y),
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-          connect: { id: userId }
-        },
-        room: {
-          connect: { id: roomId }
-        }
-      }
-    })
-    return newShape.id
-  } 
-  else if(message.type === "CIRCLE"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "CIRCLE",
-        x: Number(message.x),
-        y: Number(message.y),
-        radiusX: Number(message.radiusX),
-        radiusY: Number(message.radiusY),
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-            connect: { id: userId }
-        },
-        room: {
-            connect: { id: roomId }
-        }
-      }
-    })
-    return newShape.id
-  }
-  else if(message.type === "LINE"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "LINE",
-        x: Number(message.x),
-        y: Number(message.y),
-        points: message.points, // points -> {endX, endY}
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-          connect: { id: userId }
-        },
-        room: {
-          connect: { id: roomId }
-        }
-      }
-    })
-    return newShape.id
-  } 
-  else if(message.type === "ARROW"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "ARROW",
-        x: Number(message.x),
-        y: Number(message.y),
-        points: message.points, // points -> {endX, endY}
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-            connect: { id: userId }
-        },
-        room: {
-            connect: { id: roomId }
-        }
-      }
-    })
-    return newShape.id
-  }
-  else if(message.type === "PENCIL"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "PENCIL",
-        x: message.points[0].x,
-        y: message.points[0].y,
-        points: message.points,
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-            connect: { id: userId}
-        },
-        room: {
-            connect: { id: roomId}
-        }
-      }
-    })
-    return newShape.id
-  }
-  else if(message.type === "TEXT"){
-    if(message.textContent){
+  try {
+    let newShape;
+    if(message.type === "RECTANGLE"){
       newShape = await prismaClient.shape.create({
         data: {
-          type: "TEXT",
+          type: "RECTANGLE",
+          width: Number(message.width),
+          height: Number(message.height),
           x: Number(message.x),
           y: Number(message.y),
           color: message.color,
-          textContent: message.textContent,
+          strokeWidth: Number(message.strokeWidth) || 1,
+          user: {
+            connect: { id: userId }
+          },
+          room: {
+            connect: { id: roomId }
+          }
+        }
+      })
+      return newShape.id
+    } 
+    else if(message.type === "CIRCLE"){
+      newShape = await prismaClient.shape.create({
+        data: {
+          type: "CIRCLE",
+          x: Number(message.x),
+          y: Number(message.y),
+          radiusX: Number(message.radiusX),
+          radiusY: Number(message.radiusY),
+          color: message.color,
           strokeWidth: Number(message.strokeWidth) || 1,
           user: {
               connect: { id: userId }
@@ -122,32 +46,114 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
               connect: { id: roomId }
           }
         }
-      }) 
+      })
       return newShape.id
     }
-  }
-  else if(message.type === "ERASER"){
-    newShape = await prismaClient.shape.create({
-      data: {
-        type: "ERASER",
-        x: message.points[0].x,
-        y: message.points[0].y,
-        points: message.points,
-        color: message.color,
-        strokeWidth: Number(message.strokeWidth) || 1,
-        user: {
-            connect: { id: userId}
-        },
-        room: {
-            connect: { id: roomId}
+    else if(message.type === "LINE"){
+      newShape = await prismaClient.shape.create({
+        data: {
+          type: "LINE",
+          x: Number(message.x),
+          y: Number(message.y),
+          points: message.points, // points -> {endX, endY}
+          color: message.color,
+          strokeWidth: Number(message.strokeWidth) || 1,
+          user: {
+            connect: { id: userId }
+          },
+          room: {
+            connect: { id: roomId }
+          }
         }
+      })
+      return newShape.id
+    } 
+    else if(message.type === "ARROW"){
+      newShape = await prismaClient.shape.create({
+        data: {
+          type: "ARROW",
+          x: Number(message.x),
+          y: Number(message.y),
+          points: message.points, // points -> {endX, endY}
+          color: message.color,
+          strokeWidth: Number(message.strokeWidth) || 1,
+          user: {
+              connect: { id: userId }
+          },
+          room: {
+              connect: { id: roomId }
+          }
+        }
+      })
+      return newShape.id
+    }
+    else if(message.type === "PENCIL"){
+      newShape = await prismaClient.shape.create({
+        data: {
+          type: "PENCIL",
+          x: message.points[0].x,
+          y: message.points[0].y,
+          points: message.points,
+          color: message.color,
+          strokeWidth: Number(message.strokeWidth) || 1,
+          user: {
+              connect: { id: userId}
+          },
+          room: {
+              connect: { id: roomId}
+          }
+        }
+      })
+      return newShape.id
+    }
+    else if(message.type === "TEXT"){
+      if(message.textContent){
+        newShape = await prismaClient.shape.create({
+          data: {
+            type: "TEXT",
+            x: Number(message.x),
+            y: Number(message.y),
+            color: message.color,
+            textContent: message.textContent,
+            strokeWidth: Number(message.strokeWidth) || 1,
+            user: {
+                connect: { id: userId }
+            },
+            room: {
+                connect: { id: roomId }
+            }
+          }
+        }) 
+        return newShape.id
       }
-    })
-    return newShape.id
+    }
+    else if(message.type === "ERASER"){
+      newShape = await prismaClient.shape.create({
+        data: {
+          type: "ERASER",
+          x: message.points[0].x,
+          y: message.points[0].y,
+          points: message.points,
+          color: message.color,
+          strokeWidth: Number(message.strokeWidth) || 1,
+          user: {
+              connect: { id: userId}
+          },
+          room: {
+              connect: { id: roomId}
+          }
+        }
+      })
+      return newShape.id
+    }
+  } catch (error) {
+    console.error("Error while inserting shape in DB: ", error)
   }
+  
 }
 
 export async function updateShapeInDatabase(shape: Shapes) {
+  try {
     const room = await prismaClient.room.findUnique({
         where: { id: shape.roomId }
     });
@@ -228,5 +234,24 @@ export async function updateShapeInDatabase(shape: Shapes) {
         await prismaClient.shape.create({
             data: shapeData
         });
+    }
+  } catch (error) {
+    console.error("Error while updating a shape", error)
+  }
+   
+}
+
+export async function deleteShapeFromDatabase(shapeId: string) {
+    console.log("shapeId: ", shapeId)
+    try {
+        await prismaClient.shape.delete({
+            where: { id: shapeId }
+        });
+    } catch (err: any) {
+        if (err.code === 'P2025') {
+            console.warn(`Shape with id ${shapeId} not found for deletion.`, err);
+            return;
+        }
+        throw err; 
     }
 }

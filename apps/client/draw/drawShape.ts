@@ -577,39 +577,62 @@ export class DrawShapes{
             }
         }
         else if(this.selectedTool === "ERASER"){
-            // Create a temporary ID for local tracking
-            const tempId = `temp-${Date.now()}`;
-            
-            // Create the shape object
-            const shapeData = {
-                id: tempId,
-                type: "ERASER" as const,
-                points: this.currentPoints,
-                color: "#262626",
-                strokeWidth: this.stroke
-            };
-            
-            // Add to local collection first
-            this.existingShapes.push(shapeData);
-            
-            // Redraw canvas to show the new shape
-            this.redrawCanvas();
-            
-            const message= {
-                type: "draw",
-                roomId: this.roomId,
-                message: {
-                    type: "ERASER",
-                    points: this.currentPoints,
-                    color: "#262626",
-                    strokeWidth: this.stroke,
-                    tempId
+            // 1. Check for intersection with existing shapes
+            const erasedShapeIds: string[] = [];
+            for (const shape of this.existingShapes) {
+                if (!shape.id) continue;
+                if (this.doesEraserIntersectShape(this.currentPoints, shape)) {
+                    erasedShapeIds.push(shape.id);
                 }
             }
 
-            this.socket.send(JSON.stringify(message));
-            this.currentPoints = []
+            // 2. Remove erased shapes locally and notify server
+            for (const shapeId of erasedShapeIds) {
+                this.removeShapeFromCanvas(shapeId);
+                // Send delete message to server
+                const message = {
+                    type: "delete",
+                    roomId: this.roomId,
+                    shapeId
+                };
+                this.socket.send(JSON.stringify(message));
+            }
+
+            // 3. Optionally, clear eraser path and redraw
+            this.currentPoints = [];
+            this.redrawCanvas();
         }
+    }
+
+    doesEraserIntersectShape(eraserPoints: Array<{x: number, y: number}>, shape: Shapes): boolean {
+        const threshold = 8; // px, adjust as needed
+
+        // For RECTANGLE, CIRCLE, LINE, ARROW, TEXT: check if any eraser point is "in" the shape
+        if (shape.type !== "PENCIL" && shape.type !== "ERASER") {
+            for (const pt of eraserPoints) {
+                if (this.isPointInShape(pt.x, pt.y, shape)) return true;
+            }
+            return false;
+        }
+
+        // For PENCIL/ERASER: check if any eraser point is near any segment
+        for (const ept of eraserPoints) {
+            for (let i = 1; i < shape.points.length; i++) {
+                const p1 = shape.points[i - 1];
+                const p2 = shape.points[i];
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                if (length === 0) continue;
+                const t = ((ept.x - p1.x) * dx + (ept.y - p1.y) * dy) / (length * length);
+                if (t < 0 || t > 1) continue;
+                const projX = p1.x + t * dx;
+                const projY = p1.y + t * dy;
+                const dist = Math.sqrt((ept.x - projX) ** 2 + (ept.y - projY) ** 2);
+                if (dist <= threshold) return true;
+            }
+        }
+        return false;
     }
 
     handleWheel(event: WheelEvent) {
@@ -1361,6 +1384,15 @@ export class DrawShapes{
                     this.selectedShape = updatedShape;
                     this.drawSelectionHandles(this.selectedShape);
                 }
+            }
+            else if(message.type === "delete"){
+                const shapeId = message.message?.id || message.shapeId;
+                console.log("shapeId-1: ", shapeId)
+                console.log("existing shapes before: ", this.existingShapes)
+                if (shapeId) {
+                    this.removeShapeFromCanvas(shapeId);
+                }
+                console.log("existing shapes after: ", this.existingShapes)
             }
         }
     }

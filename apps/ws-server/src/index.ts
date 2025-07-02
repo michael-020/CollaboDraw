@@ -2,7 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { updateData } from "./queues/shapeQueue";
-import { insertIntoDB } from "./lib/utils";
+import { deleteShapeFromDatabase, insertIntoDB } from "./lib/utils";
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -151,6 +151,28 @@ wss.on("connection", function connection(ws, request) {
         };
         originalUser.ws.send(JSON.stringify(responseMessage));
       }
+    }
+
+    if (parsedData.type === "delete") {
+      console.log("delete message: ", parsedData)
+      await deleteShapeFromDatabase(parsedData.shapeId);
+
+      const usersInRoom = users.filter(user => 
+        user.rooms.includes(parsedData.roomId.toString()) && user.userId !== userId
+      );
+
+      usersInRoom.forEach(user => {
+        const broadcastMessage = {
+          type: "delete",
+          message: {
+            ...message,
+            id: parsedData.shapeId,
+            tempId: parsedData.tempId 
+          },
+          roomId: parsedData.roomId
+        };
+        user.ws.send(JSON.stringify(broadcastMessage));
+      });
     }
   });
 
