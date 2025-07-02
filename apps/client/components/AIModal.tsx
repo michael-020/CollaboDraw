@@ -51,15 +51,19 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
   }, [response]);
 
   const handleSubmit = async (type: "OBJECT" | "FLOWCHART", content: string) => {
+    if (!userId) {
+      setError("You must be logged in to use AI drawing.");
+      return;
+    }
     setLoading(true);
     setResponse(null);
     setError(null);
-    setLastPrompt(content); // Save the prompt for display
+    setLastPrompt(content); 
     try {
-      const res = await AxiosInstance.post("/user/generate-drawing", { type, content });
+      const res = await AxiosInstance.post("/user/generate-drawing", { type, content, roomId });
       setResponse(res.data.result || res.data);
-      setObjectPrompt(""); // Clear input after submit
-      setFlowPrompt("");   // Clear input after submit
+      setObjectPrompt(""); 
+      setFlowPrompt("");   
     } catch (err: any) {
       setError(err?.response?.data?.msg || "Failed to generate drawing.");
     } finally {

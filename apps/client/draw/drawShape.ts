@@ -1487,7 +1487,7 @@ export class DrawShapes{
     pushToExistingShapes(userId: string) {
         this.generatedShapes.forEach((shape: Shapes) => {
             let messageShape: any = { ...shape, roomId: this.roomId, userId }; 
-
+            console.log("user id in push to existing shape: ", userId)
             if (shape.type === "RECTANGLE") {
                 messageShape = {
                     type: "RECTANGLE",

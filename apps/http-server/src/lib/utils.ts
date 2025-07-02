@@ -21,44 +21,40 @@ export function generateUniqueId(): string {
   return Math.random().toString(36).substr(2, 9);
 }
 
-export function createObjectDrawingPrompt(objectName: string): string {
+export function createObjectDrawingPrompt(objectName: string, roomId: string, userId: string): string {
   return `You are a drawing assistant that converts object names into drawing coordinates. 
-  
-  Given the object "${objectName}", create a simple visual representation using basic shapes.
+  Given the object "${objectName}", create a simple but recognizable visual representation using basic shapes.
+  CRITICAL: Return ONLY a valid JSON array of shape objects. No explanations, no additional text, no markdown formatting - just the raw JSON array.
+  Each shape must have this EXACT structure:
 
-  Return ONLY a valid JSON array of shape objects. Each shape must have this exact structure:
-
-  For RECTANGLE:
+  RECTANGLE:
   {
-    "id": "unique_string_id",
-    "roomId": "temp_room",
-    "userId": "temp_user", 
+    "roomId": "${roomId}",
+    "userId": "${userId}", 
     "type": "RECTANGLE",
     "x": number (left position),
     "y": number (top position), 
     "width": number,
     "height": number,
-    "color": "hex_color_code"
+    "color": "#ffffff"
   }
 
-  For CIRCLE:
+  CIRCLE:
   {
-    "id": "unique_string_id",
-    "roomId": "temp_room",
-    "userId": "temp_user",
+    "roomId": "${roomId}",
+    "userId": "${userId}",
     "type": "CIRCLE", 
     "x": number (center x),
     "y": number (center y),
     "radiusX": number,
     "radiusY": number, 
-    "color": "hex_color_code"
+    "color": "#ffffff"
   }
 
-  For LINE:
+  LINE:
   {
-    "id": "unique_string_id",
-    "roomId": "temp_room", 
-    "userId": "temp_user",
+    "roomId": "${roomId}", 
+    "userId": "${userId}",
     "type": "LINE",
     "x": number (start x),
     "y": number (start y),
@@ -66,53 +62,100 @@ export function createObjectDrawingPrompt(objectName: string): string {
       "endX": number,
       "endY": number
     },
-    "color": "hex_color_code"
+    "color": "#ffffff"
   }
 
-  For TEXT:
+  ARROW:
   {
-    "id": "unique_string_id", 
-    "roomId": "temp_room",
-    "userId": "temp_user",
+    "roomId": "${roomId}", 
+    "userId": "${userId}",
+    "type": "ARROW",
+    "x": number (start x), 
+    "y": number (start y), 
+    "points": {
+      "endX": number,
+      "endY": number
+    },
+    "color": "#ffffff"
+  }
+
+  TEXT:
+  {
+    "roomId": "${roomId}",
+    "userId": "${userId}",
     "type": "TEXT",
     "textContent": "text_to_display",
-    "x": number,
-    "y": number, 
+    "x": number (left position),
+    "y": number (top position), 
     "points": [{"letter": "each_letter"}],
-    "color": "hex_color_code"
+    "color": "#ffffff"
   }
 
-  Guidelines:
-  - Use coordinates within a 800x600 canvas
-  - Choose only #ffffff color for all the shapes
-  - Break down complex objects into 2-5 basic shapes
-  - Make shapes proportional and visually appealing
-  - Generate unique IDs for each shape
-  - Return ONLY the JSON array, no additional text or explanation
+  STRICT REQUIREMENTS:
+  - Canvas size: 800x600 pixels (x: 0-800, y: 0-600)
+  - ALL shapes must use color "#ffffff" 
+  - Use 3-6 shapes for clear object recognition
+  - Ensure shapes are well-proportioned and centered
+  - Make the object easily identifiable
+  - Position shapes to create a cohesive representation
 
   Example for "house":
   [
     {
-      "id": "rect1",
-      "roomId": "temp_room", 
-      "userId": "temp_user",
+      "roomId": "${roomId}",
+      "userId": "${userId}",
       "type": "RECTANGLE",
       "x": 300,
-      "y": 350,
-      "width": 200, 
+      "y": 300,
+      "width": 200,
       "height": 150,
-      "color": "#8B4513"
+      "color": "#ffffff"
     },
     {
-      "id": "rect2",
-      "roomId": "temp_room",
-      "userId": "temp_user", 
+      "roomId": "${roomId}",
+      "userId": "${userId}",
+      "type": "LINE",
+      "x": 300,
+      "y": 300,
+      "points": {
+        "endX": 400,
+        "endY": 200
+      },
+      "color": "#ffffff"
+    },
+    {
+      "roomId": "${roomId}",
+      "userId": "${userId}",
+      "type": "LINE",
+      "x": 400,
+      "y": 200,
+      "points": {
+        "endX": 500,
+        "endY": 300
+      },
+      "color": "#ffffff"
+    },
+    {
+      "roomId": "${roomId}",
+      "userId": "${userId}",
       "type": "RECTANGLE",
-      "x": 350,
-      "y": 450,
+      "x": 375,
+      "y": 380,
       "width": 50,
-      "height": 50,
-      "color": "#654321"
+      "height": 70,
+      "color": "#ffffff"
+    },
+    {
+      "roomId": "${roomId}",
+      "userId": "${userId}",
+      "type": "RECTANGLE",
+      "x": 320,
+      "y": 330,
+      "width": 40,
+      "height": 30,
+      "color": "#ffffff"
     }
-  ]`;
+  ]
+
+  REMEMBER: Return ONLY the JSON array for "${objectName}". No other text.`;
 }

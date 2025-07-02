@@ -70,8 +70,6 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
       message.roomId = roomId
-      console.log("roomId: ", roomId)
-      console.log("update message: ", parsedData)
       try {
         if (!message.id) {
           console.error("Shape ID is required for edit operations");
@@ -119,7 +117,6 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      console.log("draw message: ", parsedData)
       const shapeId = await insertIntoDB(roomId, message, userId);
       
       const usersInRoom = users.filter(user => 

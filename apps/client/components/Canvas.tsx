@@ -8,6 +8,8 @@ import SidebarToggle from './SidebarToggle'
 import LeaveRoom from './LeaveRoom'
 import AIModal from "./AIModal";
 import { useAuthStore } from '@/stores/authStore/authStore'
+import { Loader2 } from 'lucide-react'
+import { createPortal } from 'react-dom'
 
 function Canvas({roomId, socket}: {
     roomId: string,
@@ -31,7 +33,7 @@ function Canvas({roomId, socket}: {
     const [textContent, setTextContent] = useState("")
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
     const [showAIModal, setShowAIModal] = useState(false);
-    const { authUser } = useAuthStore();
+    const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
     const getCanvasCoordinates = (clientX: number, clientY: number) => {
         const canvas = canvasRef.current
@@ -99,24 +101,41 @@ function Canvas({roomId, socket}: {
         }
         return undefined;
     };
+
+    useEffect(() => {
+        if (!authUser) {
+            checkAuth();
+        }
+    }, [authUser, checkAuth]);
     
     useEffect(() => {
-        if(canvasRef.current){
-            const canvas = canvasRef.current
-            const g = new DrawShapes(socket, roomId, canvas, tool as Tool, color, stroke)
-            drawShapeRef.current = g
-            document.addEventListener('mousedown', handleClickOutside)
+        if (canvasRef.current && authUser) {
+            const canvas = canvasRef.current;
+            const g = new DrawShapes(socket, roomId, canvas, tool as Tool, color, stroke);
+            drawShapeRef.current = g;
+            document.addEventListener('mousedown', handleClickOutside);
             return () => {
-                g.removeEventListeners()
-                document.removeEventListener('mousedown', handleClickOutside)
-            }
+                g.removeEventListeners();
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
         }
-    }, [roomId, socket])
+    }, [roomId, socket, authUser]);
 
     useEffect(() => {
         if (tool === "AI") setShowAIModal(true);
         else setShowAIModal(false);
     }, [tool]);
+
+    console.log("user: ", authUser)
+
+    if (!authUser || isCheckingAuth) {
+        return createPortal(
+            <div className="fixed inset-0 flex items-center justify-center bg-black/70 z-[9999]">
+                <Loader2 className="animate-spin size-10 text-emerald-400" />
+            </div>,
+            document.body
+        );
+    }
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
@@ -167,9 +186,9 @@ function Canvas({roomId, socket}: {
             }}
         />
         <AIModal
-            userId={authUser?.id as string}
+            userId={authUser?.id || ""}
             roomId={roomId}
-            open={showAIModal}
+            open={showAIModal && !!authUser?.id} // Only open if userId is present
             onClose={() => setShowAIModal(false)}
             changeTool={changeTool}
             drawShapeRef={drawShapeRef}

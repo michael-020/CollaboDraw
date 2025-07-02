@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import axios from "axios";
 import z from "zod";
 import { createObjectDrawingPrompt, generateUniqueId } from "../lib/utils";
+import { prismaClient } from "@repo/db/client";
 
 const drawingSchema = z.object({
   type: z.enum(["OBJECT", "FLOWCHART"]),
   content: z.string(),
+  roomId: z.string()
 });
 
 
@@ -19,10 +21,26 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
       res.status(401).json({
         msg: "Invalid inputs"
       })
+      console.error("Zod error: ", zodResponse.error)
       return
     }
 
-    const { type, content } = zodResponse.data;
+    const { type, content, roomId } = zodResponse.data;
+
+    const userId = req.user.id
+
+    const checkRoom = await prismaClient.room.findUnique({
+      where: {
+        id: roomId
+      }
+    })
+
+    if(!checkRoom){
+      res.status(401).json({
+        msg: "Room not found"
+      })
+      return
+    }
 
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) {
@@ -33,7 +51,7 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
     if(type === "OBJECT"){
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
 
-      const prompt = createObjectDrawingPrompt(content);
+      const prompt = createObjectDrawingPrompt(content, roomId, userId);
 
       const response = await axios.post(geminiUrl, {
         contents: [
