@@ -1485,6 +1485,100 @@ export class DrawShapes{
     }
 
     pushToExistingShapes(userId: string) {
+        if (!this.generatedShapes.length) return;
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const shape of this.existingShapes) {
+            if (shape.type === "RECTANGLE") {
+                minX = Math.min(minX, shape.x);
+                minY = Math.min(minY, shape.y);
+                maxX = Math.max(maxX, shape.x + shape.width);
+                maxY = Math.max(maxY, shape.y + shape.height);
+            } else if (shape.type === "CIRCLE") {
+                minX = Math.min(minX, shape.x - Math.abs(shape.radiusX));
+                minY = Math.min(minY, shape.y - Math.abs(shape.radiusY));
+                maxX = Math.max(maxX, shape.x + Math.abs(shape.radiusX));
+                maxY = Math.max(maxY, shape.y + Math.abs(shape.radiusY));
+            } else if (shape.type === "LINE" || shape.type === "ARROW") {
+                minX = Math.min(minX, shape.x, shape.points.endX);
+                minY = Math.min(minY, shape.y, shape.points.endY);
+                maxX = Math.max(maxX, shape.x, shape.points.endX);
+                maxY = Math.max(maxY, shape.y, shape.points.endY);
+            } else if (shape.type === "PENCIL" || shape.type === "ERASER") {
+                for (const pt of shape.points) {
+                    minX = Math.min(minX, pt.x);
+                    minY = Math.min(minY, pt.y);
+                    maxX = Math.max(maxX, pt.x);
+                    maxY = Math.max(maxY, pt.y);
+                }
+            } else if (shape.type === "TEXT") {
+                minX = Math.min(minX, shape.x);
+                minY = Math.min(minY, shape.y - 16);
+                maxX = Math.max(maxX, shape.x + 100);
+                maxY = Math.max(maxY, shape.y);
+            }
+        }
+
+        let gMinX = Infinity, gMinY = Infinity, gMaxX = -Infinity, gMaxY = -Infinity;
+        for (const shape of this.generatedShapes) {
+            if (shape.type === "RECTANGLE") {
+                gMinX = Math.min(gMinX, shape.x);
+                gMinY = Math.min(gMinY, shape.y);
+                gMaxX = Math.max(gMaxX, shape.x + shape.width);
+                gMaxY = Math.max(gMaxY, shape.y + shape.height);
+            } else if (shape.type === "CIRCLE") {
+                gMinX = Math.min(gMinX, shape.x - Math.abs(shape.radiusX));
+                gMinY = Math.min(gMinY, shape.y - Math.abs(shape.radiusY));
+                gMaxX = Math.max(gMaxX, shape.x + Math.abs(shape.radiusX));
+                gMaxY = Math.max(gMaxY, shape.y + Math.abs(shape.radiusY));
+            } else if (shape.type === "LINE" || shape.type === "ARROW") {
+                gMinX = Math.min(gMinX, shape.x, shape.points.endX);
+                gMinY = Math.min(gMinY, shape.y, shape.points.endY);
+                gMaxX = Math.max(gMaxX, shape.x, shape.points.endX);
+                gMaxY = Math.max(gMaxY, shape.y, shape.points.endY);
+            } else if (shape.type === "PENCIL" || shape.type === "ERASER") {
+                for (const pt of shape.points) {
+                    gMinX = Math.min(gMinX, pt.x);
+                    gMinY = Math.min(gMinY, pt.y);
+                    gMaxX = Math.max(gMaxX, pt.x);
+                    gMaxY = Math.max(gMaxY, pt.y);
+                }
+            } else if (shape.type === "TEXT") {
+                gMinX = Math.min(gMinX, shape.x);
+                gMinY = Math.min(gMinY, shape.y - 16);
+                gMaxX = Math.max(gMaxX, shape.x + 100);
+                gMaxY = Math.max(gMaxY, shape.y);
+            }
+        }
+
+        const GAP = 40;
+        let offsetX = 0, offsetY = 0;
+        if (minX !== Infinity && gMinX !== Infinity) {
+            offsetX = (maxX - gMinX) + GAP;
+            offsetY = 0; 
+        }
+
+        this.generatedShapes = this.generatedShapes.map(shape => {
+            const moved = { ...shape };
+            if (moved.type === "RECTANGLE" || moved.type === "CIRCLE" || moved.type === "TEXT") {
+                moved.x += offsetX;
+                moved.y += offsetY;
+            } else if (moved.type === "LINE" || moved.type === "ARROW") {
+                moved.x += offsetX;
+                moved.y += offsetY;
+                moved.points = {
+                    endX: moved.points.endX + offsetX,
+                    endY: moved.points.endY + offsetY
+                };
+            } else if (moved.type === "PENCIL" || moved.type === "ERASER") {
+                moved.points = moved.points.map(pt => ({
+                    x: pt.x + offsetX,
+                    y: pt.y + offsetY
+                }));
+            }
+            return moved;
+        });
+
         this.generatedShapes.forEach((shape: Shapes) => {
             let messageShape: any = { ...shape, roomId: this.roomId, userId }; 
             console.log("user id in push to existing shape: ", userId)
