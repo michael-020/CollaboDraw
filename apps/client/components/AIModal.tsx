@@ -45,7 +45,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     if (response && Array.isArray(response) && previewCanvasRef.current) {
       const ctx = previewCanvasRef.current.getContext("2d");
       if (ctx) {
-        drawShapeRef.current?.drawGeneratedShapes(ctx, response, roomId, userId);
+        drawShapeRef.current?.drawGeneratedShapes(ctx, response, roomId, userId, 480, 320);
       }
     }
   }, [response]);
@@ -188,8 +188,6 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
                       borderRadius: 8,
                       width: "100%",
                       height: "auto",
-                      maxWidth: 480,
-                      maxHeight: 320,
                       border: "1px solid #444",
                       display: "block",
                     }}

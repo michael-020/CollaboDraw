@@ -1378,45 +1378,110 @@ export class DrawShapes{
         this.stroke = stroke;
     }
 
-    drawGeneratedShapes(ctx: CanvasRenderingContext2D, shapes: Shapes[], roomId: string, userId: string) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    drawGeneratedShapes(
+        ctx: CanvasRenderingContext2D,
+        shapes: Shapes[],
+        roomId: string,
+        userId: string,
+        previewWidth: number = 480,
+        previewHeight: number = 320,
+        padding: number = 24
+    ) {
+        ctx.clearRect(0, 0, previewWidth, previewHeight);
 
-        const shapesWithTempId = shapes.map(shape => {
-            const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-            return { ...shape, id: tempId, roomId, userId } as Shapes;
-        });
+        // 1. Compute bounding box of all shapes
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        for (const shape of shapes) {
+            if (shape.type === "RECTANGLE") {
+                minX = Math.min(minX, shape.x);
+                minY = Math.min(minY, shape.y);
+                maxX = Math.max(maxX, shape.x + shape.width);
+                maxY = Math.max(maxY, shape.y + shape.height);
+            } else if (shape.type === "CIRCLE") {
+                minX = Math.min(minX, shape.x - Math.abs(shape.radiusX));
+                minY = Math.min(minY, shape.y - Math.abs(shape.radiusY));
+                maxX = Math.max(maxX, shape.x + Math.abs(shape.radiusX));
+                maxY = Math.max(maxY, shape.y + Math.abs(shape.radiusY));
+            } else if (shape.type === "LINE" || shape.type === "ARROW") {
+                minX = Math.min(minX, shape.x, shape.points.endX);
+                minY = Math.min(minY, shape.y, shape.points.endY);
+                maxX = Math.max(maxX, shape.x, shape.points.endX);
+                maxY = Math.max(maxY, shape.y, shape.points.endY);
+            } else if (shape.type === "PENCIL" || shape.type === "ERASER") {
+                for (const pt of shape.points) {
+                    minX = Math.min(minX, pt.x);
+                    minY = Math.min(minY, pt.y);
+                    maxX = Math.max(maxX, pt.x);
+                    maxY = Math.max(maxY, pt.y);
+                }
+            } else if (shape.type === "TEXT") {
+                minX = Math.min(minX, shape.x);
+                minY = Math.min(minY, shape.y - 16);
+                maxX = Math.max(maxX, shape.x + 100); // Approximate width
+                maxY = Math.max(maxY, shape.y);
+            }
+        }
 
-        for (const shape of shapesWithTempId) {
+        // 2. Calculate scale and offset to fit all shapes in preview canvas
+        const bboxWidth = maxX - minX;
+        const bboxHeight = maxY - minY;
+        const scale = Math.min(
+            (previewWidth - 2 * padding) / bboxWidth || 1,
+            (previewHeight - 2 * padding) / bboxHeight || 1,
+            1
+        );
+        const offsetX = (previewWidth - bboxWidth * scale) / 2 - minX * scale;
+        const offsetY = (previewHeight - bboxHeight * scale) / 2 - minY * scale;
+
+        // 3. Draw all shapes with scaling and offset
+        for (const shape of shapes) {
+            ctx.save();
+            ctx.translate(offsetX, offsetY);
+            ctx.scale(scale, scale);
+
+            // ...drawing logic (same as before, but using shape.x, shape.y, etc.)...
             if (shape.type === "RECTANGLE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
             } else if (shape.type === "CIRCLE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
                 ctx.beginPath();
                 ctx.ellipse(shape.x, shape.y, Math.abs(shape.radiusX), Math.abs(shape.radiusY), 0, 0, Math.PI * 2);
                 ctx.stroke();
             } else if (shape.type === "LINE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
                 ctx.beginPath();
                 ctx.moveTo(shape.x, shape.y);
                 ctx.lineTo(shape.points.endX, shape.points.endY);
                 ctx.stroke();
             } else if (shape.type === "ARROW") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = shape.strokeWidth || 2;
+                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
                 ctx.beginPath();
                 canvas_arrow(ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
                 ctx.stroke();
+            } else if (shape.type === "PENCIL" || shape.type === "ERASER") {
+                ctx.strokeStyle = shape.color;
+                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                if (shape.points.length > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(shape.points[0].x, shape.points[0].y);
+                    for (let i = 1; i < shape.points.length; i++) {
+                        ctx.lineTo(shape.points[i].x, shape.points[i].y);
+                    }
+                    ctx.stroke();
+                }
             } else if (shape.type === "TEXT") {
                 ctx.fillStyle = shape.color;
-                ctx.font = "16px Arial";
+                ctx.font = `${16 / scale}px Arial`;
                 ctx.fillText(shape.textContent, shape.x, shape.y);
             }
+            ctx.restore();
         }
-        this.generatedShapes = shapesWithTempId; 
+        this.generatedShapes = shapes.map(shape => ({ ...shape, roomId, userId })) as Shapes[];
     }
 
     pushToExistingShapes(userId: string) {
