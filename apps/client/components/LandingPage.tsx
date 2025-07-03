@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Users, Share2, Edit3, Sparkles, Zap, Palette, Loader2, ChevronDown, Star, Play } from "lucide-react"
+import { Users, Edit3, Sparkles, Zap, Palette, Loader2, ChevronDown, Star, Play, Bot } from "lucide-react"
 import { motion, easeOut, useScroll, useTransform } from "motion/react"
 import { FeatureCard } from "../components/FeatureCard"
 import { useAuthStore } from "@/stores/authStore/authStore"
@@ -460,11 +460,11 @@ const LandingPage = () => {
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
                   <FeatureCard 
-                    icon={<Users size={32} />} 
-                    title="Create Rooms" 
+                    icon={<Bot size={32} />} 
+                    title="AI Drawing Generator" 
                     className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-emerald-500/20 hover:from-emerald-500/20 hover:to-teal-500/20"
                   >
-                    Start a drawing room and invite your friends to join instantly with secure room codes.
+                    Generate stunning artwork with AI-powered drawing tools and creative assistance.
                   </FeatureCard>
                 </motion.div>
 
@@ -474,10 +474,11 @@ const LandingPage = () => {
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 >
                   <FeatureCard 
-                    icon={<Share2 size={32} />} 
-                    title="Share Instantly"
+                    icon={<Users size={32} />} 
+                    title="Create & Share Rooms" 
+                    className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-emerald-500/20 hover:from-emerald-500/20 hover:to-teal-500/20"
                   >
-                    Get shareable invite codes for quick access and seamless collaboration.
+                    Start drawing rooms and share instantly with secure invite codes for seamless collaboration.
                   </FeatureCard>
                 </motion.div>
 
@@ -489,9 +490,9 @@ const LandingPage = () => {
                   <FeatureCard 
                     icon={<Edit3 size={32} />} 
                     title="Draw Together" 
-                    className="bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border-cyan-500/20 hover:from-cyan-500/20 hover:to-blue-500/20"
+                    className="bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border-emerald-500/20 hover:from-emerald-500/20 hover:to-teal-500/20"
                   >
-                    Collaborate in real-time with powerful drawing tools and infinite canvas.
+                    Collaborate in real-time with powerful drawing tools.
                   </FeatureCard>
                 </motion.div>
               </motion.div>
@@ -527,9 +528,9 @@ const LandingPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
                   <div className="space-y-6">
                     {[
+                      "AI Drawing Generator",
                       "Real-time collaboration",
                       "Versatile drawing tools",
-                      "Secure room management",
                     ].map((feature, index) => (
                       <motion.div
                         key={feature}
@@ -546,7 +547,7 @@ const LandingPage = () => {
                   </div>
                   <div className="space-y-6">
                     {[
-                      "AI Design Generator",
+                      "Secure room management",
                       "Cross-platform support",
                       "Intuitive interface",
                     ].map((feature, index) => (
