@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Users, Share2, Edit3, Sparkles, Zap, Palette, Loader2, ChevronDown, Star, Play } from "lucide-react"
-import { motion, easeOut, easeInOut, useScroll, useTransform } from "motion/react"
+import { motion, easeOut, useScroll, useTransform } from "motion/react"
 import { FeatureCard } from "../components/FeatureCard"
 import { useAuthStore } from "@/stores/authStore/authStore"
 import { useRouter } from "next/navigation"
@@ -216,7 +216,12 @@ const ScrollIndicator = () => {
   )
 }
 
-const TypewriterText = ({ text, delay = 0 }) => {
+type TypewriterTextProps = {
+  text: string;
+  delay?: number;
+};
+
+const TypewriterText = ({ text, delay = 0 }: TypewriterTextProps) => {
   const [displayText, setDisplayText] = useState("")
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -470,8 +475,7 @@ const LandingPage = () => {
                 >
                   <FeatureCard 
                     icon={<Share2 size={32} />} 
-                    title="Share Instantly" 
-                    className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/20 hover:from-teal-500/20 hover:to-cyan-500/20"
+                    title="Share Instantly"
                   >
                     Get shareable invite codes for quick access and seamless collaboration.
                   </FeatureCard>

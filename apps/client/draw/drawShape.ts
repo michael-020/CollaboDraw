@@ -649,6 +649,7 @@ export class DrawShapes{
     }
 
     handleWheel(event: WheelEvent) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         event = event
     }
 

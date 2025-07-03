@@ -3,7 +3,7 @@ import { Tool } from "@/hooks/useDraw";
 import { Loader2, X } from "lucide-react";
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import { AxiosInstance } from "@/lib/axios";
-import { DrawShapes } from "@/draw/drawShape";
+import { DrawShapes, Shapes } from "@/draw/drawShape";
 
 interface AIModalProps {
   roomId: string,
@@ -21,8 +21,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
   const [flowPrompt, setFlowPrompt] = useState("");
   const [activeSection, setActiveSection] = useState<"object" | "flow" | null>(null);
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [response, setResponse] = useState<Shapes[] | null>(null);  const [error, setError] = useState<string | null>(null);
   const [lastPrompt, setLastPrompt] = useState<string>("");
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -54,6 +53,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
         drawShapeRef.current?.drawGeneratedShapes(ctx, response, roomId, userId, 480, 320);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
   const handleSubmit = async (type: "OBJECT" | "FLOWCHART", content: string) => {
@@ -70,6 +70,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
       setResponse(res.data.result || res.data);
       setObjectPrompt(""); 
       setFlowPrompt("");   
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err?.response?.data?.msg || "Failed to generate drawing.");
     } finally {

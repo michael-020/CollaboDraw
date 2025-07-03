@@ -119,6 +119,7 @@ function Canvas({roomId, socket}: {
                 document.removeEventListener('mousedown', handleClickOutside);
             };
         }
+        // eslint-disable-next-line
     }, [roomId, socket, authUser]);
 
     useEffect(() => {

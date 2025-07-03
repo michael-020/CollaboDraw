@@ -7,12 +7,13 @@ interface FeatureCardProps {
   title: string
   children: React.ReactNode
   delay?: number
+  className?: string 
 }
 
-export const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, children, delay = 0 }) => {
+export const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, children, delay = 0, className }) => {
   return (
     <motion.div
-      className="group relative bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 transition-all duration-300 hover:border-emerald-500/50 overflow-hidden"
+      className={`group relative bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8 transition-all duration-300 hover:border-emerald-500/50 overflow-hidden ${className ?? ""}`}
       initial={{ opacity: 0, y: 30, scale: 0.9 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
