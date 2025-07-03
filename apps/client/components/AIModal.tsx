@@ -45,6 +45,12 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     if (response && Array.isArray(response) && previewCanvasRef.current) {
       const ctx = previewCanvasRef.current.getContext("2d");
       if (ctx) {
+        // Clear canvas first
+        ctx.clearRect(0, 0, 480, 320);
+        ctx.fillStyle = "#222";
+        ctx.fillRect(0, 0, 480, 320);
+        
+        // Draw the generated shapes
         drawShapeRef.current?.drawGeneratedShapes(ctx, response, roomId, userId, 480, 320);
       }
     }
@@ -83,14 +89,23 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     if(changeTool) changeTool("")
   }
 
+  const resetModal = () => {
+    setActiveSection(null);
+    setResponse(null);
+    setError(null);
+    setObjectPrompt("");
+    setFlowPrompt("");
+    setLastPrompt("");
+  };
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
       <div
         ref={modalRef}
-        className={`bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-md text-center border border-emerald-700 relative transition-all duration-300 ${
-          response ? "max-w-2xl" : "max-w-md"
+        className={`bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full text-center border border-emerald-700 relative transition-all duration-300 ${
+          response ? "max-w-4xl" : "max-w-md"
         }`}
         style={response ? { minHeight: 500 } : {}}
       >
@@ -99,9 +114,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
           onClick={() => {
             if (changeTool) changeTool("");
             onClose();
-            setActiveSection(null);
-            setResponse(null);
-            setError(null);
+            resetModal();
           }}
           aria-label="Close"
         >
@@ -243,12 +256,14 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
                 Describe your flow chart
               </label>
               <textarea
-                className="w-full px-4 py-2 resize-none rounded bg-neutral-800 text-white focus:outline-none"
+                className="w-full px-4 py-2 resize-none rounded bg-neutral-800 text-white focus:outline-none mb-1"
                 placeholder="e.g. receive request - validate input - query DB - return response"
                 value={flowPrompt}
                 onChange={e => setFlowPrompt(e.target.value)}
                 disabled={loading}
+                rows={3}
               />
+              {error && <div className="text-red-400">{error}</div>}
             </div>
             <button
               type="submit"
@@ -257,23 +272,48 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
+                  <Loader2 className="animate-spin" />
                   Generating...
                 </span>
               ) : (
                 "Submit"
               )}
             </button>
-            {error && <div className="mt-4 text-red-400">{error}</div>}
             {response && (
-              <div className="mt-6 text-left bg-neutral-800 rounded-lg p-4 max-h-64 overflow-auto">
-                <div className="text-purple-300 font-semibold mb-2">AI Response:</div>
-                <pre className="text-white text-xs whitespace-pre-wrap break-all">
-                  {JSON.stringify(response, null, 2)}
-                </pre>
+              <div className="mt-4 flex flex-col items-center w-full">
+                <div className="text-purple-300 font-semibold mb-2">
+                  Generated flowchart for: <span className="text-white">{lastPrompt}</span>
+                </div>
+                <div
+                  style={{
+                    width: "100%",
+                    maxWidth: 480,
+                    maxHeight: 320,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <canvas
+                    ref={previewCanvasRef}
+                    width={480}
+                    height={320}
+                    style={{
+                      background: "#222",
+                      borderRadius: 8,
+                      width: "100%",
+                      height: "auto",
+                      border: "1px solid #444",
+                      display: "block",
+                    }}
+                  />
+                </div>
+                <button
+                  className="mt-4 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition"
+                  onClick={insertIntoCanvas}
+                >
+                  Insert into Canvas
+                </button>
               </div>
             )}
           </form>

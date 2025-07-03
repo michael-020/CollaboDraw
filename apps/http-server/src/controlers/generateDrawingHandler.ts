@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import axios from "axios";
-import z from "zod";
-import { createObjectDrawingPrompt, generateUniqueId } from "../lib/utils";
+import z, { object } from "zod";
+import { createFlowchartPrompt, createObjectDrawingPrompt, generateUniqueId } from "../lib/utils";
 import { prismaClient } from "@repo/db/client";
 
 const drawingSchema = z.object({
@@ -76,7 +76,22 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
       const resultText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
 
       const cleanedResponse = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-        const shapesArray = JSON.parse(cleanedResponse);
+
+      let shapesArray;
+      try {
+        shapesArray = JSON.parse(cleanedResponse);
+      } catch (err) {
+        const match = cleanedResponse.match(/\[.*\]/s);
+        if (match) {
+          try {
+            shapesArray = JSON.parse(match[0]);
+          } catch (e) {
+            throw new Error("Response is not valid JSON array");
+          }
+        } else {
+          throw new Error("Response is not valid JSON array");
+        }
+      }
 
         if (!Array.isArray(shapesArray)) {
           throw new Error("Response is not an array");
@@ -94,12 +109,70 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
           originalPrompt: content 
         });
     }
-    else {
-      res.status(500).json({
-        msg: "Flow chart feature is not working yet"
-      })
-    }
+    else if(type === "FLOWCHART") {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
 
+      const prompt = createFlowchartPrompt(content, roomId, userId);
+
+      const response = await axios.post(geminiUrl, {
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.3, 
+          maxOutputTokens: 2048,
+        }
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const resultText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+
+      const cleanedResponse = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+      let shapesArray;
+      try {
+        shapesArray = JSON.parse(cleanedResponse);
+      } catch (err) {
+        // Try to extract the first JSON array from the string
+        const match = cleanedResponse.match(/\[.*\]/s);
+        if (match) {
+          try {
+            shapesArray = JSON.parse(match[0]);
+          } catch (e) {
+            console.error("Malformed JSON from Gemini:", match[0]);
+            throw new Error("Response is not valid JSON array");
+          }
+        } else {
+          console.error("No JSON array found in Gemini response:", cleanedResponse);
+          throw new Error("Response is not valid JSON array");
+        }
+      }
+
+      if (!Array.isArray(shapesArray)) {
+        throw new Error("Response is not an array");
+      }
+
+      const processedShapes = shapesArray.map((shape: any) => ({
+        ...shape,
+        id: shape.id || generateUniqueId(),
+        roomId: shape.roomId || "temp_room",
+        userId: shape.userId || "temp_user"
+      }));
+
+      res.status(200).json({ 
+        result: processedShapes,
+        originalPrompt: content 
+      });
+    }
   } catch (error: any) {
     console.error("Error while generating:", error?.response?.data || error.message);
     res.status(500).json({
