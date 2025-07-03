@@ -1135,8 +1135,11 @@ export class DrawShapes{
         else if(shape.type === "TEXT"){
             this.ctx.font = "16px Arial";
             this.ctx.fillStyle = shape.color || this.color;
-            const text = shape.textContent;
-            this.ctx.fillText(text, shape.x, shape.y);
+            const lines = shape.textContent.split('\n');
+            const lineHeight = 20; // px, adjust as needed
+            for (let i = 0; i < lines.length; i++) {
+                this.ctx.fillText(lines[i], shape.x, shape.y + i * lineHeight);
+            }
         }
         else if(shape.type === "ERASER"){
             this.ctx.strokeStyle = "#262626";
