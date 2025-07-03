@@ -44,7 +44,7 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
 
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) {
-      res.status(500).json({ msg: "Missing Gemini API key" });
+      res.status(500).json({ msg: "Missing API key" });
       return
     }
 
