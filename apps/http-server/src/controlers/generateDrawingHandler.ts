@@ -93,21 +93,40 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
         }
       }
 
-        if (!Array.isArray(shapesArray)) {
-          throw new Error("Response is not an array");
-        }
+      if (!Array.isArray(shapesArray)) {
+        throw new Error("Response is not an array");
+      }
 
-        const processedShapes = shapesArray.map((shape: any) => ({
-          ...shape,
-          id: shape.id || generateUniqueId(),
-          roomId: shape.roomId || "temp_room",
-          userId: shape.userId || "temp_user"
-        }));
-
-        res.status(200).json({ 
-          result: processedShapes,
-          originalPrompt: content 
+      // Filter out duplicate shapes
+      const seen = new Set();
+      const processedShapes = shapesArray.filter((shape: any) => {
+        const dedupeKey = JSON.stringify({
+          type: shape.type,
+          x: shape.x,
+          y: shape.y,
+          width: shape.width,
+          height: shape.height,
+          radiusX: shape.radiusX,
+          radiusY: shape.radiusY,
+          textContent: shape.textContent,
+          points: shape.points
         });
+
+        if (seen.has(dedupeKey)) return false;
+        seen.add(dedupeKey);
+        return true;
+      }).map((shape: any) => ({
+        ...shape,
+        id: shape.id || generateUniqueId(),
+        roomId: shape.roomId || roomId,
+        userId: shape.userId || userId
+      }));
+
+
+      res.status(200).json({ 
+        result: processedShapes,
+        originalPrompt: content 
+      });
     }
     else if(type === "FLOWCHART") {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
@@ -161,12 +180,31 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
         throw new Error("Response is not an array");
       }
 
-      const processedShapes = shapesArray.map((shape: any) => ({
+      // Filter out duplicate shapes
+      const seen = new Set();
+      const processedShapes = shapesArray.filter((shape: any) => {
+        const dedupeKey = JSON.stringify({
+          type: shape.type,
+          x: shape.x,
+          y: shape.y,
+          width: shape.width,
+          height: shape.height,
+          radiusX: shape.radiusX,
+          radiusY: shape.radiusY,
+          textContent: shape.textContent,
+          points: shape.points
+        });
+
+        if (seen.has(dedupeKey)) return false;
+        seen.add(dedupeKey);
+        return true;
+      }).map((shape: any) => ({
         ...shape,
         id: shape.id || generateUniqueId(),
-        roomId: shape.roomId || "temp_room",
-        userId: shape.userId || "temp_user"
+        roomId: shape.roomId || roomId,
+        userId: shape.userId || userId
       }));
+
 
       res.status(200).json({ 
         result: processedShapes,

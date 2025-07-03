@@ -1621,7 +1621,7 @@ export class DrawShapes{
         let offsetX = 0, offsetY = 0;
         if (minX !== Infinity && gMinX !== Infinity) {
             offsetX = (maxX - gMinX) + GAP;
-            offsetY = 0; 
+            offsetY = 50 + GAP; 
         }
 
         this.generatedShapes = this.generatedShapes.map(shape => {

@@ -133,6 +133,13 @@ export function createObjectDrawingPrompt(objectName: string, roomId: string, us
   - Position shapes to create a cohesive representation
   - Choose the most appropriate tool for each part of the object
   - When adding TEXT inside shapes, calculate center position based on shape dimensions
+  - Do not generate duplicate shapes:
+    * Avoid rectangles with the same x, y, width, and height
+    * Avoid circles with the same x, y, radiusX, and radiusY
+    * Avoid lines/arrows with the same x, y, and points.endX/endY
+    * Avoid duplicate TEXT with same content and position
+    * Each shape must be uniquely placed and contribute visually
+
 
   TEXT POSITIONING FOR SHAPES:
   - For RECTANGLE: x = rectangle.x + (rectangle.width / 2) - (estimated text width / 2), y = rectangle.y + (rectangle.height / 2)
@@ -300,6 +307,13 @@ export function createFlowchartPrompt(flowchartDescription: string, roomId: stri
   - Make the flowchart easy to follow from top to bottom
   - Position elements to avoid overlapping
   - Use consistent sizing for similar elements
+  - Do not generate duplicate shapes:
+    * Avoid rectangles with the same x, y, width, and height
+    * Avoid circles with the same x, y, radiusX, and radiusY
+    * Avoid lines/arrows with the same x, y, and points.endX/endY
+    * Avoid duplicate TEXT with same content and position
+    * Each shape must be uniquely placed and contribute visually
+
 
   PARSING GUIDELINES:
   - If input contains hyphens (-), treat as sequential steps: "step1-step2-step3"
