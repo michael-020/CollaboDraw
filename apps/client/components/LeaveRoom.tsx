@@ -3,7 +3,12 @@ import { LogOut } from 'lucide-react'
 import React from 'react'
 import LeaveRoomModal from './LeaveRoomModal'
 
-const LeaveRoom = () => {
+interface LeaveRoomProps {
+  socket: WebSocket;
+  roomId: string;
+}
+
+const LeaveRoom = ({socket, roomId}: LeaveRoomProps) => {
   const { isModalVisible, changeModalVisibility} = useAuthStore()
   const leaveRoomHandler = () => {  
       changeModalVisibility()
@@ -19,7 +24,7 @@ const LeaveRoom = () => {
           </div>
       </div>
       {
-        isModalVisible && <LeaveRoomModal />
+        isModalVisible &&<LeaveRoomModal socket={socket} roomId={roomId} />
       }
       
     </div>

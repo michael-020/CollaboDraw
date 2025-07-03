@@ -4,7 +4,12 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useRef } from 'react'
 import { createPortal } from "react-dom";
 
-const LeaveRoomModal = () => {
+interface LeaveRoomModalProps {
+  socket: WebSocket;
+  roomId: string;
+}
+
+const LeaveRoomModal: React.FC<LeaveRoomModalProps> = ({ socket, roomId }) => {
   const { changeModalVisibility } = useAuthStore()
   const router = useRouter()
   const modalRef = useRef<HTMLDivElement>(null);
@@ -24,6 +29,13 @@ const LeaveRoomModal = () => {
   }, [changeModalVisibility]);
 
   const leaveRoomHandler = () => {
+    // Send leave_room message to ws-server
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({
+        type: "leave_room",
+        roomId
+      }));
+    }
     router.replace("/home-page")
     changeModalVisibility()
   }

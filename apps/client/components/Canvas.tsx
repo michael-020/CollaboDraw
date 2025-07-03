@@ -138,7 +138,7 @@ function Canvas({roomId, socket}: {
 
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
-        <LeaveRoom />
+        <LeaveRoom socket={socket} roomId={roomId} />
         {showTextArea && <textarea 
             ref={textAreaRef}
             className={`fixed bg-neutral-800/0 text-white w-auto focus:outline-none p-2 text-[${color}]`}
