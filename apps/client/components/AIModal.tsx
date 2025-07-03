@@ -169,7 +169,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
               <input
                 type="text"
                 className="w-full px-4 py-2 rounded bg-neutral-800 text-white focus:outline-none mb-1"
-                placeholder="e.g. house, snow man..."
+                placeholder="e.g. house, bus..."
                 value={objectPrompt}
                 onChange={e => setObjectPrompt(e.target.value)}
                 disabled={loading}
@@ -258,7 +258,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
               </label>
               <textarea
                 className="w-full px-4 py-2 resize-none rounded bg-neutral-800 text-white focus:outline-none mb-1"
-                placeholder="e.g. receive request - validate input - query DB - return response"
+                placeholder="e.g. receive request - validate input - query DB - return response OR tea recipe"
                 value={flowPrompt}
                 onChange={e => setFlowPrompt(e.target.value)}
                 disabled={loading}

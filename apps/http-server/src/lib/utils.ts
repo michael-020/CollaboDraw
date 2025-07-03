@@ -209,24 +209,30 @@ export function createObjectDrawingPrompt(objectName: string, roomId: string, us
 export function createFlowchartPrompt(flowchartDescription: string, roomId: string, userId: string): string {
   return `You are a flowchart assistant that converts step descriptions into visual flowchart coordinates.
   Given the description "${flowchartDescription}", create a clear and well-structured flowchart using appropriate shapes and connections.
-  
+
   CRITICAL REQUIREMENTS:
   1. Return ONLY a valid JSON array of shape objects
   2. No explanations, no additional text, no markdown formatting
   3. No trailing commas in JSON
   4. All strings must be properly quoted
   5. JSON must be complete and properly closed
-  
+
+  EXPAND THE FLOW:
+  - Thoroughly decompose the process into 8–15 logical steps wherever possible.
+  - If the input is short or vague, infer intermediate steps that improve clarity.
+  - Avoid skipping common intermediate steps (e.g., validations, confirmations, transitions).
+  - Never return fewer than 8 shapes (including text, arrows, and start/end nodes).
+
   FLOWCHART DESIGN GUIDELINES:
   - Parse the input to identify individual steps/processes
   - If input format is "step1-step2-step3", treat each as sequential process steps
-  - If input is descriptive (e.g., "create a flowchart of request-response cycle in api"), break it down into logical steps
+  - If input is descriptive (e.g., "create a flowchart of request-response cycle in API"), break it down into logical steps
   - Use appropriate flowchart symbols:
     * RECTANGLE for process steps
     * CIRCLE for start/end points
     * ARROW for flow direction
     * TEXT for labels and descriptions
-  
+
   FLOWCHART LAYOUT PRINCIPLES:
   - Start from top (y=80-100) and flow downward
   - Maintain consistent spacing (80-100 pixels between steps vertically)
@@ -234,7 +240,7 @@ export function createFlowchartPrompt(flowchartDescription: string, roomId: stri
   - Use standard flowchart proportions (rectangles: 160 width, 60 height)
   - Ensure arrows clearly show flow direction
   - Add proper labels for each step using TEXT elements
-  
+
   Each shape must have this EXACT structure:
 
   RECTANGLE:
@@ -288,12 +294,13 @@ export function createFlowchartPrompt(flowchartDescription: string, roomId: stri
 
   FLOWCHART CONSTRUCTION RULES:
   - Always start with a START circle
-  - End with an END circle (if process has clear end)
+  - End with an END circle (if process has a clear end)
   - Each process step gets a rectangle with descriptive text
   - Connect all elements with arrows showing flow direction
   - Keep text concise but descriptive
   - Ensure proper alignment and spacing
   - Center text within shapes using proper positioning
+  - If the flowchart has fewer than 8 shapes, infer additional steps and repeat generation
 
   TEXT POSITIONING FOR FLOWCHART SHAPES:
   - For RECTANGLE: x = rectangle.x + (rectangle.width / 2) - (estimated text width / 2), y = rectangle.y + (rectangle.height / 2)
@@ -301,8 +308,8 @@ export function createFlowchartPrompt(flowchartDescription: string, roomId: stri
 
   STRICT REQUIREMENTS:
   - Canvas size: 800x600 pixels (x: 0-800, y: 0-600)
-  - ALL shapes must use color "#ffffff" 
-  - Use 5-15 shapes depending on complexity
+  - ALL shapes must use color "#ffffff"
+  - You MUST generate a minimum of 8 and up to 15 shapes depending on complexity
   - Ensure clear visual hierarchy and flow
   - Make the flowchart easy to follow from top to bottom
   - Position elements to avoid overlapping
@@ -314,12 +321,11 @@ export function createFlowchartPrompt(flowchartDescription: string, roomId: stri
     * Avoid duplicate TEXT with same content and position
     * Each shape must be uniquely placed and contribute visually
 
-
   PARSING GUIDELINES:
   - If input contains hyphens (-), treat as sequential steps: "step1-step2-step3"
   - If input is descriptive, extract key processes and create logical flow
   - For complex processes, include decision points where appropriate
-  - Always maintain clear START point
+  - Always maintain a clear START point
   - Use meaningful, concise labels for each step
 
   Example for "login-validate-redirect":

@@ -48,8 +48,9 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
       return
     }
 
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
+
     if(type === "OBJECT"){
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
 
       const prompt = createObjectDrawingPrompt(content, roomId, userId);
 
@@ -65,7 +66,7 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
         ],
         generationConfig: {
           temperature: 0.3, // Lower temperature for more consistent output
-          maxOutputTokens: 2048,
+          maxOutputTokens: 4096,
         }
       }, {
         headers: {
@@ -128,87 +129,128 @@ export const generateDrawingHandler = async (req: Request, res: Response) => {
         originalPrompt: content 
       });
     }
-    else if(type === "FLOWCHART") {
-      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
+    else if (type === "FLOWCHART") {
+      const MAX_TOTAL_SHAPES = 30;
+      const CHUNK_SIZE = 5;
+      const MAX_ITER = 10;
 
-      const prompt = createFlowchartPrompt(content, roomId, userId);
+      let allShapes: any[] = [];
+      let done = false;
+      let iter = 0;
 
-      const response = await axios.post(geminiUrl, {
-        contents: [
+      while (!done && allShapes.length < MAX_TOTAL_SHAPES && iter < MAX_ITER) {
+        // Build a prompt that includes only the shapes so far and asks for the next chunk
+        const prompt =
+          createFlowchartPrompt(content, roomId, userId) +
+          (
+            allShapes.length > 0
+              ? `\n\nHere are the shapes generated so far:\n${JSON.stringify(allShapes, null, 2)}\nContinue the flowchart by generating the next ${CHUNK_SIZE} shapes. Do not repeat any previous shapes. Return ONLY a valid JSON array of the next shapes. If finished, return [].`
+              : `\n\nStart the flowchart by generating the first ${CHUNK_SIZE} shapes. Return ONLY a valid JSON array of shapes.`
+          ) +
+          `\nIMPORTANT: Return ONLY a valid JSON array of shapes. No explanations, no markdown, no extra text. If there are no more shapes, return [].`;
+
+        const response = await axios.post(
+          geminiUrl,
           {
-            parts: [
+            contents: [
               {
-                text: prompt,
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
               },
             ],
+            generationConfig: {
+              temperature: 0.3,
+              maxOutputTokens: 2048,
+            },
           },
-        ],
-        generationConfig: {
-          temperature: 0.3, 
-          maxOutputTokens: 2048,
-        }
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
-      const resultText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+        const resultText =
+          response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
+        const cleanedResponse = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-      const cleanedResponse = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-      let shapesArray;
-      try {
-        shapesArray = JSON.parse(cleanedResponse);
-      } catch (err) {
-        // Try to extract the first JSON array from the string
-        const match = cleanedResponse.match(/\[.*\]/s);
-        if (match) {
-          try {
-            shapesArray = JSON.parse(match[0]);
-          } catch (e) {
-            console.error("Malformed JSON from Gemini:", match[0]);
+        let shapesArray: any[] = [];
+        try {
+          shapesArray = JSON.parse(cleanedResponse);
+        } catch (err) {
+          const match = cleanedResponse.match(/\[[\s\S]*\]/);
+          if (match) {
+            try {
+              shapesArray = JSON.parse(match[0]);
+            } catch (e) {
+              throw new Error("Response is not valid JSON array");
+            }
+          } else {
             throw new Error("Response is not valid JSON array");
           }
-        } else {
-          console.error("No JSON array found in Gemini response:", cleanedResponse);
-          throw new Error("Response is not valid JSON array");
         }
-      }
 
-      if (!Array.isArray(shapesArray)) {
-        throw new Error("Response is not an array");
-      }
+        // Stop if nothing new is generated
+        if (!Array.isArray(shapesArray) || shapesArray.length === 0) {
+          done = true;
+          break;
+        }
 
-      // Filter out duplicate shapes
-      const seen = new Set();
-      const processedShapes = shapesArray.filter((shape: any) => {
-        const dedupeKey = JSON.stringify({
-          type: shape.type,
-          x: shape.x,
-          y: shape.y,
-          width: shape.width,
-          height: shape.height,
-          radiusX: shape.radiusX,
-          radiusY: shape.radiusY,
-          textContent: shape.textContent,
-          points: shape.points
+        // Filter out duplicates (by dedupeKey)
+        const seen = new Set(
+          allShapes.map((shape) =>
+            JSON.stringify({
+              type: shape.type,
+              x: shape.x,
+              y: shape.y,
+              width: shape.width,
+              height: shape.height,
+              radiusX: shape.radiusX,
+              radiusY: shape.radiusY,
+              textContent: shape.textContent,
+              points: shape.points,
+            })
+          )
+        );
+        const newShapes = shapesArray.filter((shape: any) => {
+          const dedupeKey = JSON.stringify({
+            type: shape.type,
+            x: shape.x,
+            y: shape.y,
+            width: shape.width,
+            height: shape.height,
+            radiusX: shape.radiusX,
+            radiusY: shape.radiusY,
+            textContent: shape.textContent,
+            points: shape.points,
+          });
+          if (seen.has(dedupeKey)) return false;
+          seen.add(dedupeKey);
+          return true;
         });
 
-        if (seen.has(dedupeKey)) return false;
-        seen.add(dedupeKey);
-        return true;
-      }).map((shape: any) => ({
-        ...shape,
-        id: shape.id || generateUniqueId(),
-        roomId: shape.roomId || roomId,
-        userId: shape.userId || userId
-      }));
+        allShapes = allShapes.concat(
+          newShapes.map((shape: any) => ({
+            ...shape,
+            id: shape.id || generateUniqueId(),
+            roomId: shape.roomId || roomId,
+            userId: shape.userId || userId,
+          }))
+        );
 
+        // If fewer than CHUNK_SIZE shapes were generated, we're likely done
+        if (newShapes.length < CHUNK_SIZE) {
+          done = true;
+        }
+        iter++;
+      }
 
-      res.status(200).json({ 
-        result: processedShapes,
-        originalPrompt: content 
+      res.status(200).json({
+        result: allShapes,
+        originalPrompt: content,
       });
     }
   } catch (error: any) {
