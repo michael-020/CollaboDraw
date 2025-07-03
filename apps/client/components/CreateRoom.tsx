@@ -39,29 +39,21 @@ const CreateRoom = () => {
     }
 
     return (
-        <div className="h-screen flex flex-col items-center justify-center text-white ">
-            <div className={` ${!isCreatingRoom ? "bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)]" : "opacity-40" }  p-10 rounded-2xl shadow-lg shadow-gray-800 max-w-lg w-full z-10`}>
-                <h1 className="text-2xl font-bold text-center mb-6">Create a Room</h1>
-                <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-                    {/* <input
-                        type="text"
-                        placeholder="Enter Room Slug..."
-                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                        onChange={onChangeHandler}
-                        value={formData.slug}
-                        name="slug"
-                    /> */}
+        <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">
+            <div className={`${!isCreatingRoom ? "bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)]" : "opacity-40"} w-full max-w-sm sm:max-w-md md:max-w-lg p-4 sm:p-8 rounded-2xl shadow-lg shadow-gray-800 z-10`}>
+                <h1 className="text-xl sm:text-2xl font-bold text-center mb-6">Create a Room</h1>
+                <form className="flex flex-col gap-4 sm:gap-6" onSubmit={handleSubmit}>
                     <input
                         type="text"
                         placeholder="Enter Room Name..."
-                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                        className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                         onChange={onChangeHandler}
                         value={formData.name}
                         name="name"
                     />
                     <button
                         type="submit"
-                        className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-lg"
+                        className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300 w-full text-base sm:text-lg"
                     >
                         Create Room
                     </button>
@@ -72,13 +64,13 @@ const CreateRoom = () => {
                     <div className='bg-gray-700 text-white px-6 py-3 text-md rounded-lg'>Copied to Clipboard 🎉</div>
             </div>}
 
-            {isCreatingRoom && <div className='z-50 relative bottom-56'>
-                <div className=' flex flex-col items-center justify-start bg-gray-700 rounded-lg h-24 w-56'>
-                    <div className=' text-white px-6 py-3 text-md '>Creating a new room</div>
-                    <div >
+            {isCreatingRoom && <div className='z-50 fixed inset-0 flex items-center justify-center'>
+                <div className='flex flex-col items-center justify-start bg-gray-700 rounded-lg h-24 w-56'>
+                    <div className='text-white px-6 py-3 text-md'>Creating a new room</div>
+                    <div>
                         <Loader className='animate-spin' />
                     </div>
-                </div>    
+                </div>
             </div>}
 
             {/* Show room ID and Join Room Button if a room is created */}
