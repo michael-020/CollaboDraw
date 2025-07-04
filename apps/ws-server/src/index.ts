@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config"
 import { updateData } from "./queues/shapeQueue";
 import { deleteShapeFromDatabase, insertIntoDB } from "./lib/utils";
+import { v4 as uuidv4 } from 'uuid';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -117,7 +118,7 @@ wss.on("connection", function connection(ws, request) {
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      const shapeId = await insertIntoDB(roomId, message, userId);
+      const shapeId = uuidv4()
       
       const usersInRoom = users.filter(user => 
         user.rooms.includes(roomId.toString()) && user.userId !== userId
@@ -151,6 +152,8 @@ wss.on("connection", function connection(ws, request) {
         };
         originalUser.ws.send(JSON.stringify(responseMessage));
       }
+
+      await insertIntoDB(roomId, message, userId, shapeId);
     }
 
     if (parsedData.type === "delete") {

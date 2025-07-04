@@ -6,12 +6,12 @@ interface Point {
   y: number;
 }
 
-export const insertIntoDB = async (roomId: string, message: any, userId: string) => {
+export const insertIntoDB = async (roomId: string, message: any, userId: string, id: string) => {
   try {
-    let newShape;
     if(message.type === "RECTANGLE"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "RECTANGLE",
           width: Number(message.width),
           height: Number(message.height),
@@ -27,11 +27,11 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     } 
     else if(message.type === "CIRCLE"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "CIRCLE",
           x: Number(message.x),
           y: Number(message.y),
@@ -47,11 +47,11 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     }
     else if(message.type === "LINE"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "LINE",
           x: Number(message.x),
           y: Number(message.y),
@@ -66,11 +66,11 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     } 
     else if(message.type === "ARROW"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "ARROW",
           x: Number(message.x),
           y: Number(message.y),
@@ -85,11 +85,11 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     }
     else if(message.type === "PENCIL"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "PENCIL",
           x: message.points[0].x,
           y: message.points[0].y,
@@ -104,12 +104,12 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     }
     else if(message.type === "TEXT"){
       if(message.textContent){
-        newShape = await prismaClient.shape.create({
+        await prismaClient.shape.create({
           data: {
+            id,
             type: "TEXT",
             x: Number(message.x),
             y: Number(message.y),
@@ -124,12 +124,12 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
             }
           }
         }) 
-        return newShape.id
       }
     }
     else if(message.type === "ERASER"){
-      newShape = await prismaClient.shape.create({
+      await prismaClient.shape.create({
         data: {
+          id,
           type: "ERASER",
           x: message.points[0].x,
           y: message.points[0].y,
@@ -144,7 +144,6 @@ export const insertIntoDB = async (roomId: string, message: any, userId: string)
           }
         }
       })
-      return newShape.id
     }
   } catch (error) {
     console.error("Error while inserting shape in DB: ", error)
@@ -159,7 +158,6 @@ export async function updateShapeInDatabase(shape: Shapes) {
     });
     if (!room) {
         console.error(`Room not found: ${shape.roomId}. Skipping shape update.`);
-        return; 
     }
 
     const user = await prismaClient.user.findUnique({
@@ -167,7 +165,6 @@ export async function updateShapeInDatabase(shape: Shapes) {
     });
     if (!user) {
         console.error(`User not found: ${shape.userId}. Skipping shape update.`);
-        return;
     }
 
     // Check if the shape exists
@@ -249,7 +246,6 @@ export async function deleteShapeFromDatabase(shapeId: string) {
     } catch (err: any) {
         if (err.code === 'P2025') {
             console.warn(`Shape with id ${shapeId} not found for deletion.`, err);
-            return;
         }
         throw err; 
     }
