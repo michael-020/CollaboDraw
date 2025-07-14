@@ -31,7 +31,7 @@ export type authState = {
 }
 
 export type authActions = {
-    signup: (data: {name: string, email: string, password: string}) => void
+    signup: (data: {name: string, email: string, password: string, confirmPassword: string}) => void
     login: (data: {email: string, password: string}) => void
     checkAuth: () => void
     logout: () => void
