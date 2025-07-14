@@ -24,6 +24,10 @@ export type authState = {
     roomId: string
     isModalVisible: boolean,
     shapesArray: Shapes[]
+    inputEmail: string
+    isVerifying: boolean
+    sendingEmail: boolean
+    otpSent: boolean
 }
 
 export type authActions = {
@@ -36,5 +40,11 @@ export type authActions = {
     getUsers: (roomId: string) => void
     leaveRoom: (roomId: string) => void
     changeModalVisibility: () => void,
-    setShapesArray: (shape: Shapes) => void
+    setShapesArray: (shape: Shapes) => void,
+    handleGoogleSignin: () => void;
+    handleGoogleAuthError: () => void;
+    handleGoogleSignup: () => void;
+    sentEmail: (data: {email: string}) => void;
+    verifyEmail: (data: {email: string, otp: string}) => void;
+    resetOtpSent: () => void;
 }

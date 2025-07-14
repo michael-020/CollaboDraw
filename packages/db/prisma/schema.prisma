@@ -9,16 +9,18 @@ datasource db {
 
 
 model User {
-  id       String    @id @default(uuid())
-  password String
-  email    String    @unique
-  name     String
-  photo    String?
-  shapes   Shape[]   
-  rooms    Room[]   
-  ownedRooms Room[] @relation("RoomAdmin")    
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String    @id @default(uuid())
+  password          String
+  email             String    @unique
+  name              String
+  photo             String?
+  shapes            Shape[]   
+  rooms             Room[]   
+  authType          AuthType  @default(CREDENTIALS) 
+  isEmailVerified   Boolean   @default(false)
+  ownedRooms        Room[]    @relation("RoomAdmin")    
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model Room {
@@ -59,6 +61,14 @@ model Shape {
   updatedAt   DateTime  @updatedAt
 }
 
+model OTP {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  otp       String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
 enum ShapeType {
   RECTANGLE 
   CIRCLE
@@ -67,4 +77,9 @@ enum ShapeType {
   PENCIL
   TEXT
   ERASER
+}
+
+enum AuthType {
+  GOOGLE
+  CREDENTIALS
 }

@@ -3,7 +3,9 @@ import { authActions, authState } from "./types";
 import { AxiosInstance } from "../../lib/axios";
 import { Shapes } from "@/draw/drawShape";
 import toast from "react-hot-toast";
+import { AxiosError } from "axios";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const useAuthStore = create<authState & authActions>((set, get) => ({
     authUser: null,
@@ -19,6 +21,10 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     roomId: "",
     isModalVisible: false,
     shapesArray: [],
+    inputEmail: "",
+    otpSent: false,
+    isVerifying: false,
+    sendingEmail: false,
 
     signup: async (data) => {
         set({isSigningUp: true})
@@ -135,5 +141,81 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
 
     setShapesArray: (shape: Shapes) => {
         get().shapesArray.push(shape)
-    }
+    },
+
+    handleGoogleSignin: () => {
+        window.location.href = `${API_URL}/auth/google/signin`;
+    },
+
+    handleGoogleSignup: () => {
+        window.location.href = `${API_URL}/auth/google/signup`;
+    },
+
+    handleGoogleAuthError: () => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const error = searchParams.get('error');
+        
+        if (error === 'email_exists') {
+            toast.error("An account with this email already exists. Please sign in.");
+            window.history.replaceState({}, '', window.location.pathname);
+            return true;
+        }
+        
+        if (error === 'oauth_failed') {
+            toast.error("Failed to authenticate with Google. Please try again.");
+            window.history.replaceState({}, '', window.location.pathname);
+            return true;
+        }
+
+        if(error === "no_account"){
+            toast.error("An account with this email doesn't exist. Please sign up.")
+            window.history.replaceState({}, '', window.location.pathname);
+            return true;
+        }
+
+        return false;
+    },
+
+        sentEmail: async (data) => {
+        set({sendingEmail: true})
+        try {
+            await AxiosInstance.post("/user/initiate-signup", data)
+            set({ otpSent: true })
+            toast.success("OTP is sent to your account")
+        } catch(error) {
+            if (error instanceof AxiosError && error.response?.data?.msg) {
+                toast.error(error.response.data.msg as string);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
+        } finally {
+            set({sendingEmail: false})
+        }
+    },
+    
+    verifyEmail: async (data) => {
+        set({isVerifying: true})
+        try {
+            await AxiosInstance.post("/user/verify-otp", data)
+            set({ 
+                inputEmail: data.email,  // Set inputEmail only after successful verification
+                otpSent: false  // Reset OTP sent status only on success
+            })
+            toast.success("Email verification is Successful")
+            return true; // Indicate success
+        } catch (error) {
+            if (error instanceof AxiosError && error.response?.data?.msg) {
+                toast.error(error.response.data.msg as string);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
+            throw error; // Re-throw to handle in component
+        } finally {
+            set({isVerifying: false})
+        }
+    },
+
+    resetOtpSent: () => {
+        set({ otpSent: false })
+    },
 }))

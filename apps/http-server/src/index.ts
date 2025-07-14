@@ -5,6 +5,7 @@ import cors from "cors"
 import  userRouter  from "./routes/user"
 import "./lib/override"
 import cookieParser from "cookie-parser"
+import authRouter from "./routes/auth"
 
 const app = express()
 
@@ -20,5 +21,6 @@ app.use(
 
 
 app.use("/user", userRouter)
+app.use("/auth", authRouter)
 
 app.listen(4000)

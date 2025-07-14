@@ -14,12 +14,27 @@ import { tokenHandler } from "../controlers/tokenHandler";
 import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 import { getUsersRoomHandler } from "../controlers/getUsersRoomsHandler";
 import { generateDrawingHandler } from "../controlers/generateDrawingHandler";
+import { checkSetupSession, setupGoogleAccountHandler } from "../controlers/setupGoogleAccountHandler";
+import { initiateSignUpHandler } from "../controlers/initiateSignupHandler";
+import { verifyOtpHandler } from "../controlers/verifyOTPHandler";
 
 const userRouter: Router = Router();
 
-userRouter.post("/signup", signupHandler);
+// signup
+// step 1: initiate signup
+userRouter.post("/initiate-signup", initiateSignUpHandler)
+
+// step 2: verify otp
+userRouter.post("/verify-otp", verifyOtpHandler)
+
+// step 3: complete signup
+userRouter.post("/complete-signup", signupHandler)
 
 userRouter.post("/signin", signinHandler);
+
+userRouter.get("/check-setup-session", checkSetupSession);
+userRouter.post("/setup-google-account", setupGoogleAccountHandler);
+
 
 userRouter.use(authMiddleware)
 

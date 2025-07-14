@@ -4,9 +4,10 @@ import { Loader } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"
+import Image from "next/image";
 
 export default function Signin(){
-    const { login, isLoggingIn } = useAuthStore()
+    const { login, isLoggingIn, handleGoogleSignin } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -84,9 +85,23 @@ export default function Signin(){
                         {isLoggingIn ? <Loader className="animate-spin mx-auto" />  : "Sign-in"}
                     </button>
                     <div className="text-center">
-                        <p>Don&#39;t have an Account? <span onClick={() => { router.push("/signup") }} className="hover:underline text-emerald-400 cursor-pointer">Sign up</span></p>
+                        <p>Don&#39;t have an Account? <span onClick={() => { router.push("/verify-email") }} className="hover:underline text-emerald-400 cursor-pointer">Sign up</span></p>
                     </div>
                 </form>
+                {/* OR Continue With Section */}
+                <div className="flex items-center my-6">
+                    <div className="flex-1 h-px bg-gray-700" />
+                    <span className="px-3 text-gray-400 text-sm">or continue with</span>
+                    <div className="flex-1 h-px bg-gray-700" />
+                </div>
+                <button
+                    type="button"
+                    onClick={handleGoogleSignin}
+                    className="flex items-center justify-center gap-3 w-full py-3 rounded-lg bg-white hover:bg-gray-100 transition font-semibold text-gray-800"
+                >
+                    <Image src="/google.svg" alt="Google Logo" width={20} height={20} />
+                    Sign in with Google
+                </button>
             </div>
         </div>
     )

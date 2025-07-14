@@ -35,7 +35,7 @@ export default function Signup(){
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">
-            <div className="bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)] p-4 sm:p-8 md:p-10 rounded-2xl shadow-lg shadow-gray-800 w-full max-w-xs sm:max-w-md md:max-w-lg">
+            <div className="bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)] p-4 sm:p-8  md:p-10 rounded-2xl shadow-lg shadow-gray-800 w-full max-w-xs sm:max-w-md md:max-w-lg">
                 <h1 className="text-xl sm:text-2xl font-bold text-center mb-6">Sign-up</h1>
                 <form className="flex flex-col gap-4 sm:gap-6" onSubmit={handleSubmit}>
                     <div className="flex flex-col gap-2">
@@ -97,10 +97,8 @@ export default function Signup(){
                     >
                         {isSigningUp ? <Loader className="mx-auto animate-spin" /> : "Sign-up"}
                     </button>
-                    <div className="text-center">
-                        <p>Already have an Account? <span onClick={() => { router.push("/signin") }} className="hover:underline text-emerald-400 cursor-pointer">Sign in</span></p>
-                    </div>
                 </form>
+                
             </div>
         </div>
     )
