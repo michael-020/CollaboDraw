@@ -1,13 +1,13 @@
 "use client"
 import { useAuthStore } from "@/stores/authStore/authStore"
 import { Loader } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { redirect, useRouter } from "next/navigation"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import { FiEye, FiEyeOff } from "react-icons/fi"
 import Image from "next/image";
 
 export default function Signin(){
-    const { login, isLoggingIn, handleGoogleSignin } = useAuthStore()
+    const { login, isLoggingIn, handleGoogleSignin, authUser } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -26,12 +26,16 @@ export default function Signin(){
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         await login(formData)
-        router.push("/home-page")
     }
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword)
     }
+
+    useEffect(() => {
+        if(authUser)
+            redirect("/home-page")
+    }, [authUser])
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">

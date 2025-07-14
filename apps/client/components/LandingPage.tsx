@@ -5,7 +5,7 @@ import { Users, Edit3, Sparkles, Zap, Palette, Loader2, ChevronDown, Star, Play,
 import { motion, easeOut, useScroll, useTransform } from "motion/react"
 import { FeatureCard } from "../components/FeatureCard"
 import { useAuthStore } from "@/stores/authStore/authStore"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { createPortal } from "react-dom"
 
 const MeshGradient = () => {
@@ -263,10 +263,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (authUser) {
-      router.replace("/home-page")
-    }
-    if (!authUser) {
-      router.replace("/"); 
+      redirect("/home-page")
     }
   }, [authUser, router])
 

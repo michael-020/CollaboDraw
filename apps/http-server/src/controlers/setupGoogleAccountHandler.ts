@@ -12,8 +12,7 @@ const setupSchema = z.object({
     .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
     .regex(/[0-9]/, "Password must contain at least 1 number")
     .regex(/[^A-Za-z0-9]/, "Password must contain at least 1 special character"),
-  confirmPassword: z.string(),
-  profilePicture: z.string().optional(),
+  confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],

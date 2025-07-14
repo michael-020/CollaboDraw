@@ -1,5 +1,5 @@
 "use client"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { useAuthStore } from "../stores/authStore/authStore"
 import { useEffect } from "react"
 import Link from "next/link"
@@ -15,10 +15,10 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!authUser) {
-      router.replace("/"); 
+      redirect("/"); 
     }
 
-  }, [authUser, router]);
+  }, [authUser]);
 
   
   return (

@@ -14,8 +14,12 @@ const userSignupSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter")
     .regex(/[0-9]/, "Password must contain at least 1 number")
     .regex(/[^A-Za-z0-9]/, "Password must contain at least 1 special character"),
+    confirmPassword: z.string(),
 }).strict({
   message: "Extra fields are not allowed"
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 export const signupHandler = async (req: Request, res: Response) => {
