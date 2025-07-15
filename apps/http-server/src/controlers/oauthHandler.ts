@@ -3,6 +3,8 @@ import { GOOGLE_CONFIG } from "../config/oauth";
 import axios from "axios";
 import { generateToken } from "../lib/utils";
 import { prismaClient } from "@repo/db/client";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "@repo/backend-common/config";
 
 // Common function to initiate Google OAuth
 const initiateGoogleAuth = (req: Request, res: Response, authType: 'signin' | 'signup') => {
@@ -57,13 +59,15 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
         return res.redirect(`${process.env.FRONTEND_URL}/verify-email?error=email_exists`);
       }
 
-      req.session.googleSignup = {
-        email,
-        authType: 'google'
-      };
-      await req.session.save();
+      const setupToken = jwt.sign(
+        { email, authType: 'google' },
+        JWT_SECRET!,
+        { expiresIn: '1h' }
+      );
 
-      return res.redirect(`${process.env.FRONTEND_URL}/set-up-account`);
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/signup?token=${setupToken}&email=${encodeURIComponent(email)}&source=google`
+      );
     }
 
     // Handle signin flow
@@ -73,7 +77,7 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
       }
 
       generateToken(existingUser.id, res);
-      return res.redirect(`${process.env.FRONTEND_URL}/home`);
+      return res.redirect(`${process.env.FRONTEND_URL}/home-page`);
     }
 
   } catch (error) {

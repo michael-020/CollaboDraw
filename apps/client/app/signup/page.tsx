@@ -6,7 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -28,13 +28,26 @@ type FormFields = z.infer<typeof schema>;
 
 export default function Signup() {
   const { signup, isSigningUp, inputEmail, authUser } = useAuthStore();
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
-    if (!inputEmail) redirect("/verify-email");
-    if(authUser)  redirect("/home-page")
+    const searchParams = new URLSearchParams(window.location.search);
+    const emailFromUrl = searchParams.get('email');
+    const token = searchParams.get('token');
+    const source = searchParams.get('source');
+    
+    if (emailFromUrl && token && source === 'google') {
+      // Store token in localStorage or state management
+      localStorage.setItem('setupToken', token);
+      useAuthStore.setState({ inputEmail: emailFromUrl });
+    }
+    
+    if (!inputEmail && !emailFromUrl) {
+      redirect("/verify-email");
+    }
+    
+    if(authUser) redirect("/home-page");
   }, [inputEmail, authUser]);
 
   const {
@@ -81,7 +94,7 @@ export default function Signup() {
               type="email"
               {...register("email")}
               readOnly
-              placeholder="xyz@gmail.com"
+              value={inputEmail}
               className="bg-gray-700/30 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:outline-none"
               id="email"
             />

@@ -39,8 +39,8 @@ export default function HomePage() {
         >
           {isLoggingOut ? (
             <Loader2 className="animate-spin size-5 mr-2" />
-          ) : null}
-          {isLoggingOut ? "Logging out..." : "Logout"}
+          ) : "Logout"}
+            
         </button>
       </div>
 

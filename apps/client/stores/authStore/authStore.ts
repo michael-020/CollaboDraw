@@ -154,6 +154,11 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     handleGoogleAuthError: () => {
         const searchParams = new URLSearchParams(window.location.search);
         const error = searchParams.get('error');
+        const email = searchParams.get('email');
+        
+        if (email) {
+            set({ inputEmail: email });
+        }
         
         if (error === 'email_exists') {
             toast.error("An account with this email already exists. Please sign in.");
