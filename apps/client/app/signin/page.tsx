@@ -7,13 +7,23 @@ import { FiEye, FiEyeOff } from "react-icons/fi"
 import Image from "next/image";
 
 export default function Signin(){
-    const { login, isLoggingIn, handleGoogleSignin, authUser } = useAuthStore()
+    const { 
+        login, 
+        isLoggingIn, 
+        handleGoogleSignin, 
+        handleGoogleAuthError,
+        authUser 
+    } = useAuthStore()
     const [formData, setFormData] = useState({
         email: "",
         password: ""
     })
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
+
+    useEffect(() => {
+        handleGoogleAuthError();
+    }, [handleGoogleAuthError]);
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value

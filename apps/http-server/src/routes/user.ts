@@ -14,7 +14,7 @@ import { tokenHandler } from "../controlers/tokenHandler";
 import { leaveRoomHandler } from "../controlers/leaveRoomHandler";
 import { getUsersRoomHandler } from "../controlers/getUsersRoomsHandler";
 import { generateDrawingHandler } from "../controlers/generateDrawingHandler";
-import { checkSetupSession, setupGoogleAccountHandler } from "../controlers/setupGoogleAccountHandler";
+import { checkSetupToken, setupGoogleAccountHandler } from "../controlers/setupGoogleAccountHandler";
 import { initiateSignUpHandler } from "../controlers/initiateSignupHandler";
 import { verifyOtpHandler } from "../controlers/verifyOTPHandler";
 
@@ -32,7 +32,7 @@ userRouter.post("/complete-signup", signupHandler)
 
 userRouter.post("/signin", signinHandler);
 
-userRouter.get("/check-setup-session", checkSetupSession);
+userRouter.get("/check-setup-session", checkSetupToken);
 userRouter.post("/setup-google-account", setupGoogleAccountHandler);
 
 

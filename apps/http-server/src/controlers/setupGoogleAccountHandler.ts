@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { generateToken } from "../lib/utils";
 import { prismaClient } from "@repo/db/client";
 
@@ -20,12 +21,20 @@ const setupSchema = z.object({
 
 export const setupGoogleAccountHandler = async (req: Request, res: Response) => {
   try {
-    if (!req.session.googleSignup) {
-      res.status(401).json({ message: "Invalid session" });
+    const setupToken = req.cookies.setup_token;
+    
+    if (!setupToken) {
+      res.status(401).json({ message: "Invalid setup token" });
       return;
     }
 
-    const { email, authType } = req.session.googleSignup;  // Only use email from session
+    // Verify the token
+    const decoded = jwt.verify(setupToken, process.env.JWT_SECRET!) as {
+      email: string;
+      authType: string;
+    };
+
+    const { email, authType } = decoded;
 
     const response = setupSchema.safeParse(req.body);
     if (!response.success) {
@@ -38,7 +47,6 @@ export const setupGoogleAccountHandler = async (req: Request, res: Response) => 
 
     const { name, password } = response.data;  
 
-    // Now create the user with all required fields
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prismaClient.user.create({
       data: {
@@ -50,11 +58,10 @@ export const setupGoogleAccountHandler = async (req: Request, res: Response) => 
       }
     });
 
-    // Clean up session
-    delete req.session.googleSignup;
-    await req.session.save();
+    // Clear the setup token cookie
+    res.clearCookie('setup_token');
 
-    // Generate token and send success response
+    // Generate auth token and send success response
     generateToken(newUser.id, res);
     res.status(200).json({
       id: newUser.id,
@@ -62,6 +69,10 @@ export const setupGoogleAccountHandler = async (req: Request, res: Response) => 
       email: newUser.email,
     });
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      res.status(401).json({ message: "Invalid or expired setup token" });
+      return;
+    }
     console.error("Error in setup:", error);
     res.status(500).json({
       message: "Internal server error",
@@ -69,19 +80,26 @@ export const setupGoogleAccountHandler = async (req: Request, res: Response) => 
   }
 };
 
-export const checkSetupSession = async (req: Request, res: Response) => {
+export const checkSetupToken = async (req: Request, res: Response) => {
   try {
-    if (!req.session?.googleSignup) {
-      res.status(401).json({ message: "No valid setup session found" });
-      return
+    const setupToken = req.cookies.setup_token;
+    
+    if (!setupToken) {
+      res.status(401).json({ message: "No valid setup token found" });
+      return;
     }
 
+    const decoded = jwt.verify(setupToken, process.env.JWT_SECRET!) as {
+      email: string;
+      authType: string;
+    };
+
     res.status(200).json({ 
-      email: req.session.googleSignup.email,
-      authType: req.session.googleSignup.authType 
+      email: decoded.email,
+      authType: decoded.authType 
     });
   } catch (error) {
-    console.error("Error checking setup session:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error checking setup token:", error);
+    res.status(500).json({ message: "Invalid or expired setup token" });
   }
 };
