@@ -84,6 +84,10 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     createRoom: async (data) => {
         set({isCreatingRoom: true})
         try {
+            if (!data.name?.trim()) {
+                toast.error("Room name must atleast contain 1 character");
+                return false;
+            }
             const res = await AxiosInstance.post("/user/create-room", data)
             const roomId = res.data.roomId
             set({roomId: roomId})
