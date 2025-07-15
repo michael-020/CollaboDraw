@@ -21,8 +21,9 @@ const JoinRoom = () => {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        await joinRoom(formData.roomId)
-        router.push(`/canvas/${formData.roomId}`)
+        const success = await joinRoom(formData.roomId || "")
+        if(success)
+            router.push(`/canvas/${formData.roomId}`)
     }
 
     useEffect(() => {}, [router])

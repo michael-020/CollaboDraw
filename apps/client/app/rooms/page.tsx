@@ -90,9 +90,11 @@ export default function Rooms() {
               </div>
               <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">No rooms found</h3>
               <p className="text-gray-400 mb-6 text-sm sm:text-base">Create your first room to get started</p>
-              <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-colors duration-200 w-full">
-                Create Room
-              </button>
+              <Link href={"/create-room"} >
+                <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg font-semibold transition-colors duration-200 w-full">
+                  Create Room
+                </button>
+              </Link>
             </div>
           </div>
         ) : (

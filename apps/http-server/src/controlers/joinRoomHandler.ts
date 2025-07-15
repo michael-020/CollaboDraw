@@ -7,6 +7,10 @@ export const joinRoomHandler = async (req: Request, res: Response) => {
         const userId = req.user.id
         const roomId = req.params.roomId
 
+        if(!roomId){
+            res.status(404).json({ msg: "Please enter a valid Room ID"})
+        }
+
         const room = await prismaClient.room.findUnique({
             where: { id: roomId },
             include: { users: {
@@ -15,7 +19,7 @@ export const joinRoomHandler = async (req: Request, res: Response) => {
         });
 
         if (!room) {
-            res.status(404).json({ message: "Room not found" });
+            res.status(404).json({ msg: "Incorrect Room ID or Room doesn't exist" });
             return
         }
 

@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.string().email("Valid email is required"),
+  email: z.string(),
   password: z.string()
     .min(8, "Password should be at least 8 characters")
     .max(100, "Password should not exceed 100 characters")
@@ -98,7 +98,6 @@ export default function Signup() {
               className="bg-gray-700/30 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:outline-none"
               id="email"
             />
-            {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>}
           </div>
           <div className="flex flex-col gap-2 relative">
             <label htmlFor="password" className="text-base sm:text-lg">Password</label>

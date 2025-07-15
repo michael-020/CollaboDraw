@@ -1,12 +1,24 @@
 import { prismaClient } from "@repo/db/client";
 import { Request, Response } from "express";
+import z from "zod";
 
+
+const createRoomSchema = z.object({
+    name: z.string().min(1, "Input must atleast contain 1 character")
+})
 
 export const createRoomHandler = async (req: Request, res: Response) => {
     try {
         const userId = req.user.id;
 
-        const {name} = req.body
+        const validatedSchema = createRoomSchema.safeParse(req.body)
+        if(!validatedSchema.success){
+            res.status(401).json({
+                msg: "Room name must atleast contain 1 character"
+            })
+            return;
+        }
+        const name = validatedSchema.data.name
         const room = await prismaClient.room.create({
             data: {
                 name: name,
