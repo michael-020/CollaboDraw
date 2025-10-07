@@ -1,7 +1,12 @@
+import dotenv from "dotenv"
+dotenv.config()
+
 import { createClient } from "redis";
 import { updateShapeInDatabase } from "../lib/utils";
 
-const client = createClient();
+const client = createClient({
+    url: process.env.REDIS_URL
+});
 let queueProcessorActive = false;
 let processorInterval: NodeJS.Timeout | null = null;
 
