@@ -18,5 +18,8 @@
     "apps/*",
     "packages/*"
   ],
-  "packageManager": "pnpm@8.0.0"
+  "packageManager": "pnpm@8.0.0",
+  "engines": {
+    "node": "v22.12.0"
+  }
 }
