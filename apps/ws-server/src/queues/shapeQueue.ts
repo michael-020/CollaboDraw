@@ -5,7 +5,7 @@ import { createClient } from "redis";
 import { updateShapeInDatabase } from "../lib/utils";
 
 const client = createClient({
-    url: process.env.REDIS_URL
+    url: "rediss://red-d3ijonmmcj7s739amlfg:8c0PBZf0j2y9THmmnmaJKgy3gKd2vsCK@oregon-keyvalue.render.com:6379"
 });
 let queueProcessorActive = false;
 let processorInterval: NodeJS.Timeout | null = null;

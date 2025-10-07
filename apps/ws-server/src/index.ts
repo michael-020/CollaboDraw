@@ -5,7 +5,11 @@ import { updateData } from "./queues/shapeQueue";
 import { deleteShapeFromDatabase, insertIntoDB } from "./lib/utils";
 import { v4 as uuidv4 } from 'uuid';
 
-const wss = new WebSocketServer({ port: 8080 });
+// const wss = new WebSocketServer({ port: 8080 });
+var express = require('express')
+
+const app = express();
+var expressWs = require('express-ws')(app);
 
 interface User {
   ws: WebSocket;
@@ -27,7 +31,7 @@ const checkUser = (token: string | undefined): string | null => {
   }
 };
 
-wss.on("connection", function connection(ws, request) {
+app.ws("/", function (ws: WebSocket, request: any) {
   const url = request.url;
   if (!url) {
     return;
@@ -182,3 +186,5 @@ wss.on("connection", function connection(ws, request) {
     users.splice(users.findIndex((u) => u.userId === userId), 1);
   });
 });
+
+app.listen(8080);
