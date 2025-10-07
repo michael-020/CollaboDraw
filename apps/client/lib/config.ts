@@ -5,5 +5,5 @@ export const HTTP_URL = isProduction
   : "http://localhost:4000";           
 
 export const WS_URL = isProduction
-  ? "wss://collabodraw-ws.mikexdev.in"    
+  ? "wss://collabodraw-ws.onrender.com"    
   : "ws://localhost:8080";             
