@@ -54,19 +54,28 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
         }
     });
 
+    if(existingUser?.authType == "CREDENTIALS"){
+      return res.redirect(`${process.env.FRONTEND_URL}/signin?error=please_signin_with_credentials`);
+    }
+
     if (authType === 'signup') {
       if (existingUser) {
         return res.redirect(`${process.env.FRONTEND_URL}/verify-email?error=email_exists`);
       }
 
-      const setupToken = jwt.sign(
-        { email, authType: 'google' },
-        JWT_SECRET!,
-        { expiresIn: '1h' }
-      );
+      const newUser = await prismaClient.user.create({
+        data: {
+          email,
+          authType: "GOOGLE",
+          isEmailVerified: true
+        }
+      });
+
+      // Generate token for the new user
+      generateToken(newUser.id, res);
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}/signup?token=${setupToken}&email=${encodeURIComponent(email)}&source=google`
+        `${process.env.FRONTEND_URL}/home`
       );
     }
 

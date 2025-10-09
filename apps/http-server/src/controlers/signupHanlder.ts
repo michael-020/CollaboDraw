@@ -54,6 +54,7 @@ export const signupHandler = async (req: Request, res: Response) => {
         name,
         email,
         password: hashedPassword,
+        authType: "CREDENTIALS"
       }
     });
 

@@ -10,13 +10,13 @@ datasource db {
 
 model User {
   id                String    @id @default(uuid())
-  password          String
+  password          String?
   email             String    @unique
-  name              String
+  name              String?
   photo             String?
   shapes            Shape[]   
   rooms             Room[]   
-  authType          AuthType  @default(CREDENTIALS) 
+  authType          AuthType  
   isEmailVerified   Boolean   @default(false)
   ownedRooms        Room[]    @relation("RoomAdmin")    
   createdAt         DateTime  @default(now())
