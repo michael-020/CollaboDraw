@@ -183,14 +183,17 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             window.history.replaceState({}, '', window.location.pathname);
             return true;
         }
-        
-        if (error === 'oauth_failed') {
+        else if (error === 'please_signin_with_credentials') {
+            toast.error("This email is already registered with a password. Please use your original sign-in method.");
+            window.history.replaceState({}, '', window.location.pathname);
+            return true;
+        }
+        else if (error === 'oauth_failed') {
             toast.error("Failed to authenticate with Google. Please try again.");
             window.history.replaceState({}, '', window.location.pathname);
             return true;
         }
-
-        if(error === "no_account"){
+        else if(error === "no_account"){
             toast.error("An account with this email doesn't exist. Please sign up.")
             window.history.replaceState({}, '', window.location.pathname);
             return true;

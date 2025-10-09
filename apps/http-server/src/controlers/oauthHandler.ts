@@ -71,16 +71,13 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
         }
       });
 
-      // Generate token for the new user
       generateToken(newUser.id, res);
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}/home`
+        `${process.env.FRONTEND_URL}/home-page`
       );
     }
-
-    // Handle signin flow
-    if (authType === 'signin') {
+    else if (authType === 'signin') {
       if (!existingUser) {
         return res.redirect(`${process.env.FRONTEND_URL}/signin?error=no_account`);
       }
