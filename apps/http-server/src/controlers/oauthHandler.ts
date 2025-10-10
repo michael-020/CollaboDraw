@@ -3,10 +3,7 @@ import { GOOGLE_CONFIG } from "../config/oauth";
 import axios from "axios";
 import { generateToken } from "../lib/utils";
 import { prismaClient } from "@repo/db/client";
-import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "@repo/backend-common/config";
 
-// Common function to initiate Google OAuth
 const initiateGoogleAuth = (req: Request, res: Response) => {
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   
