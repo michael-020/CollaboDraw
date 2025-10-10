@@ -1,12 +1,14 @@
 "use client"
 import { useAuthStore } from '@/stores/authStore/authStore'
-import { Loader, Check, Copy } from 'lucide-react'  // Add Check, Copy imports
+import { Loader, Check, Copy } from 'lucide-react'
 import Link from 'next/link'
-import React, { ChangeEvent, FormEvent, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useState, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 const CreateRoom = () => {
     const { createRoom, roomId, isCreatingRoom, joinRoom } = useAuthStore()
     const [copied, setCopied] = useState(false)
+    const modalRef = useRef<HTMLDivElement>(null)
     const [formData, setFormData] = useState({
         name: ""
     })
@@ -60,10 +62,6 @@ const CreateRoom = () => {
                 </form>
             </div>
 
-            {copied && <div className='fixed top-6 w-screen flex justify-center'>
-                    <div className='bg-gray-700 text-white px-6 py-3 text-md rounded-lg'>Copied to Clipboard 🎉</div>
-            </div>}
-
             {isCreatingRoom && <div className='z-50 fixed inset-0 flex items-center justify-center'>
                 <div className='flex flex-col items-center justify-start bg-gray-700 rounded-lg h-24 w-56'>
                     <div className='text-white px-6 py-3 text-md'>Creating a new room</div>
@@ -73,32 +71,43 @@ const CreateRoom = () => {
                 </div>
             </div>}
 
-            {/* Show room ID and Join Room Button if a room is created */}
-            {roomId && (
-                <div className="bg-gray-700 p-6 rounded-xl mt-6 text-center relative">
-                    <h2 className="text-lg font-semibold">Room Created Successfully!</h2>
-                    <div className="bg-neutral-800 rounded-lg p-4 flex items-center justify-between gap-4 mb-4">
-                        <span className="text-emerald-400 font-mono text-lg">{roomId}</span>
-                        <button
-                            onClick={copyToClipboard}
-                            className="text-emerald-400 hover:text-emerald-300 transition p-2 rounded-md hover:bg-emerald-400/10"
-                        >
-                            {copied ? (
-                                <Check className="w-5 h-5" />
-                            ) : (
-                                <Copy className="w-5 h-5" />
-                            )}
-                        </button>
+            {roomId && createPortal(
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+                    <div ref={modalRef} className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-md border border-emerald-700 relative">
+                        <div className="text-center">
+                            <h2 className="text-2xl font-bold mb-2 text-neutral-200">Room Created</h2>
+                            {/* <button
+                                className="absolute top-4 right-4 curosr-pointer text-emerald-400 hover:text-white transition"
+                            >
+                                <X size={20} />
+                            </button> */}
+                            <div className="bg-neutral-800 rounded-lg p-4 flex items-center justify-between gap-4 mb-6">
+                                <span className="text-emerald-400 font-mono text-lg">{roomId}</span>
+                                <button
+                                    onClick={copyToClipboard}
+                                    className="text-emerald-400 hover:text-emerald-300 transition p-2 rounded-md hover:bg-emerald-400/10"
+                                >
+                                    {copied ? (
+                                        <Check className="w-5 h-5" />
+                                    ) : (
+                                        <Copy className="w-5 h-5" />
+                                    )}
+                                </button>
+                            </div>
+                            <p className="text-gray-400 text-md mb-6">Share this code with others to let them join your room</p>
+
+                            <Link href={`/canvas/${roomId}`} className="block">
+                                <button 
+                                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+                                    onClick={handleJoinRoom}
+                                >
+                                    Join Room
+                                </button>
+                            </Link>
+                        </div>
                     </div>
-                    <Link href={`/canvas/${roomId}`}>
-                        <button 
-                            className="mt-4 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" 
-                            onClick={handleJoinRoom}
-                        >
-                            Join Room
-                        </button>
-                    </Link>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

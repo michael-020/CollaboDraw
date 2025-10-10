@@ -87,7 +87,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.post("/user/create-room", data)
             const roomId = res.data.roomId
             set({roomId: roomId})
-            toast.success("Room created Successfully")
+            // toast.success("Room created Successfully")
         } catch (error) {
             if (error instanceof AxiosError && error.response?.data?.msg) {
                 toast.error(error.response.data.msg);
@@ -112,7 +112,9 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             set((state) => ({
                 usersInRoom: state.authUser ? [...state.usersInRoom, state.authUser] : state.usersInRoom
             }));
-            toast.success("Room Joined Successfully")
+            toast.success("Room Joined Successfully", {
+                position: "top-right"
+            })
             return true
         } catch (error) {
             console.error(error)
@@ -202,7 +204,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
         return false;
     },
 
-        sentEmail: async (data) => {
+    sentEmail: async (data) => {
         set({sendingEmail: true})
         try {
             await AxiosInstance.post("/user/initiate-signup", data)
