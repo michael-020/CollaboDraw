@@ -23,6 +23,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<Shapes[] | null>(null);  const [error, setError] = useState<string | null>(null);
   const [lastPrompt, setLastPrompt] = useState<string>("");
+  const [isPromptExpanded, setIsPromptExpanded] = useState(false);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -97,6 +98,37 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
     setObjectPrompt("");
     setFlowPrompt("");
     setLastPrompt("");
+  };
+
+  // Add this before the return statement
+  const renderPrompt = (prompt: string) => {
+    if (prompt.length <= 50) return prompt;
+    
+    if (!isPromptExpanded) {
+      return (
+        <span>
+          {prompt.slice(0, 50)}...
+          <button 
+            onClick={() => setIsPromptExpanded(true)}
+            className="ml-2 text-sm text-emerald-400 hover:text-emerald-300 transition"
+          >
+            see more
+          </button>
+        </span>
+      );
+    }
+    
+    return (
+      <span>
+        {prompt}
+        <button 
+          onClick={() => setIsPromptExpanded(false)}
+          className="ml-2 text-sm text-emerald-400 hover:text-emerald-300 transition"
+        >
+          see less
+        </button>
+      </span>
+    );
   };
 
   if (!open) return null;
@@ -193,7 +225,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
             {response && (
               <div className="mt-4 flex flex-col items-center w-full">
                 <div className="text-emerald-300 font-semibold mb-2">
-                  Generated object for: <span className="text-white">{lastPrompt}</span>
+                  Generated object for: <span className="text-white">{renderPrompt(lastPrompt)}</span>
                 </div>
                 <div
                   style={{
@@ -283,7 +315,7 @@ const AIModal: React.FC<AIModalProps> = ({ open, onClose, changeTool, drawShapeR
             {response && (
               <div className="mt-4 flex flex-col items-center w-full">
                 <div className="text-purple-300 font-semibold mb-2">
-                  Generated flowchart for: <span className="text-white">{lastPrompt}</span>
+                  Generated flowchart for: <span className="text-white">{renderPrompt(lastPrompt)}</span>
                 </div>
                 <div
                   style={{
