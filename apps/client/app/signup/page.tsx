@@ -37,12 +37,8 @@ export default function Signup() {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const emailFromUrl = searchParams.get('email');
-    const token = searchParams.get('token');
-    const source = searchParams.get('source');
     
-    if (emailFromUrl && token && source === 'google') {
-      // Store token in localStorage or state management
-      localStorage.setItem('setupToken', token);
+    if (emailFromUrl) {
       useAuthStore.setState({ inputEmail: emailFromUrl });
     }
     
