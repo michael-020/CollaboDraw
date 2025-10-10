@@ -145,7 +145,7 @@ function Canvas({roomId, socket}: {
             onClick={() => setShowShareModal(true)}
             className='fixed top-2.5 right-14 cursor-pointer p-2 rounded-md hover:bg-neutral-800 transition-colors'
         >
-            <Share2Icon className='size-5 cursor-pointer text-emerald-300' />
+            <Share2Icon className='size-5 cursor-pointer text-emerald-400' />
         </div>
         {showTextArea && <textarea 
             ref={textAreaRef}

@@ -1,3 +1,4 @@
+
 export function createObjectDrawingPrompt(objectName: string, roomId: string, userId: string) {
   const systemPrompt = `You are a drawing assistant that converts object names into drawing coordinates using basic shapes.
 
