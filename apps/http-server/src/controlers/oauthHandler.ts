@@ -68,12 +68,12 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
       generateToken(newUser.id, res);
 
       return res.redirect(
-        `${process.env.FRONTEND_URL}/home-page`
+        `${process.env.FRONTEND_URL}/home`
       );
     }
     else{
       generateToken(existingUser.id, res);
-      return res.redirect(`${process.env.FRONTEND_URL}/home-page`);
+      return res.redirect(`${process.env.FRONTEND_URL}/home`);
     }
 
   } catch (error) {

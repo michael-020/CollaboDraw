@@ -263,7 +263,7 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (authUser) {
-      redirect("/home-page")
+      redirect("/home")
     }
   }, [authUser, router])
 

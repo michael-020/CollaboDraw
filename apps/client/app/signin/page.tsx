@@ -44,7 +44,7 @@ export default function Signin(){
 
     useEffect(() => {
         if(authUser)
-            redirect("/home-page")
+            redirect("/home")
     }, [authUser])
 
     return (

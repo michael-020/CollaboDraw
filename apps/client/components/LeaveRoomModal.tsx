@@ -36,7 +36,7 @@ const LeaveRoomModal: React.FC<LeaveRoomModalProps> = ({ socket, roomId }) => {
         roomId
       }));
     }
-    router.replace("/home-page")
+    router.replace("/home")
     changeModalVisibility()
   }
 

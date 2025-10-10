@@ -46,7 +46,7 @@ export default function Signup() {
       redirect("/verify-email");
     }
     
-    if(authUser) redirect("/home-page");
+    if(authUser) redirect("/home");
   }, [inputEmail, authUser]);
 
   const {
