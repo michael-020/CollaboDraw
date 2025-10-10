@@ -91,7 +91,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             const res = await AxiosInstance.post("/user/create-room", data)
             const roomId = res.data.roomId
             set({roomId: roomId})
-            toast.success("Room created Successfully")
+            // toast.success("Room created Successfully")
         } catch (error) {
             if (error instanceof AxiosError && error.response?.data?.msg) {
                 toast.error(error.response.data.msg);
@@ -116,7 +116,9 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             set((state) => ({
                 usersInRoom: state.authUser ? [...state.usersInRoom, state.authUser] : state.usersInRoom
             }));
-            toast.success("Room Joined Successfully")
+            toast.success("Room Joined Successfully", {
+                position: "top-right"
+            })
             return true
         } catch (error) {
             console.error(error)
@@ -170,7 +172,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     },
 
     handleGoogleSignup: () => {
-        window.location.href = `${API_URL}/auth/google/signup`;
+        window.location.href = `${API_URL}/auth/google/signin`;
     },
 
     handleGoogleAuthError: () => {
@@ -187,14 +189,17 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             window.history.replaceState({}, '', window.location.pathname);
             return true;
         }
-        
-        if (error === 'oauth_failed') {
+        else if (error === 'please_signin_with_credentials') {
+            toast.error("This email is already registered with a password. Please use your original sign-in method.");
+            window.history.replaceState({}, '', window.location.pathname);
+            return true;
+        }
+        else if (error === 'oauth_failed') {
             toast.error("Failed to authenticate with Google. Please try again.");
             window.history.replaceState({}, '', window.location.pathname);
             return true;
         }
-
-        if(error === "no_account"){
+        else if(error === "no_account"){
             toast.error("An account with this email doesn't exist. Please sign up.")
             window.history.replaceState({}, '', window.location.pathname);
             return true;
@@ -203,7 +208,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
         return false;
     },
 
-        sentEmail: async (data) => {
+    sentEmail: async (data) => {
         set({sendingEmail: true})
         try {
             await AxiosInstance.post("/user/initiate-signup", data)

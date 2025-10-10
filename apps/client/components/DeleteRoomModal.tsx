@@ -39,7 +39,7 @@ const DeleteRoomModal: React.FC<DeleteRoomModalProps> = ({
         className="bg-neutral-900 rounded-2xl p-8 shadow-2xl w-full max-w-sm text-center relative border border-red-400"
       >
         <button
-          className="absolute top-4 left-4 text-red-400 hover:text-white transition"
+          className="absolute top-4 right-4 text-red-400 hover:text-white transition"
           onClick={onCancel}
           disabled={deleting}
           aria-label="Close"
@@ -48,8 +48,8 @@ const DeleteRoomModal: React.FC<DeleteRoomModalProps> = ({
         </button>
         <h2 className="text-xl font-bold text-white mb-4">Delete Room</h2>
         <p className="text-gray-300 mb-6">
-          Are you sure you want to delete{" "}
-          <span className="font-semibold text-red-400">{roomName}</span>?
+          Are you sure you want to delete room{" "}
+          <span className="font-semibold underline text-red-400">{roomName}</span>?
         </p>
         <div className="flex justify-center gap-4">
           <button

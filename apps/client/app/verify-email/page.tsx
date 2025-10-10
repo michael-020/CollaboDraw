@@ -100,7 +100,7 @@ export default function EmailVerify() {
         {/* OR Continue With Section */}
         <div className="flex items-center my-6">
           <div className="flex-1 h-px bg-gray-700" />
-          <span className="px-3 text-gray-400 text-sm">or continue with</span>
+          <span className="px-3 text-gray-400 text-sm">Or</span>
           <div className="flex-1 h-px bg-gray-700" />
         </div>
         <button
@@ -109,7 +109,7 @@ export default function EmailVerify() {
           className="flex items-center justify-center gap-3 w-full py-3 rounded-lg bg-white hover:bg-gray-100 transition font-semibold text-gray-900 border border-gray-300"
         >
           <Image src="/google.svg" alt="Google" width={22} height={22} />
-          Sign up with Google
+          Continue with Google
         </button>
       </div>
       

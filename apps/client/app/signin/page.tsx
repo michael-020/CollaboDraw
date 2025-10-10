@@ -44,7 +44,7 @@ export default function Signin(){
 
     useEffect(() => {
         if(authUser)
-            redirect("/home-page")
+            redirect("/home")
     }, [authUser])
 
     return (
@@ -105,7 +105,7 @@ export default function Signin(){
                 {/* OR Continue With Section */}
                 <div className="flex items-center my-6">
                     <div className="flex-1 h-px bg-gray-700" />
-                    <span className="px-3 text-gray-400 text-sm">or continue with</span>
+                    <span className="px-3 text-gray-400 text-sm">Or</span>
                     <div className="flex-1 h-px bg-gray-700" />
                 </div>
                 <button
@@ -114,7 +114,7 @@ export default function Signin(){
                     className="flex items-center justify-center gap-3 w-full py-3 rounded-lg bg-white hover:bg-gray-100 transition font-semibold text-gray-800"
                 >
                     <Image src="/google.svg" alt="Google Logo" width={20} height={20} />
-                    Sign in with Google
+                    Continue with Google
                 </button>
             </div>
         </div>

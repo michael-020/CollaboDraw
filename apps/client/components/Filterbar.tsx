@@ -38,7 +38,7 @@ const Filterbar = ({
   ];
 
   return (
-    <div className="fixed bg-gray-100/30 backdrop-blur-sm top-12 -translate-x-0.5 m-4 rounded-xl">
+    <div className="fixed select-none bg-gray-100/30 backdrop-blur-sm top-12 -translate-x-0.5 m-4 rounded-xl">
       <div className="border border-neutral-400 flex flex-col gap-2 px-2 py-4 rounded-xl shadow-lg w-48 ">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col justify-center gap-1">

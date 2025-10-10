@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "@repo/backend-common/config";
 
 // Common function to initiate Google OAuth
-const initiateGoogleAuth = (req: Request, res: Response, authType: 'signin' | 'signup') => {
+const initiateGoogleAuth = (req: Request, res: Response) => {
   const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
   
   authUrl.searchParams.append('client_id', GOOGLE_CONFIG.client_id);
@@ -16,23 +16,21 @@ const initiateGoogleAuth = (req: Request, res: Response, authType: 'signin' | 's
   authUrl.searchParams.append('scope', GOOGLE_CONFIG.scope);
   authUrl.searchParams.append('access_type', 'offline');
   authUrl.searchParams.append('prompt', 'select_account');
-  authUrl.searchParams.append('state', authType); // Add state to track signin/signup
   
   res.redirect(authUrl.toString());
 };
 
 export const initiateGoogleSignin = (req: Request, res: Response) => {
-  initiateGoogleAuth(req, res, 'signin');
+  initiateGoogleAuth(req, res);
 };
 
 export const initiateGoogleSignup = (req: Request, res: Response) => {
-  initiateGoogleAuth(req, res, 'signup');
+  initiateGoogleAuth(req, res);
 };
 
 export const handleGoogleCallback = async (req: Request, res: Response) => {
   try {
-    const { code, state } = req.query;
-    const authType = state as 'signin' | 'signup';
+    const { code } = req.query;
 
     const tokenResponse = await axios.post(GOOGLE_CONFIG.token_uri, {
       code,
@@ -54,30 +52,28 @@ export const handleGoogleCallback = async (req: Request, res: Response) => {
         }
     });
 
-    if (authType === 'signup') {
-      if (existingUser) {
-        return res.redirect(`${process.env.FRONTEND_URL}/verify-email?error=email_exists`);
-      }
-
-      const setupToken = jwt.sign(
-        { email, authType: 'google' },
-        JWT_SECRET!,
-        { expiresIn: '1h' }
-      );
-
-      return res.redirect(
-        `${process.env.FRONTEND_URL}/signup?token=${setupToken}&email=${encodeURIComponent(email)}&source=google`
-      );
+    if(existingUser?.authType == "CREDENTIALS"){
+      return res.redirect(`${process.env.FRONTEND_URL}/signin?error=please_signin_with_credentials`);
     }
 
-    // Handle signin flow
-    if (authType === 'signin') {
-      if (!existingUser) {
-        return res.redirect(`${process.env.FRONTEND_URL}/signin?error=no_account`);
-      }
+    if (!existingUser) {
+      const newUser = await prismaClient.user.create({
+        data: {
+          email,
+          authType: "GOOGLE",
+          isEmailVerified: true
+        }
+      });
 
+      generateToken(newUser.id, res);
+
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/home`
+      );
+    }
+    else{
       generateToken(existingUser.id, res);
-      return res.redirect(`${process.env.FRONTEND_URL}/home-page`);
+      return res.redirect(`${process.env.FRONTEND_URL}/home`);
     }
 
   } catch (error) {

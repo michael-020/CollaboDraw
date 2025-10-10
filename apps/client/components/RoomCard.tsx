@@ -60,7 +60,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ id, name, onDelete }) => {
   return (
     <>
       <div
-        className="group relative bg-gradient-to-br from-neutral-900 to-black rounded-2xl p-6 aspect-square cursor-pointer hover:from-gray-700 hover:to-gray-800 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-gray-700 hover:border-gray-600"
+        className="group relative bg-gradient-to-br from-neutral-900 to-black rounded-2xl p-6 aspect-square cursor-pointer hover:from-neutral-900 hover:to-neutral-950 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl border border-gray-700 hover:border-gray-600"
         onClick={handleJoin}
       >
         {/* 3-dots menu for mobile */}

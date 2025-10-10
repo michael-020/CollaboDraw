@@ -36,7 +36,7 @@ const LeaveRoomModal: React.FC<LeaveRoomModalProps> = ({ socket, roomId }) => {
         roomId
       }));
     }
-    router.replace("/home-page")
+    router.replace("/home")
     changeModalVisibility()
   }
 
@@ -48,7 +48,7 @@ const LeaveRoomModal: React.FC<LeaveRoomModalProps> = ({ socket, roomId }) => {
       >
         {/* X mark */}
         <button
-          className="absolute top-4 left-4 text-emerald-400 hover:text-white transition"
+          className="absolute top-4 right-4 text-emerald-400 hover:text-white transition"
           onClick={changeModalVisibility}
           aria-label="Close"
         >

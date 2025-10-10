@@ -21,10 +21,17 @@ export const signinHandler = async (req: Request, res: Response) => {
                 }
             });
     
-            if (!checkUser) {
+            if (!checkUser || !checkUser.password) {
                 res.status(411).json({
                     msg: "Invalid credentials"
                 });
+                return;
+            }
+
+            if(checkUser.authType != "CREDENTIALS"){
+                res.status(400).json({
+                    msg: "Invalid Login Attempt, Please Continue with Google."
+                })
                 return;
             }
 

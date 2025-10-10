@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 
 const userSignupSchema = z.object({
-  name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email"),
   password: z.string()
     .min(8, "Password should be at least 8 characters")
@@ -33,7 +32,7 @@ export const signupHandler = async (req: Request, res: Response) => {
     return;
   }
 
-  const { name, email, password } = response.data;
+  const { email, password } = response.data;
 
   try {
     const existingUser = await prismaClient.user.findUnique({
@@ -51,9 +50,9 @@ export const signupHandler = async (req: Request, res: Response) => {
 
     const newUser = await prismaClient.user.create({
       data: {
-        name,
         email,
         password: hashedPassword,
+        authType: "CREDENTIALS"
       }
     });
 

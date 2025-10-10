@@ -9,7 +9,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
   email: z.string(),
   password: z.string()
     .min(8, "Password should be at least 8 characters")
@@ -47,7 +46,7 @@ export default function Signup() {
       redirect("/verify-email");
     }
     
-    if(authUser) redirect("/home-page");
+    if(authUser) redirect("/home");
   }, [inputEmail, authUser]);
 
   const {
@@ -64,8 +63,8 @@ export default function Signup() {
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
-      const { name, email, password, confirmPassword } = data;
-      signup({ name, email, password, confirmPassword });
+      const { email, password, confirmPassword } = data;
+      signup({ email, password, confirmPassword });
     } catch (error) {
       setError("root", { message: "Registration failed" });
       console.error("Error while signing up", error)
@@ -77,7 +76,7 @@ export default function Signup() {
       <div className="bg-neutral-900 bg-[radial-gradient(circle,_rgb(26,26,26)_0%,_rgb(9,9,9)_100%)] p-4 sm:p-8 md:p-10 rounded-2xl shadow-lg shadow-gray-800 w-full max-w-xs sm:max-w-md md:max-w-lg">
         <h1 className="text-xl sm:text-2xl font-bold text-center mb-6">Sign-up</h1>
         <form className="flex flex-col gap-4 sm:gap-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             <label htmlFor="name" className="text-base sm:text-lg">Name</label>
             <input
               type="text"
@@ -87,7 +86,7 @@ export default function Signup() {
               id="name"
             />
             {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>}
-          </div>
+          </div> */}
           <div className="flex flex-col gap-2">
             <label htmlFor="email" className="text-base sm:text-lg">Email</label>
             <input
@@ -106,7 +105,7 @@ export default function Signup() {
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 placeholder="Enter Password..."
-                className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none w-full"
+                className="bg-neutral-900 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none w-full"
                 id="password"
               />
               <button
@@ -130,7 +129,7 @@ export default function Signup() {
                 type={showConfirmPassword ? "text" : "password"}
                 {...register("confirmPassword")}
                 placeholder="Confirm Password..."
-                className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none w-full"
+                className="bg-neutral-900 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none w-full"
                 id="confirmPassword"
               />
               <button

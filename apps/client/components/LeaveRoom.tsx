@@ -16,10 +16,10 @@ const LeaveRoom = ({socket, roomId}: LeaveRoomProps) => {
 
   return (
     <div className='z-50'>  
-      <div className='fixed top-4 right-4'>
-          <div className='text-red-500/90'>
-              <button onClick={leaveRoomHandler}>
-                  <LogOut />
+      <div className='fixed top-2.5 right-4'>
+          <div onClick={leaveRoomHandler} className='text-red-500/90 hover:bg-neutral-800 p-2 pb-0 rounded-md cursor-pointer'>
+              <button >
+                  <LogOut className='size-5' />
               </button>
           </div>
       </div>
