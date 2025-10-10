@@ -63,7 +63,7 @@ export default function Rooms() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <button
               onClick={handleBack}
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-200 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg w-fit"
+              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-200 bg-neutral-800 hover:bg-neutral-700 px-4 py-2 rounded-lg w-fit"
             >
               <ArrowLeft size={20} />
               <span>Back</span>
