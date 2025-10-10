@@ -12,10 +12,10 @@ const UsersInRoom = ({roomId}: {roomId: string}) => {
     <div className={`${isModalVisible ? "opacity-40": ""}`}><div className='fixed left-4 flex gap-2 top-2'>{usersInRoom.map(user => (
         <div key={user.id} className='relative flex flex-col  items-center'>
             <div className='border w-10 h-10 bg-blue-400 text-black rounded-full flex items-center justify-center hover:cursor-pointer'>
-                <div>{user.name[0].toUpperCase()}</div>
+                <div>{user.email[0].toUpperCase()}</div>
             </div>
             <div className='absolute top-10 text-xs'>
-                {user.name}
+                {user.email}
             </div>
         </div>
     ))}</div></div>
