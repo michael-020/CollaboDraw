@@ -1,9 +1,6 @@
-const isProduction = process.env.NODE_ENV === "production";
+// const isProduction = process.env.NODE_ENV === "production";
 
-export const HTTP_URL = isProduction
-  ? "https://collabodraw-http.mikexdev.in"  
-  : "http://localhost:4000";           
+export const HTTP_URL = process.env.NEXT_PUBLIC_API_URL 
+   
 
-export const WS_URL = isProduction
-  ? "wss://collabodraw-ws.onrender.com"    
-  : "ws://localhost:8080";             
+export const WS_URL =  process.env.NEXT_PUBLIC_WS_URL              
