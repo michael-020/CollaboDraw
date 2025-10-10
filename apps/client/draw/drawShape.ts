@@ -12,7 +12,7 @@ export type Shapes = (
         width: number,
         height: number,
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "CIRCLE",
@@ -21,7 +21,7 @@ export type Shapes = (
         radiusX: number,
         radiusY: number,
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "LINE",
@@ -32,7 +32,7 @@ export type Shapes = (
             endY: number
         },
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "ARROW",
@@ -43,13 +43,13 @@ export type Shapes = (
             endY: number
         },
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "PENCIL",
         points: Array<{x: number, y: number}>,
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "TEXT",
@@ -57,13 +57,13 @@ export type Shapes = (
         y: number,
         textContent: string
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     } | {
         id?: string,
         type: "ERASER",
         points: Array<{x: number, y: number}>,
         color: string,
-        strokeWidth?: number
+        strokeWidth: number
     }
 ) & {
     roomId?: string;
@@ -1198,6 +1198,7 @@ export class DrawShapes{
             x,
             y,
             textContent,
+            strokeWidth: 2,
             color: this.color,
           };
         

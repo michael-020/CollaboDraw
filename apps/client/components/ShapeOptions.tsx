@@ -27,6 +27,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
                     setTool(t.id)
                 }}
                 key={t.id}
+                title={t.id}
                 className={`${t.id == tool ? "bg-emerald-400" : ""} px-3 p-2 rounded transition-all relative duration-500 cursor-pointer`}
             >
                 <Icon

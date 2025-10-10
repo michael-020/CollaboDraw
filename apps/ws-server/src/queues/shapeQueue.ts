@@ -3,6 +3,7 @@ dotenv.config()
 
 import { createClient } from "redis";
 import { updateShapeInDatabase } from "../lib/utils";
+import { Shapes } from "../lib/types";
 
 const client = createClient({
     url: process.env.REDIS_URL
@@ -15,69 +16,6 @@ const main = async () => {
     startQueueProcessor();
 }
 main();
-
-export type Shapes = {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "RECTANGLE",
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-    color?: string,
-} | {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "CIRCLE",
-    x: number, 
-    y: number, 
-    radiusX: number,
-    radiusY: number,
-    color?: string,
-} | {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "LINE",
-    x: number, 
-    y: number, 
-    points: {
-        endX: number,
-        endY: number
-    },
-    color?: string,
-} | {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "ARROW",
-    x: number, 
-    y: number, 
-    points: {
-        endX: number,
-        endY: number
-    },
-    color?: string,
-} | {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "PENCIL",
-    points: Array<{x: number, y: number}>,
-    color?: string,
-} | {
-    id: string,
-    roomId: string,
-    userId: string,
-    type: "TEXT",
-    textContent: string,
-    x: number,
-    y: number,
-    points: Array<{letter: string}>,
-    color?: string,
-}
 
 export async function pushShape(shape: Shapes) { 
     const queueKey = `queue:room:${shape.roomId}`;

@@ -6,6 +6,7 @@ export type Shapes = {
     x: number,
     y: number,
     width: number,
+    strokeWidth: number,
     height: number,
     color?: string,
 } | {
@@ -17,6 +18,7 @@ export type Shapes = {
     y: number, 
     radiusX: number,
     radiusY: number,
+    strokeWidth: number,
     color?: string,
 } | {
     id: string,
@@ -30,6 +32,7 @@ export type Shapes = {
         endY: number
     },
     color?: string,
+    strokeWidth: number,
 } | {
     id: string,
     roomId: string,
@@ -42,6 +45,7 @@ export type Shapes = {
         endY: number
     },
     color?: string,
+    strokeWidth: number,
 } | {
     id: string,
     roomId: string,
@@ -59,6 +63,7 @@ export type Shapes = {
     y: number,
     points: Array<{letter: string}>,
     color?: string,
+    strokeWidth: number,
 } | {
     id: string,
     roomId: string,
@@ -66,4 +71,5 @@ export type Shapes = {
     type: "ERASER",
     points: Array<{x: number, y: number}>,
     color?: string,
+    strokeWidth: number,
 }
