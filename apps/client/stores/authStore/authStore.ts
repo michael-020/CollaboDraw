@@ -166,7 +166,7 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
     },
 
     handleGoogleSignup: () => {
-        window.location.href = `${API_URL}/auth/google/signup`;
+        window.location.href = `${API_URL}/auth/google/signin`;
     },
 
     handleGoogleAuthError: () => {

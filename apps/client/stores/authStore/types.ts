@@ -4,7 +4,7 @@ export interface IUser  {
     id: string;           
     email: string;
     password?: string;
-    name: string;
+    name?: string;
     photo?: string;
     createdAt: Date;
     updatedAt: Date;
@@ -31,7 +31,7 @@ export type authState = {
 }
 
 export type authActions = {
-    signup: (data: {name: string, email: string, password: string, confirmPassword: string}) => void
+    signup: (data: { email: string, password: string, confirmPassword: string}) => void
     login: (data: {email: string, password: string}) => void
     checkAuth: () => void
     logout: () => void
