@@ -100,7 +100,7 @@ async function startQueueProcessor() {
     
     processorInterval = setInterval(async () => {
         await processQueues();
-    }, 2000);
+    }, 1000);
 }
 
 async function processQueues() {

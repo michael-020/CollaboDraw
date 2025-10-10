@@ -8,22 +8,26 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 
-const schema = z.object({
-  email: z.string(),
-  password: z.string()
-    .min(8, "Password should be at least 8 characters")
-    .max(100, "Password should not exceed 100 characters")
-    .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
-    .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter")
-    .regex(/[0-9]/, "Password must contain at least 1 number")
-    .regex(/[^A-Za-z0-9]/, "Password must contain at least 1 special character"),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"]
-});
+// Define the schema
+const signupSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    password: z.string()
+      .min(8, "Password should be at least 8 characters")
+      .max(100, "Password should not exceed 100 characters")
+      .regex(/[a-z]/, "Password must contain at least 1 lowercase letter")
+      .regex(/[A-Z]/, "Password must contain at least 1 uppercase letter")
+      .regex(/[0-9]/, "Password must contain at least 1 number")
+      .regex(/[^A-Za-z0-9]/, "Password must contain at least 1 special character"),
+    confirmPassword: z.string()
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"]
+  });
 
-type FormFields = z.infer<typeof schema>;
+// Infer the type from the schema
+type SignupFormFields = z.infer<typeof signupSchema>;
 
 export default function Signup() {
   const { signup, isSigningUp, inputEmail, authUser } = useAuthStore();
@@ -49,19 +53,22 @@ export default function Signup() {
     if(authUser) redirect("/home");
   }, [inputEmail, authUser]);
 
+  // Form initialization with proper types
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors }
-  } = useForm<FormFields>({
+  } = useForm<SignupFormFields>({
     defaultValues: {
-      email: inputEmail || ""
+      email: inputEmail || "",
+      password: "",
+      confirmPassword: ""
     },
-    resolver: zodResolver(schema)
+    resolver: zodResolver(signupSchema)
   });
 
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
+  const onSubmit: SubmitHandler<SignupFormFields> = async (data) => {
     try {
       const { email, password, confirmPassword } = data;
       signup({ email, password, confirmPassword });
