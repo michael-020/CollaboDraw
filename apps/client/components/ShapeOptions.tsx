@@ -17,7 +17,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
         { id: "AI" as Tool, icon: AiIcon },
       ];
   return (
-    <div className="fixed top-3 left-1/2 -translate-x-1/2 bg-gray-100/30 backdrop-blur-sm rounded-md ">
+    <div className="fixed top-3 left-1/2 -translate-x-1/2 bg-neutral-500/50 backdrop-blur-sm rounded-md ">
         <div className="flex gap-0.5 px-2 py-2 rounded shadow-lg">
         {tools.map((t) => {
             const Icon = t.icon;
@@ -30,7 +30,7 @@ export const ShapeOptions = ({tool, setTool}: {tool: Tool, setTool: (s: Tool) =>
                 className={`${t.id == tool ? "bg-emerald-400" : ""} px-3 p-2 rounded transition-all relative duration-500 cursor-pointer`}
             >
                 <Icon
-                className={`w-4 h-4 transition-all duration-500 text-gray-900`}
+                className={`w-4 h-4 transition-all duration-500 text-neutral-900`}
                 />
             </button>
             );

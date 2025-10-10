@@ -8,8 +8,9 @@ import SidebarToggle from './SidebarToggle'
 import LeaveRoom from './LeaveRoom'
 import AIModal from "./AIModal";
 import { useAuthStore } from '@/stores/authStore/authStore'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Share2Icon } from 'lucide-react'
 import { createPortal } from 'react-dom'
+import ShareRoomCodeModal from './ShareRoomCodeModal';
 
 function Canvas({roomId, socket}: {
     roomId: string,
@@ -33,6 +34,7 @@ function Canvas({roomId, socket}: {
     const [textContent, setTextContent] = useState("")
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
     const [showAIModal, setShowAIModal] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
 
     const getCanvasCoordinates = (clientX: number, clientY: number) => {
@@ -139,6 +141,12 @@ function Canvas({roomId, socket}: {
     return <div className='h-full w-full'>
         <ShapeOptions tool={tool as Tool} setTool={changeTool} />
         <LeaveRoom socket={socket} roomId={roomId} />
+        <div 
+            onClick={() => setShowShareModal(true)}
+            className='fixed top-2.5 right-14 cursor-pointer p-2 rounded-md hover:bg-neutral-800 transition-colors'
+        >
+            <Share2Icon className='size-5 cursor-pointer' />
+        </div>
         {showTextArea && <textarea 
             ref={textAreaRef}
             className={`fixed bg-neutral-800/0 text-white w-auto focus:outline-none p-2 text-[${color}]`}
@@ -179,7 +187,7 @@ function Canvas({roomId, socket}: {
             height={10000}
             width={10000}
             onClick={handleCanvasClick}
-            className={`bg-neutral-800 `}
+            className={`bg-neutral-900 `}
             style={{
                 ...(cursorStyle(tool) ? { cursor: cursorStyle(tool) } : {})
             }}
@@ -191,6 +199,11 @@ function Canvas({roomId, socket}: {
             onClose={() => setShowAIModal(false)}
             changeTool={changeTool}
             drawShapeRef={drawShapeRef}
+        />
+        <ShareRoomCodeModal 
+            roomId={roomId}
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
         />
     </div>
 }

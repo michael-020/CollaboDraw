@@ -1,15 +1,13 @@
 "use client"
 import { useAuthStore } from '@/stores/authStore/authStore'
-import { Loader } from 'lucide-react'
+import { Loader, Check, Copy } from 'lucide-react'  // Add Check, Copy imports
 import Link from 'next/link'
 import React, { ChangeEvent, FormEvent, useState } from 'react'
-import { FiCopy } from 'react-icons/fi'  // Importing the copy icon from react-icons
 
 const CreateRoom = () => {
     const { createRoom, roomId, isCreatingRoom, joinRoom } = useAuthStore()
     const [copied, setCopied] = useState(false)
     const [formData, setFormData] = useState({
-        // slug: "",
         name: ""
     })
 
@@ -26,11 +24,13 @@ const CreateRoom = () => {
         createRoom(formData)
     }
 
-    const copyToClipboard = () => {
+    const copyToClipboard = async () => {
         if (roomId) {
-            navigator.clipboard.writeText(roomId)
+            await navigator.clipboard.writeText(roomId)
             setCopied(true)
-            setTimeout(() => setCopied(false), 2*1000)
+            setTimeout(() => {
+                setCopied(false)
+            }, 4000)
         }
     }
 
@@ -77,17 +77,24 @@ const CreateRoom = () => {
             {roomId && (
                 <div className="bg-gray-700 p-6 rounded-xl mt-6 text-center relative">
                     <h2 className="text-lg font-semibold">Room Created Successfully!</h2>
-                    <div className="flex justify-center items-center gap-3">
-                        <h3 className="text-emerald-400 font-bold text-xl mt-2">{roomId}</h3>
+                    <div className="bg-neutral-800 rounded-lg p-4 flex items-center justify-between gap-4 mb-4">
+                        <span className="text-emerald-400 font-mono text-lg">{roomId}</span>
                         <button
-                            className="hover:text-white hover:scale-105 relative top-1 text-gray-400 text-xl"
                             onClick={copyToClipboard}
+                            className="text-emerald-400 hover:text-emerald-300 transition p-2 rounded-md hover:bg-emerald-400/10"
                         >
-                            <FiCopy />
+                            {copied ? (
+                                <Check className="w-5 h-5" />
+                            ) : (
+                                <Copy className="w-5 h-5" />
+                            )}
                         </button>
                     </div>
                     <Link href={`/canvas/${roomId}`}>
-                        <button className="mt-4 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" onClick={handleJoinRoom} >
+                        <button 
+                            className="mt-4 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-300" 
+                            onClick={handleJoinRoom}
+                        >
                             Join Room
                         </button>
                     </Link>
