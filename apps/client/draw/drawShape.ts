@@ -1103,7 +1103,7 @@ export class DrawShapes{
 
         this.ctx.strokeStyle = shape.color || this.color;
         // Apply strokeWidth if available, otherwise use default
-        this.ctx.lineWidth = shape.strokeWidth || this.stroke;
+        this.ctx.lineWidth = shape.strokeWidth;
         
         if(shape.type === "RECTANGLE"){
             this.drawRectangle(this.ctx, shape.x, shape.y, shape.width, shape.height, shape.color, shape.strokeWidth);
@@ -1116,14 +1116,14 @@ export class DrawShapes{
         }
         else if(shape.type === "ARROW"){
             this.ctx.strokeStyle = shape.color;
-            this.ctx.lineWidth = shape.strokeWidth || this.stroke;
+            this.ctx.lineWidth = shape.strokeWidth;
             this.ctx.beginPath();
             canvas_arrow(this.ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
             this.ctx.stroke();
         }
         else if(shape.type === "PENCIL"){
             this.ctx.strokeStyle = shape.color;
-            this.ctx.lineWidth = shape.strokeWidth || this.stroke;
+            this.ctx.lineWidth = shape.strokeWidth;
             if(shape.points && shape.points.length > 0){
                 this.ctx.beginPath();
                 this.ctx.moveTo(shape.points[0].x, shape.points[0].y);
@@ -1166,24 +1166,24 @@ export class DrawShapes{
         }
     }
 
-    drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color?: string, strokeWidth?: number){
+    drawRectangle(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, color: string, strokeWidth: number){
         ctx.strokeStyle = color as string;
-        ctx.lineWidth = strokeWidth || this.stroke;
+        ctx.lineWidth = strokeWidth;
         ctx.strokeRect(x, y, width, height);
     }
 
-    drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radiusX: number, radiusY: number, color?: string, strokeWidth?: number){
+    drawCircle(ctx: CanvasRenderingContext2D, x: number, y: number, radiusX: number, radiusY: number, color: string, strokeWidth: number){
         ctx.strokeStyle = color as string;
-        ctx.lineWidth = strokeWidth || this.stroke;
+        ctx.lineWidth = strokeWidth;
         ctx.beginPath();
         ctx.ellipse(x, y, Math.abs(radiusX), Math.abs(radiusY), 0, 0, Math.PI*2);
         ctx.stroke();
         ctx.closePath();
     }
 
-    drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, points: {endX: number, endY: number}, color?: string, strokeWidth?: number){
+    drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, points: {endX: number, endY: number}, color: string, strokeWidth: number){
         ctx.strokeStyle = color as string;
-        ctx.lineWidth = strokeWidth || this.stroke;
+        ctx.lineWidth = strokeWidth;
         ctx.beginPath();
         ctx.moveTo(x, y);
         ctx.lineTo(points.endX, points.endY);
@@ -1509,30 +1509,30 @@ export class DrawShapes{
             // ...drawing logic (same as before, but using shape.x, shape.y, etc.)...
             if (shape.type === "RECTANGLE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                ctx.lineWidth = (shape.strokeWidth) / scale;
                 ctx.strokeRect(shape.x, shape.y, shape.width, shape.height);
             } else if (shape.type === "CIRCLE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                ctx.lineWidth = (shape.strokeWidth) / scale;
                 ctx.beginPath();
                 ctx.ellipse(shape.x, shape.y, Math.abs(shape.radiusX), Math.abs(shape.radiusY), 0, 0, Math.PI * 2);
                 ctx.stroke();
             } else if (shape.type === "LINE") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                ctx.lineWidth = (shape.strokeWidth) / scale;
                 ctx.beginPath();
                 ctx.moveTo(shape.x, shape.y);
                 ctx.lineTo(shape.points.endX, shape.points.endY);
                 ctx.stroke();
             } else if (shape.type === "ARROW") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                ctx.lineWidth = (shape.strokeWidth) / scale;
                 ctx.beginPath();
                 canvas_arrow(ctx, shape.x, shape.y, shape.points.endX, shape.points.endY);
                 ctx.stroke();
             } else if (shape.type === "PENCIL" || shape.type === "ERASER") {
                 ctx.strokeStyle = shape.color;
-                ctx.lineWidth = (shape.strokeWidth || 2) / scale;
+                ctx.lineWidth = (shape.strokeWidth) / scale;
                 if (shape.points.length > 0) {
                     ctx.beginPath();
                     ctx.moveTo(shape.points[0].x, shape.points[0].y);
