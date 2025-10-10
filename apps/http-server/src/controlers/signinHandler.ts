@@ -21,10 +21,17 @@ export const signinHandler = async (req: Request, res: Response) => {
                 }
             });
     
-            if (!checkUser || !checkUser.password) {
-                res.status(411).json({
-                    msg: "Invalid credentials"
+            if (!checkUser) {
+                res.status(400).json({
+                    msg: "User with this email does not exist"
                 });
+                return;
+            }
+
+            if(!checkUser.password){
+                res.status(400).json({
+                    msg: "Invalid Password"
+                })
                 return;
             }
 

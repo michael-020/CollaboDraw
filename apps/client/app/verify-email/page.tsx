@@ -50,7 +50,7 @@ export default function EmailVerify() {
             <input
               type="email"
               placeholder="Enter Email..."
-              className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="bg-neutral-900 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
               name="email"
@@ -65,7 +65,7 @@ export default function EmailVerify() {
               <input
                 type="text"
                 placeholder="Enter OTP..."
-                className="bg-gray-700 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="bg-neutral-900 border border-gray-600 text-white px-4 py-3 rounded-lg text-base sm:text-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 onChange={(e) => setOtp(e.target.value)}
                 value={otp}
                 name="otp"

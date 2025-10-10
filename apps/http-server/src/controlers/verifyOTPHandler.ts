@@ -27,7 +27,7 @@ export const verifyOtpHandler = async (req: Request, res: Response) => {
         }
       });
       if (!otpRecord || otpRecord.otp !== otp) {
-        res.status(403).json({ msg: "Invalid OTP or Email" });
+        res.status(403).json({ msg: "Incorrect OTP" });
         return
       }
   

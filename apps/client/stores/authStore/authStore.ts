@@ -34,7 +34,11 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             toast.success("Signed up successfully")
         } catch (error) {
             console.error("error while signing up", error)
-            toast.error("failed to signup")
+             if (error instanceof AxiosError && error.response?.data?.msg) {
+                toast.error(error.response.data.msg as string);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
             set({authUser: null})
         } finally {
             set({isSigningUp: false})
@@ -49,7 +53,11 @@ export const useAuthStore = create<authState & authActions>((set, get) => ({
             toast.success("Logged in successfully")
         } catch (error) {
             console.error("error while logging in", error)
-            toast.error("failed to login")
+             if (error instanceof AxiosError && error.response?.data?.msg) {
+                toast.error(error.response.data.msg as string);
+            } else {
+                toast.error("An unexpected error occurred.");
+            }
             set({authUser: null})
         } finally {
             set({isLoggingIn: false})
