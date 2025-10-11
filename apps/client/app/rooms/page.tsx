@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Plus } from "lucide-react";
+import { redirect, useRouter } from "next/navigation";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import RoomCard from "@/components/RoomCard";
 import RoomCardSkeleton from "@/components/RoomCardSkeleton";
 import { AxiosInstance } from "@/lib/axios";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useAuthStore } from "@/stores/authStore/authStore";
 
 interface Room {
   id: string;
@@ -17,6 +18,24 @@ export default function Rooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [authChecked, setAuthChecked] = useState(false);
+  const { checkAuth, authUser, isCheckingAuth } = useAuthStore()
+  
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      await checkAuth();  
+      setAuthChecked(true);  
+    };
+
+    checkUserAuth();
+  }, [checkAuth]);
+
+  
+  useEffect(() => {
+    if (authChecked && !authUser) {
+      redirect("/");  
+    }
+  }, [authChecked, authUser]);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -85,6 +104,12 @@ export default function Rooms() {
         </div>
       </div>
     );
+  }
+
+  if(!authUser || isCheckingAuth){
+    return <div className="bg-black h-screen w-screen">
+      <Loader2 className="animate-spin size-10" />
+    </div>
   }
 
   return (

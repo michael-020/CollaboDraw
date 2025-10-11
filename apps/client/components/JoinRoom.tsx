@@ -1,8 +1,8 @@
 "use client"
 import { useAuthStore } from '@/stores/authStore/authStore'
-import { Loader } from 'lucide-react'
+import { Loader, Loader2 } from 'lucide-react'
 import React, { ChangeEvent, useEffect, useState } from 'react'
-import {useRouter} from "next/navigation"
+import {redirect, useRouter} from "next/navigation"
 
 const JoinRoom = () => {
     const { joinRoom, isJoiningRoom } = useAuthStore()
@@ -10,6 +10,24 @@ const JoinRoom = () => {
         roomId: "",
     })
     const router = useRouter()
+    const [authChecked, setAuthChecked] = useState(false);
+    const { checkAuth, authUser, isCheckingAuth } = useAuthStore()
+    
+    useEffect(() => {
+    const checkUserAuth = async () => {
+        await checkAuth();  
+        setAuthChecked(true);  
+    };
+
+    checkUserAuth();
+    }, [checkAuth]);
+
+    
+    useEffect(() => {
+    if (authChecked && !authUser) {
+        redirect("/");  
+    }
+    }, [authChecked, authUser]);
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -26,7 +44,11 @@ const JoinRoom = () => {
             router.push(`/canvas/${formData.roomId}`)
     }
 
-    useEffect(() => {}, [router])
+    if(!authUser || isCheckingAuth){
+        return <div className="bg-black h-screen w-screen">
+        <Loader2 className="animate-spin size-10" />
+        </div>
+    }
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">

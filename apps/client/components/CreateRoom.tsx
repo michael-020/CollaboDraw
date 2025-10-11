@@ -1,17 +1,35 @@
 "use client"
 import { useAuthStore } from '@/stores/authStore/authStore'
-import { Loader, Check, Copy } from 'lucide-react'
+import { Loader, Check, Copy, Loader2 } from 'lucide-react'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import React, { ChangeEvent, FormEvent, useState, useRef } from 'react'
+import React, { ChangeEvent, FormEvent, useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
 const CreateRoom = () => {
-    const { createRoom, roomId, isCreatingRoom, joinRoom } = useAuthStore()
+    const { createRoom, roomId, isCreatingRoom, joinRoom, checkAuth, authUser, isCheckingAuth } = useAuthStore()
     const [copied, setCopied] = useState(false)
     const modalRef = useRef<HTMLDivElement>(null)
     const [formData, setFormData] = useState({
         name: ""
     })
+    const [authChecked, setAuthChecked] = useState(false);
+        
+    useEffect(() => {
+        const checkUserAuth = async () => {
+            await checkAuth();  
+            setAuthChecked(true);  
+        };
+
+        checkUserAuth();
+    }, [checkAuth]);
+
+    
+    useEffect(() => {
+        if (authChecked && !authUser) {
+            redirect("/");  
+        }
+    }, [authChecked, authUser]);
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -38,6 +56,12 @@ const CreateRoom = () => {
 
     function handleJoinRoom(){
         joinRoom(roomId)
+    }
+
+    if(!authUser || isCheckingAuth){
+        return <div className="bg-black h-screen w-screen">
+        <Loader2 className="animate-spin size-10" />
+        </div>
     }
 
     return (
