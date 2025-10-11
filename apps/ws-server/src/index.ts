@@ -4,6 +4,7 @@ import { JWT_SECRET } from "@repo/backend-common/config"
 import { updateData } from "./queues/shapeQueue";
 import { deleteShapeFromDatabase, insertIntoDB } from "./lib/utils";
 import { v4 as uuidv4 } from 'uuid';
+import { Request, Response } from "express";
 
 // const wss = new WebSocketServer({ port: 8080 });
 var express = require('express')
@@ -186,5 +187,25 @@ app.ws("/", function (ws: WebSocket, request: any) {
     users.splice(users.findIndex((u) => u.userId === userId), 1);
   });
 });
+
+app.get("/server-health", async (req: Request, res: Response) => {
+    try {
+        
+        res.status(200).json({
+            app: "Collabodraw-ws",
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+            message: 'Server is running normally'
+        });
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).json({
+            status: 'unhealthy',
+            timestamp: new Date().toISOString(),
+            error: 'Database connection failed'
+        });
+    }
+})
 
 app.listen(8080);
