@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, FormEvent } from "react";
 import { useAuthStore } from "@/stores/authStore/authStore";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader } from "lucide-react";
 import Image from "next/image";
@@ -16,6 +16,8 @@ export default function EmailVerify() {
     handleGoogleAuthError,
     otpSent,
     resetOtpSent,
+    authUser,
+    checkAuth
   } = useAuthStore();
 
   const [email, setEmail] = useState("");
@@ -39,6 +41,16 @@ export default function EmailVerify() {
     await verifyEmail({ email, otp });
     router.push("/signup");
   }
+
+  useEffect(() => {
+      checkAuth()
+    }, [checkAuth])
+  
+    useEffect(() => {
+      if (authUser) {
+        redirect("/home")
+      }
+    }, [authUser])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">

@@ -30,7 +30,7 @@ const signupSchema = z
 type SignupFormFields = z.infer<typeof signupSchema>;
 
 export default function Signup() {
-  const { signup, isSigningUp, inputEmail, authUser } = useAuthStore();
+  const { signup, isSigningUp, inputEmail, authUser, checkAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -73,6 +73,16 @@ export default function Signup() {
       console.error("Error while signing up", error)
     }
   };
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  useEffect(() => {
+    if (authUser) {
+        redirect("/home")
+    }
+  }, [authUser])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-white px-2">

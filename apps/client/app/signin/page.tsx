@@ -12,8 +12,10 @@ export default function Signin(){
         isLoggingIn, 
         handleGoogleSignin, 
         handleGoogleAuthError,
-        authUser 
+        authUser,
+        checkAuth 
     } = useAuthStore()
+
     const [formData, setFormData] = useState({
         email: "",
         password: ""
@@ -43,8 +45,13 @@ export default function Signin(){
     }
 
     useEffect(() => {
-        if(authUser)
+        checkAuth()
+    }, [checkAuth])
+
+    useEffect(() => {
+        if (authUser) {
             redirect("/home")
+        }
     }, [authUser])
 
     return (

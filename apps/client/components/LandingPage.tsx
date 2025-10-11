@@ -1,12 +1,10 @@
 "use client"
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Users, Edit3, Sparkles, Zap, Palette, Loader2, ChevronDown, Star, Play, Bot } from "lucide-react"
+import { Users, Edit3, Sparkles, Zap, Palette, ChevronDown, Star, Bot } from "lucide-react"
 import { motion, easeOut, useScroll, useTransform } from "motion/react"
 import { FeatureCard } from "../components/FeatureCard"
-import { useAuthStore } from "@/stores/authStore/authStore"
-import { redirect, useRouter } from "next/navigation"
-import { createPortal } from "react-dom"
+
 
 const MeshGradient = () => {
   return (
@@ -251,21 +249,9 @@ const TypewriterText = ({ text, delay = 0 }: TypewriterTextProps) => {
 }
 
 const LandingPage = () => {
-  const { authUser, checkAuth, isLoggingOut } = useAuthStore()
-  const router = useRouter()
   const { scrollY } = useScroll()
   const y1 = useTransform(scrollY, [0, 300], [0, 50])
   const y2 = useTransform(scrollY, [0, 300], [0, -50])
-
-  useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
-
-  useEffect(() => {
-    if (authUser) {
-      redirect("/home")
-    }
-  }, [authUser, router])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -305,7 +291,7 @@ const LandingPage = () => {
 
   return (
     <>
-      {isLoggingOut &&
+      {/* {isLoggingOut &&
         createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 flex flex-col items-center space-y-4">
@@ -315,7 +301,7 @@ const LandingPage = () => {
           </div>,
           document.body
         )
-      }
+      } */}
       
       <div className="relative min-h-screen bg-neutral-900 bg-[radial-gradient(circle,_rgb(46,46,46)_0%,_rgb(5,5,5)_100%)] text-white overflow-hidden">
         {/* Background Elements */}
@@ -385,7 +371,6 @@ const LandingPage = () => {
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   <Link
                     href="/signin"
@@ -402,19 +387,18 @@ const LandingPage = () => {
                 <motion.div 
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
                 >
                   <Link
                     href="/signup"
                     className="relative bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-4 rounded-2xl font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-emerald-500 transition-all duration-300 inline-flex items-center justify-center min-w-[140px] focus:ring-4 focus:ring-emerald-500/20 focus:outline-none group"
                   >
                     <span className="mr-2">Get Started</span>
-                    <motion.div
+                    {/* <motion.div
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
                       <Play size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                    </motion.div>
+                    </motion.div> */}
                   </Link>
                 </motion.div>
               </motion.div>
