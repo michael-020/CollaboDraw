@@ -13,7 +13,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(
   cors({
-    origin: ["http://collabodraw.mikexdev.in", "https://collabodraw.mikexdev.in", "http://localhost:3000"],
+    origin: ["https://collabodraw-http.michaelhosamani.com", "https://collabodraw.michaelhosamani.com", "http://localhost:3000"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
