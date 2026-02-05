@@ -14,7 +14,7 @@ export function generateOTP(): string {
 export async function sendOTP(email: string, otp: string): Promise<boolean> {
   try {
     const { data, error } = await resend.emails.send({
-      from: "Collabodraw <onboarding@resend.dev>",
+      from: "Collabodraw <noreply@michaelhosamani.com>",
       to: email,
       subject: "Email Verification OTP",
       html: `<p>Your OTP for email verification is: <strong>${otp}</strong></p>`,
