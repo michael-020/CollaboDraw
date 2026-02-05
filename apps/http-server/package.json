@@ -20,6 +20,7 @@
     "express-session": "^1.18.1",
     "nodemailer": "^7.0.5",
     "parser": "^0.1.4",
+    "resend": "^6.9.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "zod": "^3.24.1"
@@ -39,9 +40,9 @@
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "groq-sdk": "^0.32.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "groq-sdk": "^0.32.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.9"
   }
